@@ -29,11 +29,8 @@ services:
   backend:
     build:
       context: backend/
-    restart: unless-stopped
     ports:
-      - 3000:3000
-    environment:
-      MONGO_URL: mongodb://root:root@mongodb:27017/
+      - 8000:8000
     depends_on:
       - mongodb
     volumes:
