@@ -1,5 +1,9 @@
-import { Request, Response } from 'express';
+import express, {Router} from 'express';
+import { sayHello } from "../controllers/helloWorldController";
 
-export const helloWorldRoute = (req: Request, res: Response): void => {
-  res.send('Hello, World!');
-};
+const helloRouter: Router = express.Router();
+
+// Define routes here
+helloRouter.get('/', sayHello);
+
+export default helloRouter;
