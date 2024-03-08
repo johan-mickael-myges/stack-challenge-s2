@@ -20,9 +20,11 @@ function add50() {
 </script>
 
 <template>
-  <h1>Counter</h1>
-  <button @click="increment">Increment</button>
-  <button @click="add50">+50</button>
-  <button @click="resetCounter">Reset</button>
-  {{ counterStore.count }}
+  <div class="p-5 gap-4">
+    <h1 class="text-5xl mb-4">Counter</h1>
+    <button class="p-3 bg-blue-100 text-blue-500" @click="increment">Increment</button>
+    <button class="p-3 bg-yellow-100 text-yellow-500" @click="add50">+50</button>
+    <button class="p-3 bg-gray-100 text-gray-500" @click="resetCounter">Reset</button>
+    <p class="text-9xl">{{ counterStore.count }}</p>
+  </div>
 </template>
