@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Counter from "./components/Counter.vue";
+import TodoList from "./components/Todo/TodoList.vue";
 </script>
 
 <template>
-  <Counter />
+  <TodoList />
 </template>
