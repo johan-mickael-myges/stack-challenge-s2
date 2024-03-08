@@ -1,6 +1,6 @@
 FROM node:alpine
 
-WORKDIR /app
+WORKDIR /app/backend
 
 COPY . .
 
@@ -10,4 +10,4 @@ ENTRYPOINT ["npm"]
 
 CMD ["start"]
 
-EXPOSE 3000
+EXPOSE 8000
