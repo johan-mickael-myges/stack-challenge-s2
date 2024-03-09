@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TodoList from "./components/Todo/TodoList.vue";
+import ProductList from "./components/Product/ProductList.vue";
 </script>
 
 <template>
-  <TodoList />
+  <ProductList />
 </template>

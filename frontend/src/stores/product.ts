@@ -1,13 +1,11 @@
 import { defineStore } from 'pinia';
 import {ref} from "vue";
 
-export const useTodoStore = defineStore('todo', {
+export const useProductStore = defineStore('product', {
     state: (): {
-        count: number;
         loading: boolean;
         data: any;
     } => ({
-        count: 0,
         loading: false,
         data: ref([]),
     }),
@@ -15,7 +13,7 @@ export const useTodoStore = defineStore('todo', {
         async fetch() : Promise<void> {
             try {
                 this.loading = true;
-                const response : Response = await fetch(`http://localhost:8000/api/todos`);
+                const response : Response = await fetch(`http://localhost:8000/api/products`);
                 this.data.value = await response.json();
             } catch (e) {
                 console.error(e);

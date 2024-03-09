@@ -1,11 +1,9 @@
 import express, {Router} from 'express';
-import helloRouter from './helloworld';
-import todoRouter from "./todoRouter";
+import ProductRouter from "./ProductRouter";
 
 const router: Router = express.Router();
 
 // Define routes here
-router.use('/hello', helloRouter);
-router.use('/todos', todoRouter);
+router.use('/products', ProductRouter)
 
 export default router;
