@@ -14,7 +14,7 @@ export const connect = async (): Promise<void> => {
         await mongoose.connect(URI, {});
         console.log('Connected to database');
     } catch (e) {
-        console.error(e);
+        console.error(`Failed to connect to database with URI:${URI}`, e);
     }
 }
 
@@ -23,7 +23,7 @@ export const disconnect = async (): Promise<void> => {
         await mongoose.disconnect();
         console.log('Disconnected from database');
     } catch (e) {
-        console.error(e);
+        console.error(`Failed to disconnect from database with URI:${URI}`, e);
     }
 }
 
