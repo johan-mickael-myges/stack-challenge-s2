@@ -1,36 +1,41 @@
 version: "3.1"
 
 services:
-  mongodb:
-    build:
-      context: mongodb/
+  mongo:
+    image: mongo:5.0
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
     restart: unless-stopped
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
-      - mongodb_data_container:/data/db
-
+      - ./database/db:/data/db
+      - ./database/dev.archive:/Databases/dev.archive
+      - ./database/production:/Databases/production
   mongo-express:
     image: mongo-express
+    container_name: mexpress
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_URL=mongodb://root:password@mongo:27017/?authSource=admin
+      - ME_CONFIG_BASICAUTH_USERNAME=mexpress
+      - ME_CONFIG_BASICAUTH_PASSWORD=mexpress
+    links:
+      - mongo
     restart: unless-stopped
     ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: root
-      ME_CONFIG_MONGODB_URL: mongodb://root:root@mongodb:27017/
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin
-    depends_on:
-      - mongodb
+      - "8081:8081"
 
   backend:
     build:
       context: backend/
     ports:
-      - 8000:8000
+      - "8000:8000"
     depends_on:
-      - mongodb
+      - mongo
     volumes:
       - ./backend:/app/backend
 
@@ -38,7 +43,7 @@ services:
     build:
       context: frontend/
     ports:
-      - 3000:5173
+      - "3000:5173"
     depends_on:
       - backend
     volumes:
