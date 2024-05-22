@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useProductStore} from "../../stores/product.ts";
+import {useProductStore} from "../stores/product.ts";
 import {onMounted} from "vue";
 
 const productStore = useProductStore();
