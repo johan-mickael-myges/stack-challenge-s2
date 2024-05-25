@@ -1,8 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+import { Todo } from '../interfaces';
 
-export interface Todo extends Document  {
-    title: string;
-}
 
 const TodoSchema: Schema = new Schema({
     title: { type: String, required: true },

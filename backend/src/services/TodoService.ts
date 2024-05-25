@@ -1,5 +1,5 @@
 import TodoRepository from "../repositories/todoRepository";
-import { Todo } from "../models/todoModel";
+import { Todo } from '../interfaces';
 
 export default class TodoService {
     static async all(): Promise<Todo[]> {
