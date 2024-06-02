@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 
 const URI = process.env.MONGO_URI;
 
