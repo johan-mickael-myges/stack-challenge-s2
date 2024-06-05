@@ -1,7 +1,8 @@
 import express from 'express';
 import routes from './routes';
-import { connect } from './config/database/mongoose';
-import { testDbConnection } from './config/database/sequelize';
+import { connect as connectMongodb} from './config/database/mongoose';
+import { connect as connectPostgres } from './config/database/sequelize';
+import loadFixtures from './fixtures';
 
 const app = express();
 const cors = require('cors');
@@ -9,9 +10,10 @@ const cors = require('cors');
 app.use(cors());
 app.use('/api', routes);
 
-connect();
+connectMongodb();
 
-// testDbConnection();
+connectPostgres();
+loadFixtures();
 
 const PORT = 8000;
 app.listen(PORT, () => {
