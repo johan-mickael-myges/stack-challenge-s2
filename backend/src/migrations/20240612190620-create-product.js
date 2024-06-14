@@ -1,5 +1,7 @@
 'use strict';
 
+const { toDefaultValue } = require("sequelize/lib/utils");
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('products', {
@@ -13,13 +15,22 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: false,
+      reference: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       price: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.DECIMAL(10,2),
         allowNull: false,
+      },      
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      images: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        allowNull: false,
+        defaultValue: []
       },
       createdAt: {
         allowNull: false,

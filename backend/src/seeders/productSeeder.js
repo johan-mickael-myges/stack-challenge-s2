@@ -15,15 +15,19 @@ module.exports = {
         const products = [
             {
                 name: 'Product 1',
+                reference: 'REF1234512343',
                 description: 'Description for product 1',
                 price: 10.0,
+                images: 'UrlOfimage1',
                 createdAt: new Date(),
                 updatedAt: new Date(),
             },
             {
                 name: 'Product 2',
+                reference: 'REF8888777382778',
                 description: 'Description for product 2',
                 price: 20.0,
+                images: 'UrlOfimage2',
                 createdAt: new Date(),
                 updatedAt: new Date(),
             },
