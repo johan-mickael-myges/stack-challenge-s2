@@ -14,7 +14,6 @@ services:
       - ./database/db:/data/db
       - ./database/dev.archive:/Databases/dev.archive
       - ./database/production:/Databases/production
-
   mongo-express:
     image: mongo-express
     container_name: mexpress
@@ -53,7 +52,6 @@ services:
       - postgres
     volumes:
       - ./backend:/app/backend
-    user: "1000:1000"
 
   frontend:
     build:
@@ -64,7 +62,6 @@ services:
       - backend
     volumes:
       - ./frontend:/app/frontend
-    user: "1000:1000"
 
 volumes:
     mongodb_data_container: {}
