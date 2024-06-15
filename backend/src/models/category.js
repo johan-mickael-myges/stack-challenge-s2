@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes, Model } = require('sequelize');
+const { DataTypes, Model } = require('sequelize');
 
 class Category extends Model {
     static associate(models) {
@@ -17,11 +17,13 @@ module.exports = (sequelize) => {
                 name: {
                     type: DataTypes.STRING,
                     allowNull: false,
+                    unique: true
                 }
             },
             {
                 sequelize,
                 tableName: 'categories',
+                timestamps: true
             }
     );
 
