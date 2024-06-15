@@ -3,8 +3,7 @@ const { DataTypes, Model } = require('sequelize');
 class User extends Model {
     static associate(models) {
         User.belongsToMany(models.Role, {through: 'user_roles', timestamps: false});
-        User.hasMany(models.Address);
-        User.hasOne(models.Order);
+        User.hasMany(models.Order);
         User.hasOne(models.Cart);
     }
 }

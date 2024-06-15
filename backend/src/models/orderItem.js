@@ -2,7 +2,7 @@ const { DataTypes, Model } = require('sequelize');
 
 class OrderItem extends Model {
     static associate(models) {
-        OrderItem.belongsTo(models.Cart,{onDelete: 'CASCADE'});
+        OrderItem.belongsTo(models.Order,{onDelete: 'CASCADE'});
         OrderItem.belongsTo(models.Product,{onDelete: 'CASCADE'});
     }
 }
