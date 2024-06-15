@@ -4,7 +4,8 @@ class User extends Model {
     static associate(models) {
         User.belongsToMany(models.Role, {through: 'user_roles', timestamps: false});
         User.hasMany(models.Address);
-        User.hasMany(models.Cart)
+        User.hasOne(models.Order);
+        User.hasOne(models.Cart);
     }
 }
 
