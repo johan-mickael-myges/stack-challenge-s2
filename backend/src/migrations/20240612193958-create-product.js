@@ -21,10 +21,20 @@ module.exports = {
       price: {
         type: Sequelize.DECIMAL(10,2),
         allowNull: false,
-      },      
-      description: {
-        type: Sequelize.TEXT,
+      },
+      brandId: {
+        type: Sequelize.INTEGER,
         allowNull: true,
+        references: {
+          model: 'brands',
+          key: 'id'
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',     
+        description: {
+          type: Sequelize.TEXT,
+          allowNull: true,
+        }
       },
       images: {
         type: Sequelize.ARRAY(Sequelize.STRING),
