@@ -4,7 +4,6 @@ class Product extends Model {
     static associate(models) {
         Product.belongsToMany(models.Category, {through: 'product_category', timestamps: false});
         Product.belongsTo(models.Brand);
-        Product.hasOne(models.Quantity);
         Product.belongsToMany(models.Promotion, {through: 'product_promotion'});
     }
 }
