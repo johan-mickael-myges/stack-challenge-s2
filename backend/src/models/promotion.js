@@ -2,7 +2,7 @@ const { DataTypes, Model } = require('sequelize');
 
 class Promotion extends Model {
   static associate(models) {
-    Promotion.belongsToMany(models.Product, {through: 'product_promotion'});
+    Promotion.belongsToMany(models.Product, {through: 'product_promotions'});
   }
 }
 

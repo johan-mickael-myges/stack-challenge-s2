@@ -6,7 +6,7 @@ class Cart extends Model {
             foreignKey: 'userId',
             as: 'user',
         });
-        Cart.belongsToMany(models.Product, { through: 'cart_item' });
+        Cart.belongsToMany(models.Product, { through: 'cart_items' });
     }
 }
 

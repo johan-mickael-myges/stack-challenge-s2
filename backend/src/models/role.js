@@ -2,7 +2,7 @@ const { DataTypes, Model } = require('sequelize');
 
 class Role extends Model {
   static associate(models) {
-    Role.belongsToMany(models.User, {through: 'user_role', timestamps: false});
+    Role.belongsToMany(models.User, {through: 'user_roles', timestamps: false});
   }
 }
 
