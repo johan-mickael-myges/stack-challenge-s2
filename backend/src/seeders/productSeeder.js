@@ -18,18 +18,14 @@ module.exports = {
                 reference: 'REF1234512343',
                 description: 'Description for product 1',
                 price: 10.0,
-                images: 'UrlOfimage1',
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                images: ['UrlOfimage1'],
             },
             {
                 name: 'Product 2',
                 reference: 'REF8888777382778',
                 description: 'Description for product 2',
                 price: 20.0,
-                images: 'UrlOfimage2',
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                images: ['UrlOfimage2']
             },
         ];
 

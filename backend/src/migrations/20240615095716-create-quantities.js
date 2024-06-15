@@ -2,34 +2,27 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('products', {
+    await queryInterface.createTable('quantities', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
+        type: Sequelize.INTEGER
+      },
+      productId: {
         type: Sequelize.INTEGER,
-      },
-      name: {
-        type: Sequelize.STRING,
         allowNull: false,
+        references: {
+          model: 'products',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
-      reference: {
-        type: Sequelize.STRING,
+      stock: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-        unique: true
-      },
-      price: {
-        type: Sequelize.DECIMAL(10,2),
-        allowNull: false,
-      },      
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      images: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        allowNull: false,
-        defaultValue: []
+        defaultValue: 0
       },
       createdAt: {
         allowNull: false,
@@ -40,11 +33,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
-
-      },
+      }
     });
   },
+
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('products');
-  },
+    await queryInterface.dropTable('quantities');
+  }
 };

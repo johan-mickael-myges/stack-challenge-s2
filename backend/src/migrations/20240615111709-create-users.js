@@ -2,49 +2,51 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('products', {
+    await queryInterface.createTable('users', {
       id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
       },
-      name: {
+      username: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      reference: {
+      firstname: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true
       },
-      price: {
-        type: Sequelize.DECIMAL(10,2),
+      lastname: {
+        type: Sequelize.STRING,
         allowNull: false,
-      },      
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true,
       },
-      images: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
+      email: {
+        type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: []
+        unique: true,
+        validate: {
+          isEmail: true,
+        },
+      },
+      number: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
-
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
     });
   },
+
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('products');
-  },
+    await queryInterface.dropTable('users');
+  }
 };

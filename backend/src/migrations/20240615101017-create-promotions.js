@@ -2,34 +2,28 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('products', {
+    await queryInterface.createTable('promotions', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
-      reference: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
+      discountPercentage: {
+        type: Sequelize.FLOAT,
+        allowNull: false
       },
-      price: {
-        type: Sequelize.DECIMAL(10,2),
-        allowNull: false,
-      },      
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true,
+      startDate: {
+        type: Sequelize.DATE,
+        allowNull: false
       },
-      images: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
-        allowNull: false,
-        defaultValue: []
+      endDate: {
+        type: Sequelize.DATE,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -40,11 +34,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
-
-      },
+      }
     });
   },
+
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('products');
-  },
+    await queryInterface.dropTable('promotions');
+  }
 };
