@@ -2,7 +2,7 @@ const { DataTypes, Model } = require('sequelize');
 
 class Category extends Model {
     static associate(models) {
-        Category.belongsToMany(models.Product, { through: 'productCategories' });
+        Category.belongsToMany(models.Product, { through: 'product_category', timestamps: false });
     }
 }
 

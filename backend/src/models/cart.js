@@ -2,8 +2,11 @@ const { DataTypes, Model } = require('sequelize');
 
 class Cart extends Model {
     static associate(models) {
-        Cart.belongsTo(models.User);
-        Cart.belongsToMany(models.Product, { through: 'CartItem' });
+        Cart.belongsTo(models.User, {
+            foreignKey: 'userId',
+            as: 'user',
+        });
+        Cart.belongsToMany(models.Product, { through: 'cart_item' });
     }
 }
 
@@ -19,7 +22,7 @@ module.exports = (sequelize) => {
                 type: DataTypes.UUID,
                 allowNull: false,
                 references: {
-                    model: User,
+                    model: 'User',
                     key: 'id',
                 },
             },

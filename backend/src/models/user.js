@@ -2,8 +2,9 @@ const { DataTypes, Model } = require('sequelize');
 //et le mdp ?
 class User extends Model {
     static associate(models) {
-        User.belongsToMany(models.Role, {through: 'UserRole'});
+        User.belongsToMany(models.Role, {through: 'user_role', timestamps: false});
         User.hasMany(models.Address);
+        User.hasMany(models.Cart)
     }
 }
 

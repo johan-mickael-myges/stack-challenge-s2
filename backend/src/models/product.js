@@ -2,10 +2,10 @@ const { DataTypes, Model } = require('sequelize');
 
 class Product extends Model {
     static associate(models) {
-        Product.belongsToMany(models.Category, {through: 'productCategories'});
+        Product.belongsToMany(models.Category, {through: 'product_category', timestamps: false});
         Product.belongsTo(models.Brand);
         Product.hasOne(models.Quantity);
-        Product.belongsToMany(models.Promotion, {through: 'ProductPromotions'});
+        Product.belongsToMany(models.Promotion, {through: 'product_promotion'});
     }
 }
 
@@ -38,6 +38,11 @@ module.exports = (sequelize) => {
                     type: DataTypes.ARRAY(DataTypes.STRING),
                     allowNull: false,
                     defaultValue: []
+                },
+                quantity: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    defaultValue: 0
                 },
             },
             {
