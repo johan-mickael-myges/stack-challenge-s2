@@ -1,6 +1,14 @@
 <template>
-  <v-navigation-drawer app>
-    <v-list-item title="Moonshine" subtitle="Administration"></v-list-item>
+  <v-navigation-drawer
+      :rail="rail"
+      permanent
+  >
+    <div class="flex flex-row justify-between">
+      <v-list-item v-if="!rail" title="Moonshine" subtitle="Administration"></v-list-item>
+      <v-list-item class="text-right">
+        <v-icon @click="toggleRail">{{ menuIcon }}</v-icon>
+      </v-list-item>
+    </div>
     <v-divider></v-divider>
     <v-list-item
         v-for="item in items"
@@ -17,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 
 export default defineComponent({
   name: 'Sidebar',
@@ -25,7 +33,23 @@ export default defineComponent({
     return {
       items: [
         {title: 'Products', icon: 'mdi-view-list', to: {name: 'AdminProductList'}},
+        {title: 'Categories', icon: 'mdi-folder-outline', to: {name: 'AdminCategoryList'}},
       ],
+    };
+  },
+
+  setup() {
+    const rail = ref(false);
+    const menuIcon = computed(() => (rail.value ? 'mdi-menu-close' : 'mdi-menu-open'));
+
+    const toggleRail = () => {
+      rail.value = !rail.value;
+    };
+
+    return {
+      rail,
+      menuIcon,
+      toggleRail,
     };
   },
 });

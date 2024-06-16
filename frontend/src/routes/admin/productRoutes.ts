@@ -1,16 +1,16 @@
 import { RouteRecordRaw } from 'vue-router';
-import AdminProductList from '@/views/admin/AdminProductList.vue';
-import AdminProductForm from '@/views/admin/AdminProductForm.vue';
+import AdminProductList from '@/views/admin/products/AdminProductList.vue';
+import AdminProductForm from '@/views/admin/products/AdminProductForm.vue';
 import AdminLayout from "@/layouts/AdminLayout.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
-        path: '/admin',
+        path: '/admin/products',
         component: AdminLayout,
         children: [
-            { path: '/admin/products', name: 'AdminProductList', component: AdminProductList },
-            { path: '/admin/products/new', name: 'AdminProductForm', component: AdminProductForm },
-            { path: '/admin/products/edit/:id', name: 'AdminProductEdit', component: AdminProductForm },
+            { path: '', name: 'AdminProductList', component: AdminProductList },
+            { path: 'new', name: 'AdminProductForm', component: AdminProductForm },
+            { path: 'edit/:id', name: 'AdminProductEdit', component: AdminProductForm },
         ],
     }
 ];
