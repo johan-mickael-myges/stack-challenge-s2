@@ -41,7 +41,11 @@ module.exports = (sequelize) => {
             },
             price: {
                 type: DataTypes.DECIMAL(10, 2),
-                allowNull: false
+                allowNull: false,
+                get() {
+                    const value = this.getDataValue('price');
+                    return value === null ? null : parseFloat(value);
+                },
             },
             description: {
                 type: DataTypes.TEXT,

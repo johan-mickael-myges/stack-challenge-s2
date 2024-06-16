@@ -11,12 +11,12 @@ const productSchema = z.object({
     images: z.array(z.string()).optional(),
 });
 
-export type Products = z.infer<typeof productSchema>;
+export type Product = z.infer<typeof productSchema>;
 
 export const useProductStore = defineStore('adminProducts', {
     state: () => ({
-        products: [] as Products[],
-        product: null as Products | null,
+        products: [] as Product[],
+        product: null as Product | null,
     }),
     actions: {
         async fetchProducts() {
@@ -27,11 +27,11 @@ export const useProductStore = defineStore('adminProducts', {
             const response = await apiClient.get(`/admin/products/${id}`);
             this.product = productSchema.parse(response.data);
         },
-        async createProduct(product: Products) {
+        async createProduct(product: Product) {
             await apiClient.post('/admin/products', productSchema.parse(product));
             await this.fetchProducts();
         },
-        async updateProduct(product: Products) {
+        async updateProduct(product: Product) {
             await apiClient.put(`/admin/products/${product.id}`, productSchema.parse(product));
             await this.fetchProducts();
         },
