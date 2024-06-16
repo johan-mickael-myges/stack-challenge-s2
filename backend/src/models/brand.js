@@ -1,4 +1,4 @@
-const { DataTypes, Model } = require('sequelize');
+const {DataTypes, Model} = require('sequelize');
 
 class Brand extends Model {
     static associate(models) {

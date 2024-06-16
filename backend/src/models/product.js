@@ -1,10 +1,20 @@
-const { DataTypes, Model } = require('sequelize');
+const {DataTypes, Model} = require('sequelize');
 
 class Product extends Model {
     static associate(models) {
-        Product.belongsToMany(models.Category, {through: 'product_categories', timestamps: false});
+        Product.belongsToMany(models.Category, {
+            through: 'product_categories',
+            foreignKey: 'productId',
+            otherKey: 'categoryId',
+            timestamps: false
+        });
         Product.belongsTo(models.Brand);
-        Product.belongsToMany(models.Promotion, {through: 'ProductPromotions'});
+        Product.belongsToMany(models.Promotion, {
+            through: 'ProductPromotions',
+            foreignKey: 'productId',
+            otherKey: 'promotionId',
+            timestamps: false
+        });
         Product.hasMany(models.CartItem);
         Product.hasMany(models.OrderItem);
     }
@@ -12,45 +22,45 @@ class Product extends Model {
 
 module.exports = (sequelize) => {
     Product.init(
-            {
-                id: {
-                    type: DataTypes.INTEGER,
-                    autoIncrement: true,
-                    primaryKey: true,
-                },
-                name: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                },
-                reference: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                    unique: true
-                },
-                price: {
-                    type: DataTypes.DECIMAL(10,2),
-                    allowNull: false
-                },
-                description: {
-                    type: DataTypes.TEXT,
-                    allowNull: true
-                },
-                images: {
-                    type: DataTypes.ARRAY(DataTypes.STRING),
-                    allowNull: false,
-                    defaultValue: []
-                },
-                quantity: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false,
-                    defaultValue: 0
-                },
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true,
             },
-            {
-                sequelize,
-                tableName: 'products',
-                timestamps: true
-            }
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            reference: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true
+            },
+            price: {
+                type: DataTypes.DECIMAL(10, 2),
+                allowNull: false
+            },
+            description: {
+                type: DataTypes.TEXT,
+                allowNull: true
+            },
+            images: {
+                type: DataTypes.ARRAY(DataTypes.STRING),
+                allowNull: false,
+                defaultValue: []
+            },
+            quantity: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 0
+            },
+        },
+        {
+            sequelize,
+            tableName: 'products',
+            timestamps: true
+        }
     );
 
     return Product;

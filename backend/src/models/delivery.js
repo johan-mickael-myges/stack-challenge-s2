@@ -1,8 +1,8 @@
-const { DataTypes, Model } = require('sequelize');
+const {DataTypes, Model} = require('sequelize');
 
 class Delivery extends Model {
     static associate(models) {
-        Delivery.belongsTo(models.ShippingMethod,{onDelete: 'SET NULL'});
+        Delivery.belongsTo(models.ShippingMethod, {onDelete: 'SET NULL'});
         Delivery.belongsTo(models.Order);
     }
 }

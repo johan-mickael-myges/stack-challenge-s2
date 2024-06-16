@@ -1,8 +1,14 @@
-const { DataTypes, Model } = require('sequelize');
+const {DataTypes, Model} = require('sequelize');
+
 //et le mdp ?
 class User extends Model {
     static associate(models) {
-        User.belongsToMany(models.Role, {through: 'user_roles', timestamps: false});
+        User.belongsToMany(models.Role, {
+            through: 'user_roles',
+            foreignKey: 'userId',
+            otherKey: 'roleId',
+            timestamps: false
+        });
         User.hasMany(models.Order);
         User.hasOne(models.Cart);
     }
@@ -10,41 +16,41 @@ class User extends Model {
 
 module.exports = (sequelize) => {
     User.init(
-            {
-                id: {
-                    type: DataTypes.INTEGER,
-                    autoIncrement: true,
-                    primaryKey: true,
-                },
-                username: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                },
-                firstname: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                },
-                lastname: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                },
-                email: {
-                    type: DataTypes.STRING,
-                    allowNull: false,
-                    validate: {
-                        isEmail: true
-                    }
-                },
-                number: {
-                    type: DataTypes.STRING,
-                    allowNull: false
-                },
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true,
             },
-            {
-                sequelize,
-                tableName: 'users',
-                timestamps: true
-            }
+            username: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            firstname: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            lastname: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            email: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    isEmail: true
+                }
+            },
+            number: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+        },
+        {
+            sequelize,
+            tableName: 'users',
+            timestamps: true
+        }
     );
 
     return User;

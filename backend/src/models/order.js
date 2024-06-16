@@ -1,8 +1,9 @@
-const { DataTypes, Model } = require('sequelize');
+const {DataTypes, Model} = require('sequelize');
+
 class Order extends Model {
     static associate(models) {
-        Order.belongsTo(models.User,{onDelete: 'CASCADE'});
-        Order.hasMany(models.OrderItem,{onDelete: 'CASCADE'});
+        Order.belongsTo(models.User, {onDelete: 'CASCADE'});
+        Order.hasMany(models.OrderItem, {onDelete: 'CASCADE'});
         Order.hasOne(models.Delivery);
     }
 }

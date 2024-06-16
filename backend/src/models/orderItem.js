@@ -1,9 +1,9 @@
-const { DataTypes, Model } = require('sequelize');
+const {DataTypes, Model} = require('sequelize');
 
 class OrderItem extends Model {
     static associate(models) {
-        OrderItem.belongsTo(models.Order,{onDelete: 'CASCADE'});
-        OrderItem.belongsTo(models.Product,{onDelete: 'CASCADE'});
+        OrderItem.belongsTo(models.Order, {onDelete: 'CASCADE'});
+        OrderItem.belongsTo(models.Product, {onDelete: 'CASCADE'});
     }
 }
 
@@ -20,21 +20,21 @@ module.exports = (sequelize) => {
                 allowNull: false
             },
             unitPrice: {
-                type: DataTypes.DECIMAL(10,2),
+                type: DataTypes.DECIMAL(10, 2),
                 allowNull: false
             },
             subtotal: {
-                type: DataTypes.DECIMAL(10,2),
+                type: DataTypes.DECIMAL(10, 2),
                 allowNull: false
             }
         },
         {
-          sequelize,
-          modelName: 'OrderItem',
-          tableName: 'order_items',
-          timestamps: true
+            sequelize,
+            modelName: 'OrderItem',
+            tableName: 'order_items',
+            timestamps: true
         }
-      );
-    
-      return OrderItem;
+    );
+
+    return OrderItem;
 }

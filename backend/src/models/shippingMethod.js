@@ -1,8 +1,8 @@
-const { DataTypes, Model } = require('sequelize');
+const {DataTypes, Model} = require('sequelize');
 
 class ShippingMethod extends Model {
     static associate(models) {
-        ShippingMethod.hasMany(models.Delivery, { onDelete: 'SET NULL'});
+        ShippingMethod.hasMany(models.Delivery, {onDelete: 'SET NULL'});
     }
 }
 
