@@ -9,12 +9,10 @@
       </v-toolbar>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon small class="mr-2" @click="$router.push(`/admin/products/edit/${item.id}`)">
-        mdi-pencil
-      </v-icon>
-      <v-icon small @click="deleteProduct(item.id)">
-        mdi-delete
-      </v-icon>
+      <div class="flex">
+        <v-btn variant="text" density="compact"  icon="mdi-pencil" @click="$router.push(`/admin/products/edit/${item.id}`)"></v-btn>
+        <DeleteButton variant="text" density="compact" icon="mdi-delete" :deleteFunction="() => deleteProduct(item.id)" />
+      </div>
     </template>
   </v-data-table>
 </template>
@@ -22,9 +20,13 @@
 <script lang="ts">
 import { defineComponent, computed, onMounted } from 'vue';
 import { useProductStore } from "@/stores/admin/products.ts";
+import DeleteButton from '@/components/Button/DeleteButton.vue';
 
 export default defineComponent({
   name: 'ProductTable',
+  components: {
+    DeleteButton,
+  },
   setup() {
     const store = useProductStore();
 
@@ -34,8 +36,13 @@ export default defineComponent({
 
     const products = computed(() => store.products);
 
-    const deleteProduct = (id: number) => {
-      store.deleteProduct(id);
+    const deleteProduct = async (id: number|undefined) => {
+      if (!id) return;
+      try {
+        await store.deleteProduct(id);
+      } catch (error) {
+        throw new Error('An error occurred while trying to delete the item.');
+      }
     };
 
     return { products, deleteProduct };
