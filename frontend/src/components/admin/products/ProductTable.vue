@@ -1,5 +1,5 @@
 <template>
-  <v-data-table :headers="headers" :items="products" class="elevation-1">
+  <v-data-table :headers="headers" :items="products" class="border" hide-default-footer>
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>Products</v-toolbar-title>
@@ -50,10 +50,10 @@ export default defineComponent({
   data() {
     return {
       headers: [
-        { text: 'Name', value: 'name' },
-        { text: 'Reference', value: 'reference' },
-        { text: 'Price', value: 'price' },
-        { text: 'Actions', value: 'actions', sortable: false },
+        { title: 'Name', value: 'name' },
+        { title: 'Reference', value: 'reference' },
+        { title: 'Price', value: 'price' },
+        { title: 'Actions', value: 'actions', sortable: false },
       ],
     };
   },
