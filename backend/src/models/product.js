@@ -12,7 +12,7 @@ class Product extends Model {
             foreignKey: 'brandId',
         });
         Product.belongsToMany(models.Promotion, {
-            through: 'ProductPromotions',
+            through: 'product_promotions',
             foreignKey: 'productId',
             otherKey: 'promotionId',
             timestamps: false
