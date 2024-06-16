@@ -30,11 +30,7 @@ module.exports = {
           key: 'id'
         },
         onDelete: 'SET NULL',
-        onUpdate: 'CASCADE',     
-        description: {
-          type: Sequelize.TEXT,
-          allowNull: true,
-        }
+        onUpdate: 'CASCADE',
       },
       images: {
         type: Sequelize.ARRAY(Sequelize.STRING),

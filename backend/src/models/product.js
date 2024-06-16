@@ -8,7 +8,9 @@ class Product extends Model {
             otherKey: 'categoryId',
             timestamps: false
         });
-        Product.belongsTo(models.Brand);
+        Product.belongsTo(models.Brand, {
+            foreignKey: 'brandId',
+        });
         Product.belongsToMany(models.Promotion, {
             through: 'ProductPromotions',
             foreignKey: 'productId',
@@ -54,6 +56,15 @@ module.exports = (sequelize) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 defaultValue: 0
+            },
+            brandId: {
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'brands',
+                    key: 'id'
+                },
+                onDelete: 'SET NULL',
+                onUpdate: 'CASCADE'
             },
         },
         {

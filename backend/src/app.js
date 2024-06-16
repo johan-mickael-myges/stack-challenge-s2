@@ -10,8 +10,7 @@ app.use(cors());
 app.use('/api', routes);
 
 const PORT = 8000;
-const run = () => {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
-};
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

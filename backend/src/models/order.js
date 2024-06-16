@@ -2,9 +2,17 @@ const {DataTypes, Model} = require('sequelize');
 
 class Order extends Model {
     static associate(models) {
-        Order.belongsTo(models.User, {onDelete: 'CASCADE'});
-        Order.hasMany(models.OrderItem, {onDelete: 'CASCADE'});
-        Order.hasOne(models.Delivery);
+        Order.belongsTo(models.User, {
+            foreignKey: 'userId',
+            onDelete: 'CASCADE'
+        });
+        Order.hasMany(models.OrderItem, {
+            foreignKey: 'orderId',
+            onDelete: 'CASCADE'
+        });
+        Order.hasOne(models.Delivery, {
+            foreignKey: 'orderId'
+        });
     }
 }
 
@@ -19,6 +27,16 @@ module.exports = (sequelize) => {
             paymentMethod: {
                 type: DataTypes.ENUM('PAYPAL', 'CARD'),
                 allowNull: false
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'users',
+                    key: 'id'
+                },
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE'
             },
         },
         {

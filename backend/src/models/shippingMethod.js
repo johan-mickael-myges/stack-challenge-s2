@@ -2,7 +2,10 @@ const {DataTypes, Model} = require('sequelize');
 
 class ShippingMethod extends Model {
     static associate(models) {
-        ShippingMethod.hasMany(models.Delivery, {onDelete: 'SET NULL'});
+        ShippingMethod.hasMany(models.Delivery, {
+            foreignKey: 'shippingMethodId',
+            onDelete: 'SET NULL'
+        });
     }
 }
 
@@ -16,6 +19,10 @@ module.exports = (sequelize) => {
             },
             name: {
                 type: DataTypes.STRING,
+                allowNull: false,
+            },
+            cost: {
+                type: DataTypes.DECIMAL(10, 2),
                 allowNull: false,
             },
             minEstimatedDeliveryTime: {

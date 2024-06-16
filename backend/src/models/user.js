@@ -1,6 +1,6 @@
-const {DataTypes, Model} = require('sequelize');
+const { DataTypes, Model } = require('sequelize');
+const bcrypt = require('bcrypt');
 
-//et le mdp ?
 class User extends Model {
     static associate(models) {
         User.belongsToMany(models.Role, {
@@ -11,6 +11,15 @@ class User extends Model {
         });
         User.hasMany(models.Order);
         User.hasOne(models.Cart);
+    }
+
+    static async hashPassword(password) {
+        const salt = await bcrypt.genSalt(10);
+        return bcrypt.hash(password, salt);
+    }
+
+    async validatePassword(password) {
+        return bcrypt.compare(password, this.password);
     }
 }
 
@@ -45,11 +54,25 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false
             },
+            password: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
         },
         {
             sequelize,
             tableName: 'users',
-            timestamps: true
+            timestamps: true,
+            hooks: {
+                beforeCreate: async (user) => {
+                    user.password = await User.hashPassword(user.password);
+                },
+                beforeUpdate: async (user) => {
+                    if (user.changed('password')) {
+                        user.password = await User.hashPassword(user.password);
+                    }
+                }
+            }
         }
     );
 

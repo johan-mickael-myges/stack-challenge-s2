@@ -2,8 +2,14 @@ const {DataTypes, Model} = require('sequelize');
 
 class OrderItem extends Model {
     static associate(models) {
-        OrderItem.belongsTo(models.Order, {onDelete: 'CASCADE'});
-        OrderItem.belongsTo(models.Product, {onDelete: 'CASCADE'});
+        OrderItem.belongsTo(models.Order, {
+            foreignKey: 'orderId',
+            onDelete: 'CASCADE',
+        });
+        OrderItem.belongsTo(models.Product, {
+            foreignKey: 'productId',
+            onDelete: 'CASCADE',
+        });
     }
 }
 
@@ -26,6 +32,26 @@ module.exports = (sequelize) => {
             subtotal: {
                 type: DataTypes.DECIMAL(10, 2),
                 allowNull: false
+            },
+            orderId: {
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'orders',
+                    key: 'id'
+                },
+                allowNull: false,
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE'
+            },
+            productId: {
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'products',
+                    key: 'id'
+                },
+                allowNull: false,
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE'
             }
         },
         {
