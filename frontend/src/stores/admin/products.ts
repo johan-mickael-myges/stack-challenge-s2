@@ -27,16 +27,16 @@ export const useProductStore = defineStore('adminProducts', {
             const response = await apiClient.get(`/admin/products/${id}`);
             this.product = productSchema.parse(response.data);
         },
-        async createProduct(product: Product) {
-            await apiClient.post('/admin/products', productSchema.parse(product));
+        async createProduct(product: Product, signal?: AbortSignal) {
+            await apiClient.post('/admin/products', productSchema.parse(product), { signal });
             await this.fetchProducts();
         },
-        async updateProduct(product: Product) {
-            await apiClient.put(`/admin/products/${product.id}`, productSchema.parse(product));
+        async updateProduct(product: Product, signal?: AbortSignal) {
+            await apiClient.put(`/admin/products/${product.id}`, productSchema.parse(product), { signal });
             await this.fetchProducts();
         },
-        async deleteProduct(id: number) {
-            await apiClient.delete(`/admin/products/${id}`);
+        async deleteProduct(id: number, signal?: AbortSignal) {
+            await apiClient.delete(`/admin/products/${id}`, { signal });
             await this.fetchProducts();
         },
     },
