@@ -11,13 +11,28 @@ export type Category = z.infer<typeof categoriesSchema>;
 
 export const useCategoryStore = defineStore('adminCategories', {
     state: () => ({
+        loading: false,
         categories: [] as Category[],
         category: null as Category | null,
+        total: 0,
     }),
     actions: {
-        async fetchCategories() {
-            const response = await apiClient.get('/admin/categories');
-            this.categories = response.data;
+        async fetchCategories({ page = 1, itemsPerPage = 10, sortBy = [] as any } = {}) {
+            try {
+                const response = await apiClient.get('/admin/categories', {
+                    params: {
+                        page: page,
+                        limit: itemsPerPage,
+                        sortBy: sortBy,
+                    },
+                });
+                this.categories = response.data.items;
+                this.total = response.data.total;
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async fetchCategory(id: number) {
             const response = await apiClient.get(`/admin/categories/${id}`);

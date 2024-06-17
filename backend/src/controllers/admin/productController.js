@@ -1,10 +1,19 @@
 const { Product } = require('~models');
+const {buildQueryOptions} = require("../../utils/queryOptionsFactory");
 
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.findAll();
-        res.json(products);
+        let options = buildQueryOptions(req.query);
+
+        const products = await Product.findAndCountAll(options);
+        res.json({
+            total: products.count,
+            page: options.page,
+            limit: options.limit,
+            items: products.rows,
+        });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to fetch products' });
     }
 };

@@ -1,9 +1,17 @@
 const { Category } = require('~models');
+const {buildQueryOptions} = require("../../utils/queryOptionsFactory");
 
 const getAllCategories = async (req, res) => {
     try {
-        const categories = await Category.findAll();
-        res.json(categories);
+        let options = buildQueryOptions(req.query);
+
+        const categories = await Category.findAndCountAll(options);
+        res.json({
+            total: categories.count,
+            page: options.page,
+            limit: options.limit,
+            items: categories.rows,
+        });
     } catch (error) {
         const errMessage = (error instanceof Error) ? error.message : 'Unknown error';
         res.status(500).json({ error: errMessage });

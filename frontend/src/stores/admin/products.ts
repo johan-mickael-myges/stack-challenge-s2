@@ -15,17 +15,35 @@ export type Product = z.infer<typeof productSchema>;
 
 export const useProductStore = defineStore('adminProducts', {
     state: () => ({
+        loading: false,
         products: [] as Product[],
         product: null as Product | null,
+        total: 0,
     }),
     actions: {
-        async fetchProducts() {
-            const response = await apiClient.get('/admin/products');
-            this.products = response.data;
+        async fetchProducts({ page = 1, itemsPerPage = 10, sortBy = [] as any } = {}) {
+            this.loading = true;
+            try {
+                const response = await apiClient.get('/admin/products', {
+                    params: {
+                        page: page,
+                        limit: itemsPerPage,
+                        sortBy: sortBy,
+                    },
+                });
+                this.products = response.data.items;
+                this.total = response.data.total;
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async fetchProduct(id: number) {
+            this.loading = true;
             const response = await apiClient.get(`/admin/products/${id}`);
             this.product = productSchema.parse(response.data);
+            this.loading = false;
         },
         async createProduct(product: Product, signal?: AbortSignal) {
             await apiClient.post('/admin/products', productSchema.parse(product), { signal });

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Heading tag="h1">List of categories</Heading>
     <CategoryTable />
   </div>
 </template>

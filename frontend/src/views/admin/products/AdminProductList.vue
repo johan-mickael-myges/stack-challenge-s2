@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Heading tag="h1">List of products</Heading>
     <ProductTable />
   </div>
 </template>
