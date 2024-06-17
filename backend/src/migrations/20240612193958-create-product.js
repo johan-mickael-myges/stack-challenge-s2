@@ -35,7 +35,7 @@ module.exports = {
       images: {
         type: Sequelize.ARRAY(Sequelize.STRING),
         allowNull: false,
-        defaultValue: []
+        defaultValue: ['https://i.ibb.co/tqZvnKc/pngtree-not-found-outline-icon-vectors-png-image-1737857-removebg-preview.png']
       },
       createdAt: {
         allowNull: false,

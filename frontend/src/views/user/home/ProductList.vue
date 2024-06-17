@@ -42,7 +42,7 @@ export default defineComponent({
                   @mouseover="handleMouseOver(product.id)" 
                   @mouseleave="handleMouseLeave()">
             
-            <v-img src="https://www.cartier.com/variants/images/1647597332270633/img1/w1242_tpadding12.jpg">
+            <v-img :src="product.images ? product.images[0]: ''">
 
               <v-icon size="20px" class="icon-overlay">mdi-heart-outline</v-icon>
               

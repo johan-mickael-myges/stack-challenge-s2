@@ -54,7 +54,7 @@ module.exports = (sequelize) => {
             images: {
                 type: DataTypes.ARRAY(DataTypes.STRING),
                 allowNull: false,
-                defaultValue: []
+                defaultValue: ['https://i.ibb.co/tqZvnKc/pngtree-not-found-outline-icon-vectors-png-image-1737857-removebg-preview.png']
             },
             quantity: {
                 type: DataTypes.INTEGER,

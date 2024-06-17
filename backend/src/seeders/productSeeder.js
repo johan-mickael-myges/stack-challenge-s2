@@ -6,6 +6,11 @@ module.exports = {
             "SELECT id, name FROM categories WHERE name IN ('Earrings', 'Rings', 'Necklace');",
             { type: Sequelize.QueryTypes.SELECT }
         );
+        const existingReferences = await queryInterface.sequelize.query(
+            "SELECT reference FROM products;",
+            { type: Sequelize.QueryTypes.SELECT }
+        );
+        const referenceSet = new Set(existingReferences.map((product) => product.reference));
 
         const categoryMap = {};
         categories.forEach((category) => {
@@ -17,42 +22,41 @@ module.exports = {
                 name: 'Product 1',
                 reference: 'REF1234512343',
                 description: 'Description for product 1',
-                price: 10.0,
-                images: ['UrlOfimage1'],
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                price: 150.0,
+                images: ['https://www.cartier.com/variants/images/1647597332270633/img1/w1242_tpadding12.jpg'],
+                quantity: 132
             },
             {
                 name: 'Product 2',
                 reference: 'REF8888777382778',
                 description: 'Description for product 2',
-                price: 20.0,
-                images: ['UrlOfimage2'],
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                price: 581.99,
+                images: ['https://www.cartier.com/variants/images/1647597332270633/img1/w1242_tpadding12.jpg'],
+                quantity: 51
             },
         ];
-
-        await queryInterface.bulkInsert('products', products, {});
-
-        const productCategories = [
-            {
-                productId: 1, // Ensure this matches the naming convention used in the `product_categories` table
-                categoryId: categoryMap['Earrings'],
-            },
-            {
-                productId: 1,
-                categoryId: categoryMap['Rings'],
-            },
-            {
-                productId: 2,
-                categoryId: categoryMap['Necklace'],
-            },
-        ];
-
-        await queryInterface.bulkInsert('product_categories', productCategories, {});
+        for (const product of products) {
+            if (!referenceSet.has(product.reference)) {
+                await queryInterface.bulkInsert('products', products, {});
+                const productCategories = [
+                    {
+                        ProductId: 1, // Ensure this matches the naming convention used in the `product_categories` table
+                        categoryId: categoryMap['Earrings'],
+                    },
+                    {
+                        ProductId: 1,
+                        categoryId: categoryMap['Rings'],
+                    },
+                    {
+                        ProductId: 2,
+                        categoryId: categoryMap['Necklace'],
+                    },
+                ];
+        
+                await queryInterface.bulkInsert('product_categories', productCategories, {});
+            }
+        }
     },
-
     down: async (queryInterface, Sequelize) => {
         await queryInterface.bulkDelete('products', null, {});
         await queryInterface.bulkDelete('product_categories', null, {});
