@@ -4,7 +4,7 @@
       permanent
   >
     <div class="flex flex-row justify-between">
-      <v-list-item v-if="!rail" title="Moonshine" subtitle="Administration"></v-list-item>
+      <v-list-item v-if="!rail" title="Layalin" subtitle="Administration"></v-list-item>
       <v-list-item class="text-right">
         <v-icon @click="toggleRail">{{ menuIcon }}</v-icon>
       </v-list-item>
