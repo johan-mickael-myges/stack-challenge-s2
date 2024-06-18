@@ -1,11 +1,17 @@
 <script lang="ts">
-import { useProductStore } from '@/stores/user/products';
-import { defineComponent, computed, onMounted, ref } from 'vue';
+import { useProductStore } from "@/stores/user/products";
+import { useCartStore } from "@/stores/user/cartItem";
+import { defineComponent, computed, onMounted, ref } from "vue";
+import axios from "axios";
 
 export default defineComponent({
-    name: 'ProductList',
+  name: "ProductList",
   setup() {
     const store = useProductStore();
+
+    const {
+      addToCart
+    } = useCartStore();
 
     onMounted(() => {
       store.fetchProducts();
@@ -15,19 +21,23 @@ export default defineComponent({
     const hoveredCard = ref<number | null>(null);
 
     const handleMouseOver = (productId: number | undefined) => {
-    if (productId !== undefined) {
+      if (productId !== undefined) {
         hoveredCard.value = productId;
-    }
-};
-
-    const handleMouseLeave = () => {
-    hoveredCard.value = null;
+      }
     };
 
-    return {products, hoveredCard, handleMouseOver, handleMouseLeave};
+    const handleMouseLeave = () => {
+      hoveredCard.value = null;
+    };
+    return {
+      products,
+      hoveredCard,
+      handleMouseOver,
+      handleMouseLeave,
+      addToCart,
+    };
   },
 });
-
 </script>
 
 <template>
@@ -37,34 +47,45 @@ export default defineComponent({
     <div v-else>
       <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
         <div v-for="product in products" :key="product.id">
+          <v-card
+            variant="elevated"
+            @mouseover="handleMouseOver(product.id)"
+            @mouseleave="handleMouseLeave()"
+          >
+            <v-img :src="product.images ? product.images[0] : ''">
+              <v-icon size="20px" class="icon-overlay"
+                >mdi-heart-outline</v-icon
+              >
 
-          <v-card variant="elevated" 
-                  @mouseover="handleMouseOver(product.id)" 
-                  @mouseleave="handleMouseLeave()">
-            
-            <v-img :src="product.images ? product.images[0]: ''">
-
-              <v-icon size="20px" class="icon-overlay">mdi-heart-outline</v-icon>
-              
-              <v-card-text class="product_infos" :class="{ 'shifted-up': hoveredCard === product.id }">
+              <v-card-text
+                class="product_infos"
+                :class="{ 'shifted-up': hoveredCard === product.id }"
+              >
                 {{ product.name }}
               </v-card-text>
-              <v-card-subtitle class="product_infos" :class="{ 'shifted-up': hoveredCard === product.id }">
-                <span >{{ product.price }} €</span>
+              <v-card-subtitle
+                class="product_infos"
+                :class="{ 'shifted-up': hoveredCard === product.id }"
+              >
+                <span>{{ product.price }} €</span>
               </v-card-subtitle>
 
               <template v-if="hoveredCard === product.id">
                 <v-card-actions class="card-actions">
-                  <v-btn color="white" class="add-to-cart-btn" block prepend-icon="mdi-cart-plus">
+                  <v-btn
+                    color="white"
+                    class="add-to-cart-btn"
+                    block
+                    prepend-icon="mdi-cart-plus"
+                    @click="addToCart(product.id)"
+                  >
                     <v-icon color="white"></v-icon>
                     <span> Ajouter au panier</span>
                   </v-btn>
                 </v-card-actions>
               </template>
-            
             </v-img>
           </v-card>
-          
         </div>
       </div>
     </div>
@@ -72,7 +93,6 @@ export default defineComponent({
 </template>
 
 <style scoped>
-
 .icon-overlay {
   position: absolute;
   top: 20px;
@@ -108,5 +128,4 @@ export default defineComponent({
   height: 100%;
   text-align: center;
 }
-
 </style>
