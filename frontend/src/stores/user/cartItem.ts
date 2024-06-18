@@ -18,10 +18,6 @@ export const useCartStore = defineStore('cart', {
   actions: {
     async addToCart(productId: number, quantity: number = 1) {
       try {
-        alert('testingggggggggggggggg');
-        console.log(`Adding product ${productId} to cart with quantity ${quantity}`);
-        console.log('testingggggggggggggggg');
-
         const response = await apiClient.post('/user/cart/add', {
           productId,
           quantity,

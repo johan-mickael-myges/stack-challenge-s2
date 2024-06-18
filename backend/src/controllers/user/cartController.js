@@ -6,16 +6,17 @@ const placeholderUserId = 1;
 // Add item to cart
 exports.addToCart = async (req, res) => {
   try {
+    console.log(req.body);
+    console.log(req.query);
     const { productId, quantity } = req.body;
     const userId = placeholderUserId;
 
     console.log(`Add to Cart: userId=${userId}, productId=${productId}, quantity=${quantity}`);
     // Find or create a cart for the user
-    let cart = await Cart.findOne({ 
-        // where: {
-        //     userId: userId 
-        // } 
+    let cart = await Cart.findOne({
+        where: { userId },
     });
+    console.log(cart);
     if (!cart) {
       cart = await Cart.create({ userId });
     }

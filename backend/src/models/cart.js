@@ -4,6 +4,7 @@ class Cart extends Model {
     static associate(models) {
         Cart.belongsTo(models.User, {
             foreignKey: 'userId',
+            as: 'user',
             onDelete: 'CASCADE'
         });
         Cart.hasMany(models.CartItem, {
