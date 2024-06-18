@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <v-btn v-bind="$attrs" color="red" @click="openModal"></v-btn>
+    <v-btn v-bind="$attrs" @click="openModal"></v-btn>
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title class="headline">{{ title }}</v-card-title>

@@ -45,7 +45,7 @@ export default defineComponent({
             <v-img :src="product.images ? product.images[0]: ''">
 
               <v-icon size="20px" class="icon-overlay">mdi-heart-outline</v-icon>
-              
+
               <v-card-text class="product_infos" :class="{ 'shifted-up': hoveredCard === product.id }">
                 {{ product.name }}
               </v-card-text>
