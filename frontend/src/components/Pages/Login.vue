@@ -1,7 +1,8 @@
 <script lang="ts">
 
-import {defineComponent} from 'vue';
+import {defineComponent, ref} from 'vue';
 import {LoginData} from "@/types";
+import {emailRules, passwordRules} from "@/utils/validationRules.ts";
 
 export default defineComponent({
   name: 'Login',
@@ -27,8 +28,18 @@ export default defineComponent({
       subtitle = 'Enter your admin credentials to access the dashboard.';
     }
 
+    const valid = ref(true);
+
+    const emailValidationRules = emailRules();
+    const passwordValidationRules = passwordRules({
+      required: true,
+    });
+
     return {
       subtitle,
+      valid,
+      emailValidationRules,
+      passwordValidationRules,
     };
   },
 });
@@ -47,9 +58,27 @@ export default defineComponent({
     </template>
 
     <v-card-text>
-      <v-form>
-        <v-text-field label="Email" type="email" v-model="data.email" required></v-text-field>
-        <v-text-field label="Mot de passe" type="password" v-model="data.password" required></v-text-field>
+      <v-form
+          ref="form"
+          v-model="valid"
+          lazy-validation
+      >
+        <v-text-field
+            label="Email"
+            type="email"
+            v-model="data.email"
+            required
+            :rules="emailValidationRules"
+            clearable
+        />
+        <v-text-field
+            label="Password"
+            type="password"
+            v-model="data.password"
+            required
+            :rules="passwordValidationRules"
+            clearable
+        />
       </v-form>
     </v-card-text>
     <v-card-actions>
