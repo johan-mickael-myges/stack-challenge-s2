@@ -26,7 +26,13 @@ module.exports = (sequelize) => {
             },
             paymentMethod: {
                 type: DataTypes.ENUM('PAYPAL', 'CARD'),
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    isIn: {
+                        args: [['PAYPAL', 'CARD']],
+                        msg: 'Payment method must be either PAYPAL or CARD',
+                    },
+                },
             },
             userId: {
                 type: DataTypes.INTEGER,

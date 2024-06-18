@@ -23,15 +23,39 @@ module.exports = (sequelize) => {
             },
             quantity: {
                 type: DataTypes.INTEGER,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    min: {
+                        args: [1],
+                        msg: 'Quantity must be at least 1',
+                    },
+                },
             },
             unitPrice: {
                 type: DataTypes.DECIMAL(10, 2),
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    isDecimal: {
+                        msg: 'Price must be a decimal number',
+                    },
+                    min: {
+                        args: [0],
+                        msg: 'Price must be at least 0',
+                    },
+                },
             },
             subtotal: {
                 type: DataTypes.DECIMAL(10, 2),
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    isDecimal: {
+                        msg: 'Subtotal must be a decimal number',
+                    },
+                    min: {
+                        args: [0],
+                        msg: 'Subtotal must be at least 0',
+                    },
+                },
             },
             orderId: {
                 type: DataTypes.INTEGER,

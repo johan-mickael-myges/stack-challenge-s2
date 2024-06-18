@@ -43,7 +43,13 @@ module.exports = (sequelize) => {
             },
             quantity: {
                 type: DataTypes.INTEGER,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    min: {
+                        args: [1],
+                        msg: 'Quantity must be at least 1',
+                    },
+                },
             },
         },
         {

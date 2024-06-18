@@ -33,15 +33,42 @@ module.exports = (sequelize) => {
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    notEmpty: {
+                        msg: 'Name is required'
+                    },
+                    len: {
+                        args: [3, 255],
+                        msg: 'Name must be between 3 and 255 characters'
+                    }
+                }
             },
             reference: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true
+                unique: true,
+                validate: {
+                    notEmpty: {
+                        msg: 'Reference is required'
+                    },
+                    len: {
+                        args: [3, 20],
+                        msg: 'Reference must be between 3 and 20 characters'
+                    }
+                }
             },
             price: {
                 type: DataTypes.DECIMAL(10, 2),
                 allowNull: false,
+                validate: {
+                    isDecimal: {
+                        msg: 'Price must be a decimal value'
+                    },
+                    min: {
+                        args: [0],
+                        msg: 'Price must be a positive value'
+                    }
+                },
                 get() {
                     const value = this.getDataValue('price');
                     return value === null ? null : parseFloat(value);
@@ -54,12 +81,27 @@ module.exports = (sequelize) => {
             images: {
                 type: DataTypes.ARRAY(DataTypes.STRING),
                 allowNull: false,
-                defaultValue: ['https://i.ibb.co/tqZvnKc/pngtree-not-found-outline-icon-vectors-png-image-1737857-removebg-preview.png']
+                validate: {
+                    isUrlArray(value) {
+                        if (!Array.isArray(value) || !value.every(url => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url))) {
+                            throw new Error('Each image must be a valid URL');
+                        }
+                    }
+                }
             },
             quantity: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                defaultValue: 0
+                defaultValue: 0,
+                validate: {
+                    isInt: {
+                        msg: 'Quantity must be an integer'
+                    },
+                    min: {
+                        args: [0],
+                        msg: 'Quantity cannot be negative'
+                    }
+                }
             },
             brandId: {
                 type: DataTypes.INTEGER,

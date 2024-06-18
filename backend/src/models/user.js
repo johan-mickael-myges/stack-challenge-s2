@@ -34,29 +34,87 @@ module.exports = (sequelize) => {
             username: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    isAlphanumeric: {
+                        msg: 'Username must be alphanumeric',
+                    },
+                    len: {
+                        args: [3, 30],
+                        msg: 'Username must be between 3 and 30 characters',
+                    },
+                },
             },
             firstname: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    isAlpha: {
+                        msg: 'Firstname must contain only letters',
+                    },
+                    len: {
+                        args: [2, 30],
+                        msg: 'Firstname must be between 2 and 30 characters',
+                    },
+                },
             },
             lastname: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    isAlpha: {
+                        msg: 'Lastname must contain only letters',
+                    },
+                    len: {
+                        args: [2, 30],
+                        msg: 'Lastname must be between 2 and 30 characters',
+                    },
+                },
             },
             email: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
-                    isEmail: true
-                }
+                    isEmail: {
+                        msg: 'Must be a valid email address',
+                    },
+                },
             },
             number: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    isNumeric: {
+                        msg: 'Number must contain only numbers',
+                    },
+                    len: {
+                        args: [10, 15],
+                        msg: 'Number must be between 10 and 15 characters',
+                    },
+                },
             },
             password: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    len: {
+                        args: [8, 100],
+                        msg: 'Password must be at least 8 characters long',
+                    },
+                    isStrongPassword(value) {
+                        if (!value.match(/[A-Z]/)) {
+                            throw new Error('Password must contain at least one uppercase letter');
+                        }
+                        if (!value.match(/[a-z]/)) {
+                            throw new Error('Password must contain at least one lowercase letter');
+                        }
+                        if (!value.match(/[0-9]/)) {
+                            throw new Error('Password must contain at least one digit');
+                        }
+                        if (!value.match(/[^A-Za-z0-9]/)) {
+                            throw new Error('Password must contain at least one special character');
+                        }
+                    },
+                },
             },
         },
         {

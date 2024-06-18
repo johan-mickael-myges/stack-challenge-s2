@@ -22,7 +22,16 @@ module.exports = (sequelize) => {
             name: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true
+                unique: true,
+                validate: {
+                    notEmpty: {
+                        msg: 'Name is required',
+                    },
+                    len: {
+                        args: [1, 255],
+                        msg: 'Name must be between 1 and 255 characters',
+                    },
+                },
             }
         },
         {

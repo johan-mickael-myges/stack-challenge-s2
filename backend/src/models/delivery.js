@@ -22,16 +22,36 @@ module.exports = (sequelize) => {
             },
             recipientName: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    notEmpty: {
+                        msg: 'Recipient name is required',
+                    },
+                    len: {
+                        args: [1, 255],
+                        msg: 'Recipient name must be between 1 and 255 characters',
+                    },
+                },
             },
             address: {
                 type: DataTypes.STRING,
-                allowNull: false
+                allowNull: false,
+                validate: {
+                    notEmpty: {
+                        msg: 'Address is required',
+                    },
+                },
             },
             status: {
                 type: DataTypes.ENUM('PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED'),
                 allowNull: false,
                 defaultValue: 'PENDING',
+                validate: {
+                    isIn: {
+                        args: [['PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED']],
+                        msg: 'Status must be one of PENDING, SHIPPED, DELIVERED, CANCELLED',
+                    },
+                },
             },
             shippingMethodId: {
                 type: DataTypes.INTEGER,
