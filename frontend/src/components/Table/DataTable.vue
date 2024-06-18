@@ -19,7 +19,7 @@
       </template>
       <template v-slot:item.actions="{ item }">
         <div class="flex justify-end space-x-2">
-          <slot name="actions" :item="item"></slot>
+          <slot name="item.actions" :item="item"></slot>
         </div>
       </template>
     </v-data-table-server>
