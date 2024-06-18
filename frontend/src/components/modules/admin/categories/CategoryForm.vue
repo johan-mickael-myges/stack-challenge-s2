@@ -1,9 +1,6 @@
 <template>
   <v-form @submit.prevent="handleSubmit">
     <v-text-field v-model="formState.data.name" label="Name" required></v-text-field>
-    <v-text-field v-model="formState.data.reference" label="Reference" required></v-text-field>
-    <v-textarea v-model="formState.data.description" label="Description"></v-textarea>
-    <v-text-field v-model.number="formState.data.price" label="Price" required></v-text-field>
     <v-btn type="submit" color="primary" :disabled="formState.isSubmitting">Save</v-btn>
     <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Cancel</v-btn>
     <v-progress-linear v-if="formState.isSubmitting" indeterminate color="primary"></v-progress-linear>
@@ -15,52 +12,44 @@
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useForm } from '@/composables/useForm';
+import { useForm } from '@/composables/useForm.ts';
 import { z } from 'zod';
-import { useProductStore } from '@/stores/admin/products';
+import {useCategoryStore} from "@/stores/admin/categories.ts";
 
-const productSchema = z.object({
+const categorySchema = z.object({
   id: z.number().optional(),
   name: z.string(),
-  reference: z.string(),
-  description: z.string().optional(),
-  price: z.number(),
-  images: z.array(z.string()).optional(),
 });
 
 export default defineComponent({
-  name: 'ProductForm',
+  name: 'CategoryForm',
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const store = useProductStore();
+    const store = useCategoryStore();
 
     const initialData = {
       id: undefined,
       name: '',
-      reference: '',
-      description: '',
-      price: 0,
-      images: [],
     };
 
-    const { formState, submitForm, cancelRequest } = useForm(initialData, productSchema);
+    const { formState, submitForm, cancelRequest } = useForm(initialData, categorySchema);
 
     const handleSubmit = () => {
       submitForm(async (data, signal) => {
         if (data.id) {
-          await store.updateProduct(data, signal);
+          await store.updateCategory(data, signal);
         } else {
-          await store.createProduct(data, signal);
+          await store.createCategory(data, signal);
         }
-        router.push('/admin/products');
+        router.push('/admin/categories');
       });
     };
 
     onMounted(() => {
       if (route.params.id) {
-        store.fetchProduct(Number(route.params.id)).then(() => {
-          formState.data = store.product;
+        store.fetchCategory(Number(route.params.id)).then(() => {
+          formState.data = store.category;
         });
       }
     });

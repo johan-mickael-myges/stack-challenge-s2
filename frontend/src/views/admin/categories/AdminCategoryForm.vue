@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, ref} from 'vue';
-import CategoryForm from "@/components/admin/categories/CategoryForm.vue";
+import CategoryForm from "@/components/modules/admin/categories/CategoryForm.vue";
 import {useRoute} from "vue-router";
 import Heading from "@/components/Typography/Heading.vue";
 

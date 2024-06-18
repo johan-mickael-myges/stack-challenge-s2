@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, ref} from 'vue';
-import ProductForm from '@/components/admin/products/ProductForm.vue';
+import ProductForm from '@/components/modules/admin/products/ProductForm.vue';
 import Heading from "@/components/Typography/Heading.vue";
 import {useRoute} from "vue-router";
 
