@@ -41,9 +41,14 @@ export const useProductStore = defineStore('adminProducts', {
         },
         async fetchProduct(id: number) {
             this.loading = true;
-            const response = await apiClient.get(`/admin/products/${id}`);
-            this.product = productSchema.parse(response.data);
-            this.loading = false;
+            try {
+                const response = await apiClient.get(`/admin/products/${id}`);
+                this.product = productSchema.parse(response.data);
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async createProduct(product: Product, signal?: AbortSignal) {
             await apiClient.post('/admin/products', productSchema.parse(product), { signal });

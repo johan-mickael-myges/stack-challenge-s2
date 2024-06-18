@@ -1,20 +1,18 @@
 <template>
-  <v-data-table-server
+  <DataTable
       :headers="headers"
       :items="items"
       :items-length="totalItems"
       :loading="loading"
+      loading-text="Loading... Please wait"
       @update:options="loadItems"
-      class="shadow"
   >
-    <template v-slot:top>
-      <v-toolbar flat class="px-4">
-        <Heading tag="h3">List of categories</Heading>
-        <v-divider class="mx-4" inset vertical></v-divider>
-        <v-spacer></v-spacer>
-        <v-btn color="secondary" @click="exportCSVHandler">Export CSV</v-btn>
-        <v-btn color="primary" variant="flat" @click="$router.push('/admin/categories/new')">Add New Category</v-btn>
-      </v-toolbar>
+    <template v-slot:top.title>
+      <Heading tag="h3">List of categories</Heading>
+    </template>
+    <template v-slot:top.actions>
+      <v-btn color="secondary" @click="exportCSVHandler">Export CSV</v-btn>
+      <v-btn color="primary" variant="flat" @click="$router.push('/admin/categories/new')">Add New Category</v-btn>
     </template>
     <template v-slot:item.actions="{ item }">
       <div class="flex justify-end">
@@ -22,7 +20,7 @@
         <DeleteButton variant="text" density="compact" icon="mdi-delete" :deleteFunction="() => deleteCategory(item.id)" />
       </div>
     </template>
-  </v-data-table-server>
+  </DataTable>
 </template>
 
 <script lang="ts">
@@ -31,10 +29,12 @@ import DeleteButton from '@/components/Button/DeleteButton.vue';
 import {useCategoryStore} from "@/stores/admin/categories.ts";
 import Heading from "@/components/Typography/Heading.vue";
 import {useCSVExport} from "@/composables/useCSVExport.ts";
+import DataTable from "@/components/Table/DataTable.vue";
 
 export default defineComponent({
   name: 'CategoryTable',
   components: {
+    DataTable,
     Heading,
     DeleteButton,
   },

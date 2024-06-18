@@ -1,21 +1,19 @@
 <template>
-  <v-data-table-server
+  <DataTable
       :headers="headers"
       :items="items"
       :items-length="totalItems"
       :loading="loading"
+      loading-text="Loading... Please wait"
       multi-sort
       @update:options="loadItems"
-      class="shadow"
   >
-    <template v-slot:top>
-      <v-toolbar flat class="px-4">
-        <Heading tag="h3">List of products</Heading>
-        <v-divider class="mx-4" inset vertical></v-divider>
-        <v-spacer></v-spacer>
-        <v-btn color="secondary" @click="exportCSVHandler">Export CSV</v-btn>
-        <v-btn color="primary" variant="flat" @click="$router.push('/admin/products/new')">Add New Product</v-btn>
-      </v-toolbar>
+    <template v-slot:top.title>
+      <Heading tag="h3">List of products</Heading>
+    </template>
+    <template v-slot:top.actions>
+      <v-btn color="secondary" @click="exportCSVHandler">Export CSV</v-btn>
+      <v-btn color="primary" variant="flat" @click="$router.push('/admin/products/new')">Add New Product</v-btn>
     </template>
     <template v-slot:item.actions="{ item }">
       <div class="flex justify-end">
@@ -25,7 +23,7 @@
                       :deleteFunction="() => deleteProduct(item.id)"/>
       </div>
     </template>
-  </v-data-table-server>
+  </DataTable>
 </template>
 
 <script lang="ts">
@@ -34,16 +32,19 @@ import {useProductStore} from "@/stores/admin/products.ts";
 import DeleteButton from '@/components/Button/DeleteButton.vue';
 import {useCSVExport} from "@/composables/useCSVExport.ts";
 import Heading from "@/components/Typography/Heading.vue";
+import DataTable from "@/components/Table/DataTable.vue";
+import {Header} from "@/components/Table/types/Header.ts";
 
 export default defineComponent({
   name: 'ProductTable',
   components: {
+    DataTable,
     Heading,
     DeleteButton,
   },
   setup() {
     const store = useProductStore();
-    const { exportCSV } = useCSVExport();
+    const {exportCSV} = useCSVExport();
 
     onMounted(async () => {
       await store.fetchProducts();
@@ -78,12 +79,12 @@ export default defineComponent({
         {title: 'Reference', value: 'reference', sortable: true},
         {title: 'Price', value: 'price', sortable: true},
         {title: '', value: 'actions', sortable: false},
-      ],
+      ] as Header[],
     };
   },
   methods: {
-    async loadItems({ page, itemsPerPage, sortBy }) {
-      await this.store.fetchProducts({ page, itemsPerPage, sortBy});
+    async loadItems({page, itemsPerPage, sortBy}) {
+      await this.store.fetchProducts({page, itemsPerPage, sortBy});
     },
 
     async exportCSVHandler() {

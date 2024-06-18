@@ -18,6 +18,7 @@ export const useCategoryStore = defineStore('adminCategories', {
     }),
     actions: {
         async fetchCategories({ page = 1, itemsPerPage = 10, sortBy = [] as any } = {}) {
+            this.loading = true;
             try {
                 const response = await apiClient.get('/admin/categories', {
                     params: {
@@ -35,8 +36,14 @@ export const useCategoryStore = defineStore('adminCategories', {
             }
         },
         async fetchCategory(id: number) {
-            const response = await apiClient.get(`/admin/categories/${id}`);
-            this.category = categoriesSchema.parse(response.data);
+            try {
+                const response = await apiClient.get(`/admin/categories/${id}`);
+                this.category = categoriesSchema.parse(response.data);
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async createCategory(category: Category, signal?: AbortSignal) {
             await apiClient.post('/admin/categories', categoriesSchema.parse(category), { signal });
