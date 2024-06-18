@@ -6,15 +6,12 @@ exports.getAllProducts = async (req, res) => {
         let options = buildQueryOptions(req.query);
 
         const products = await Product.findAndCountAll(options);
-        res.json({
+        res.status(200).json({
             total: products.count,
-            page: options.page,
-            limit: options.limit,
             items: products.rows,
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch products' });
+        res.status(500);
     }
 };
 
@@ -22,11 +19,11 @@ exports.getProductById = async (req, res) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
+            return res.status(404);
         }
-        res.json(product);
+        res.status(200).json(product);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch product' });
+        res.status(500);
     }
 };
 
@@ -35,7 +32,7 @@ exports.createProduct = async (req, res) => {
         const product = await Product.create(req.body);
         res.status(201).json(product);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to create product' });
+        res.status(500);
     }
 };
 
@@ -43,12 +40,12 @@ exports.updateProduct = async (req, res) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
+            return res.status(404);
         }
         await product.update(req.body);
-        res.json(product);
+        res.status(200).json(product);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update product' });
+        res.status(500);
     }
 };
 
@@ -56,11 +53,11 @@ exports.deleteProduct = async (req, res) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
+            return res.status(404);
         }
         await product.destroy();
-        res.json({ message: 'Product deleted' });
+        res.status(204).send();
     } catch (error) {
-        res.status(500).json({ error: 'Failed to delete product' });
+        res.status(500);
     }
 };
