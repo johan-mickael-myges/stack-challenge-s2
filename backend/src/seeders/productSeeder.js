@@ -40,15 +40,15 @@ module.exports = {
                 await queryInterface.bulkInsert('products', products, {});
                 const productCategories = [
                     {
-                        ProductId: 1, // Ensure this matches the naming convention used in the `product_categories` table
+                        productId: 1, // Ensure this matches the naming convention used in the `product_categories` table
                         categoryId: categoryMap['Earrings'],
                     },
                     {
-                        ProductId: 1,
+                        productId: 1,
                         categoryId: categoryMap['Rings'],
                     },
                     {
-                        ProductId: 2,
+                        productId: 2,
                         categoryId: categoryMap['Necklace'],
                     },
                 ];
