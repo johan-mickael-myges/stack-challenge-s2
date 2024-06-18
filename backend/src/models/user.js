@@ -9,8 +9,8 @@ class User extends Model {
             otherKey: 'roleId',
             timestamps: false
         });
-        User.hasMany(models.Order);
-        User.hasOne(models.Cart);
+        User.hasMany(models.Order, { foreignKey: 'userId' });
+        User.hasOne(models.Cart, { foreignKey: 'userId' });
     }
 
     static async hashPassword(password) {
