@@ -24,6 +24,11 @@ db-undo-migrate:
 db-undo-all-migrations:
 	$(DOCKER_COMPOSE) $(SEQUELIZE) db:migrate:undo:all
 
+# Command to generate a new seed file with a dynamic name
+generate-seed:
+	@read -p "Seed name: " name; \
+	$(DOCKER_COMPOSE) sh -c "npx sequelize-cli seed:generate --name '$$name' --seeders-path src/seeders --config src/config/config.js"
+
 # Command to run seeders
 db-seed:
 	$(DOCKER_COMPOSE) $(SEQUELIZE) db:seed:all
@@ -54,7 +59,7 @@ db-clean:
 # Command to generate a new migration with a dynamic name
 db-generate-migration:
 	@read -p "Migration name: " name; \
-	$(DOCKER_COMPOSE) sh -c "npx sequelize-cli migration:generate --name '$$name' --migrations-path src/migrations"
+	$(DOCKER_COMPOSE) sh -c "npx sequelize-cli migration:generate --name '$$name' --migrations-path src/migrations --config src/config/config.js"
 
 # Command to synchronize models with the database
 db-sync:

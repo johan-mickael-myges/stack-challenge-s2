@@ -8,11 +8,13 @@
     "start": "nodemon --watch ./src --ext js --exec 'node' src/app.js",
     "migrate": "npx sequelize-cli db:migrate --config src/config/config.js --migrations-path src/migrations",
     "generate:migration": "prompt -p 'Migration name: ' -d name -- npx sequelize-cli migration:generate --name $name --migrations-path src/migrations",
+    "generate:seed": "prompt -p 'Seed name: ' -d name -- npx sequelize-cli seed:generate --name $name --seeders-path src/seeders",
     "seed": "npx sequelize-cli db:seed:all --config src/config/config.js --seeders-path src/seeders"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
