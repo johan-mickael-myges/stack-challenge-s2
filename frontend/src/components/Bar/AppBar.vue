@@ -1,5 +1,9 @@
 <script setup lang="ts">
+  import {useGoToUrl} from "@/composables/useGoToUrl.ts";
 
+  const {
+    login
+  } = useGoToUrl();
 </script>
 
 <template>
@@ -24,7 +28,7 @@
       <v-icon size="20px">mdi-heart-outline</v-icon>
     </v-btn>
 
-    <v-btn icon >
+    <v-btn icon @click="login">
       <v-icon size="20px">mdi-account-outline</v-icon>
     </v-btn>
 

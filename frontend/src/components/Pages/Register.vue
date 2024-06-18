@@ -37,9 +37,10 @@ export default defineComponent({
 
 <template>
   <v-card
-    class="mx-auto"
-    :subtitle="subtitle"
-    width="500"
+      elevation="8"
+      class="px-2 py-4"
+      :subtitle="subtitle"
+      width="500"
   >
     <template v-slot:title>
       <span class="font-weight-black">Register</span>
@@ -55,5 +56,6 @@ export default defineComponent({
     <v-card-actions>
       <v-btn color="primary" block variant="flat">Validate</v-btn>
     </v-card-actions>
+    <slot name="content.additional"></slot>
   </v-card>
 </template>

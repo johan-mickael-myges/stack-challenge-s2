@@ -25,6 +25,13 @@ export default defineComponent({
 
 <template>
   <CenteredContainer>
-    <Register :data="data" type="admin"/>
+    <Register :data="data" type="admin">
+      <template v-slot:content.additional>
+        <div class="text-center">
+          <p class="text-gray-700">You already have an account ?</p>
+          <router-link to="/login/admin">Login</router-link>
+        </div>
+      </template>
+    </Register>
   </CenteredContainer>
 </template>

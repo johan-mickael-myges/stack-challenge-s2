@@ -25,6 +25,13 @@ export default defineComponent({
 
 <template>
   <CenteredContainer>
-    <Register :data="data" />
+    <Register :data="data">
+      <template v-slot:content.additional>
+        <div class="text-center">
+          <p class="text-gray-700">You already have an account ?</p>
+          <router-link to="/login">Login</router-link>
+        </div>
+      </template>
+    </Register>
   </CenteredContainer>
 </template>
