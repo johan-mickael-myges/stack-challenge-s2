@@ -14,7 +14,7 @@ app.use(errorHandler);
 
 app.use(cors());
 
-app.use('/api', routes);
+app.use('/', routes);
 
 const PORT = 8000;
 
