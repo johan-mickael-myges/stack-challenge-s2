@@ -28,18 +28,20 @@ export default defineComponent({
 
 <template>
   <CenteredContainer>
-    <div class="flex justify-center mb-4">
-      <div>
-        <v-img :src="logo" width="100"></v-img>
-      </div>
-    </div>
-    <Login :data="data">
-      <template v-slot:content.additional>
-        <div class="text-center">
-          <p class="text-gray-600">Doesn't have an account yet ?</p>
-          <router-link to="/register">Register</router-link>
+    <div>
+      <div class="flex justify-center mb-4">
+        <div>
+          <v-img :src="logo" width="100"></v-img>
         </div>
-      </template>
-    </Login>
+      </div>
+      <Login :data="data">
+        <template v-slot:content.additional>
+          <div class="text-center">
+            <p class="text-gray-600">Doesn't have an account yet ?</p>
+            <router-link to="/register">Register</router-link>
+          </div>
+        </template>
+      </Login>
+    </div>
   </CenteredContainer>
 </template>

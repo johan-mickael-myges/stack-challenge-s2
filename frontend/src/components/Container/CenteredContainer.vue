@@ -1,6 +1,6 @@
 <template>
-  <div class="h-screen flex justify-center items-center">
-    <div>
+  <div v-bind="$attrs" class="min-h-screen flex justify-center items-center">
+    <div class="w-full max-w-screen-sm">
       <slot />
     </div>
   </div>

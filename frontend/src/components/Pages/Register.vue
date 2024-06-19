@@ -85,86 +85,107 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-card
-      elevation="8"
-      class="px-2 py-4"
-      :subtitle="subtitle"
-      width="500"
-  >
-    <template v-slot:title>
-      <span class="font-weight-black">Register</span>
-    </template>
-
-    <v-card-text>
-      <v-form
-          ref="form"
-          v-model="valid"
-          lazy-validation
+  <v-responsive>
+    <v-container class="pa-0">
+      <slot name="header"></slot>
+      <v-card
+          class="px-2 py-4 mx-auto"
+          :subtitle="subtitle"
+          max-width="600"
+          elevation="0"
       >
-        <v-text-field
-            label="Username"
-            v-model="data.username"
-            :rules="usernameValidationRules"
-            :error-messages="errors.username && errors.username.map(e => e.msg)"
-            required
-            clearable
-        />
-        <v-text-field
-            label="First name"
-            v-model="data.firstname"
-            :rules="firstNameValidationRules"
-            :error-messages="errors.firstname && errors.firstname.map(e => e.msg)"
-            required
-            clearable
-        />
-        <v-text-field
-            label="Last name"
-            v-model="data.lastname"
-            :rules="lastNameValidationRules"
-            :error-messages="errors.lastname && errors.lastname.map(e => e.msg)"
-            required
-            clearable
-        />
-        <v-text-field
-            label="Email"
-            type="email"
-            v-model="data.email"
-            :rules="emailValidationRules"
-            :error-messages="errors.email && errors.email.map(e => e.msg)"
-            required
-            clearable
-        />
-        <v-text-field
-            label="Mot de passe"
-            type="password"
-            v-model="data.password"
-            :rules="passwordValidationRules"
-            :error-messages="errors.password && errors.password.map(e => e.msg)"
-            required
-            clearable
-        />
-        <v-text-field
-            label="Confirm password"
-            type="password"
-            v-model="data.confirmPassword"
-            :rules="passwordMatchValidationRules"
-            required
-            clearable
-        />
-        <v-text-field
-            label="Phone number"
-            type="number"
-            v-model="data.number"
-            :rules="numberValidationRules"
-            :error-messages="errors.number && errors.number.map(e => e.msg)"
-            required
-            clearable
-        />
-      </v-form>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn color="primary" block variant="flat" @click="register">Validate</v-btn>
-    </v-card-actions>
-    <slot name="content.additional"></slot>
-  </v-card>
+        <template v-slot:title>
+          <span class="font-weight-black">Register</span>
+        </template>
+
+        <v-card-text>
+          <v-form
+              ref="form"
+              v-model="valid"
+              lazy-validation
+          >
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-text-field
+                    label="Username"
+                    v-model="data.username"
+                    :rules="usernameValidationRules"
+                    :error-messages="errors.username && errors.username.map(e => e.msg)"
+                    required
+                    clearable
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                    label="Email"
+                    type="email"
+                    v-model="data.email"
+                    :rules="emailValidationRules"
+                    :error-messages="errors.email && errors.email.map(e => e.msg)"
+                    required
+                    clearable
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                    label="First name"
+                    v-model="data.firstname"
+                    :rules="firstNameValidationRules"
+                    :error-messages="errors.firstname && errors.firstname.map(e => e.msg)"
+                    required
+                    clearable
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                    label="Last name"
+                    v-model="data.lastname"
+                    :rules="lastNameValidationRules"
+                    :error-messages="errors.lastname && errors.lastname.map(e => e.msg)"
+                    required
+                    clearable
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                    label="Password"
+                    type="password"
+                    v-model="data.password"
+                    :rules="passwordValidationRules"
+                    :error-messages="errors.password && errors.password.map(e => e.msg)"
+                    required
+                    clearable
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                    label="Confirm password"
+                    type="password"
+                    v-model="data.confirmPassword"
+                    :rules="passwordMatchValidationRules"
+                    required
+                    clearable
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                    label="Phone number"
+                    type="number"
+                    v-model="data.number"
+                    :rules="numberValidationRules"
+                    :error-messages="errors.number && errors.number.map(e => e.msg)"
+                    required
+                    clearable
+                />
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn :loading="loading" color="primary" block variant="flat" @click="register">Validate</v-btn>
+        </v-card-actions>
+        <slot name="content.additional"></slot>
+      </v-card>
+    </v-container>
+  </v-responsive>
 </template>

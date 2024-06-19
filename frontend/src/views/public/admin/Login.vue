@@ -22,13 +22,15 @@ export default defineComponent({
 
 <template>
   <CenteredContainer>
-    <Login :data="data" type="admin">
-      <template v-slot:content.additional>
-        <div class="text-center">
-          <p class="text-gray-600">Doesn't have an account yet ?</p>
-          <router-link to="/register/admin">Register</router-link>
-        </div>
-      </template>
-    </Login>
+    <div class="md:p-5 md:shadow-lg shadow-gray-300 md:border">
+      <Login :data="data" type="admin">
+        <template v-slot:content.additional>
+          <div class="text-center">
+            <p class="text-gray-600">Doesn't have an account yet ?</p>
+            <router-link to="/register/admin">Register</router-link>
+          </div>
+        </template>
+      </Login>
+    </div>
   </CenteredContainer>
 </template>

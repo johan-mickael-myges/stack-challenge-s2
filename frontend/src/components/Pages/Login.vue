@@ -47,43 +47,53 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-card
-      elevation="8"
-      class="px-2 py-4"
-      :subtitle="subtitle"
-      width="400"
-  >
-    <template v-slot:title>
-      <span class="font-weight-black">Login</span>
-    </template>
-
-    <v-card-text>
-      <v-form
-          ref="form"
-          v-model="valid"
-          lazy-validation
+  <v-responsive>
+    <v-container class="pa-0">
+      <v-card
+          class="px-2 py-4 mx-auto"
+          :subtitle="subtitle"
+          max-width="600"
+          elevation="0"
       >
-        <v-text-field
-            label="Email"
-            type="email"
-            v-model="data.email"
-            required
-            :rules="emailValidationRules"
-            clearable
-        />
-        <v-text-field
-            label="Password"
-            type="password"
-            v-model="data.password"
-            required
-            :rules="passwordValidationRules"
-            clearable
-        />
-      </v-form>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn color="primary" block variant="flat">Login</v-btn>
-    </v-card-actions>
-    <slot name="content.additional"></slot>
-  </v-card>
+        <template v-slot:title>
+          <span class="font-weight-black">Login</span>
+        </template>
+
+        <v-card-text>
+          <v-form
+              ref="form"
+              v-model="valid"
+              lazy-validation
+          >
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                    label="Email"
+                    type="email"
+                    v-model="data.email"
+                    required
+                    :rules="emailValidationRules"
+                    clearable
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                    label="Password"
+                    type="password"
+                    v-model="data.password"
+                    required
+                    :rules="passwordValidationRules"
+                    clearable
+                />
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" block variant="flat">Login</v-btn>
+        </v-card-actions>
+        <slot name="content.additional"></slot>
+      </v-card>
+    </v-container>
+  </v-responsive>
 </template>

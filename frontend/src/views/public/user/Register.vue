@@ -11,9 +11,13 @@ export default defineComponent({
   components: {Register, CenteredContainer},
   setup() {
     const data = reactive<RegisterData>({
+      username: '',
+      firstname: '',
+      lastname: '',
       email: '',
       password: '',
       confirmPassword: '',
+      number: '',
     });
 
     return {
@@ -31,18 +35,22 @@ export default defineComponent({
 
 <template>
   <CenteredContainer>
-    <div class="flex justify-center mb-4">
-      <div>
-        <v-img :src="logo" width="100"></v-img>
-      </div>
+    <div class="shadow-lg shadow-gray-300 border">
+      <Register :data="data">
+        <template v-slot:header>
+          <div class="flex justify-center py-4">
+            <div>
+              <v-img :src="logo" width="100"></v-img>
+            </div>
+          </div>
+        </template>
+        <template v-slot:content.additional>
+          <div class="text-center">
+            <p class="text-gray-600">You already have an account ?</p>
+            <router-link to="/login">Login</router-link>
+          </div>
+        </template>
+      </Register>
     </div>
-    <Register :data="data">
-      <template v-slot:content.additional>
-        <div class="text-center">
-          <p class="text-gray-600">You already have an account ?</p>
-          <router-link to="/login">Login</router-link>
-        </div>
-      </template>
-    </Register>
   </CenteredContainer>
 </template>
