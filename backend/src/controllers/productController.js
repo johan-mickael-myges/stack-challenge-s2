@@ -1,5 +1,5 @@
 const { Product } = require('~models');
-const {buildQueryOptions} = require("../../utils/queryOptionsFactory");
+const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 
 exports.getAllProducts = async (req, res) => {
     try {

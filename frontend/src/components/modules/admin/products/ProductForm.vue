@@ -17,7 +17,7 @@ import { defineComponent, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useForm } from '@/composables/useForm.ts';
 import { z } from 'zod';
-import { useProductStore } from '@/stores/admin/products.ts';
+import { useProductStore } from '@/stores/products.ts';
 
 const productSchema = z.object({
   id: z.number().optional(),

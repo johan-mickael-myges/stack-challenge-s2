@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const userRoutes = require('./user');
-const adminRoutes = require('./admin');
+const productRoutes = require('./productRoutes');
+const categoryRoutes = require('./categoryRoutes');
 
-router.use('/admin', adminRoutes);
-router.use('/user', userRoutes);
+router.use('/products', productRoutes);
+router.use('/categories', categoryRoutes);
 
 module.exports = router;

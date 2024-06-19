@@ -9,7 +9,7 @@ const categoriesSchema = z.object({
 
 export type Category = z.infer<typeof categoriesSchema>;
 
-export const useCategoryStore = defineStore('adminCategories', {
+export const useCategoryStore = defineStore('categories', {
     state: () => ({
         loading: false,
         categories: [] as Category[],
@@ -20,7 +20,7 @@ export const useCategoryStore = defineStore('adminCategories', {
         async fetchCategories({ page = 1, itemsPerPage = 10, sortBy = [] as any } = {}) {
             this.loading = true;
             try {
-                const response = await apiClient.get('/admin/categories', {
+                const response = await apiClient.get('/categories', {
                     params: {
                         page: page,
                         limit: itemsPerPage,
@@ -37,7 +37,7 @@ export const useCategoryStore = defineStore('adminCategories', {
         },
         async fetchCategory(id: number) {
             try {
-                const response = await apiClient.get(`/admin/categories/${id}`);
+                const response = await apiClient.get(`/categories/${id}`);
                 this.category = categoriesSchema.parse(response.data);
             } catch (error) {
                 throw error;
@@ -46,15 +46,15 @@ export const useCategoryStore = defineStore('adminCategories', {
             }
         },
         async createCategory(category: Category, signal?: AbortSignal) {
-            await apiClient.post('/admin/categories', categoriesSchema.parse(category), { signal });
+            await apiClient.post('//categories', categoriesSchema.parse(category), { signal });
             await this.fetchCategories();
         },
         async updateCategory(category: Category, signal?: AbortSignal) {
-            await apiClient.put(`/admin/categories/${category.id}`, categoriesSchema.parse(category), { signal });
+            await apiClient.put(`/categories/${category.id}`, categoriesSchema.parse(category), { signal });
             await this.fetchCategories();
         },
         async deleteCategory(id: number, signal?: AbortSignal) {
-            await apiClient.delete(`/admin/categories/${id}`, { signal });
+            await apiClient.delete(`/categories/${id}`, { signal });
             await this.fetchCategories();
         },
     },

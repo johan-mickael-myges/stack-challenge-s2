@@ -1,5 +1,5 @@
 const { Category } = require('~models');
-const {buildQueryOptions} = require("../../utils/queryOptionsFactory");
+const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 
 const getAllCategories = async (req, res) => {
     try {

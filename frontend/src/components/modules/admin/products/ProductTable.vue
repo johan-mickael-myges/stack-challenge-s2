@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import {defineComponent, computed, onMounted} from 'vue';
-import {useProductStore} from "@/stores/admin/products.ts";
+import {useProductStore} from "@/stores/products.ts";
 import DeleteButton from '@/components/Button/DeleteButton.vue';
 import {useCSVExport} from "@/composables/useCSVExport.ts";
 import Heading from "@/components/Typography/Heading.vue";

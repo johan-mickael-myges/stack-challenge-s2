@@ -1,5 +1,5 @@
 <script lang="ts">
-import { useProductStore } from '@/stores/user/products';
+import { useProductStore } from '@/stores/products';
 import { defineComponent, computed, onMounted, ref } from 'vue';
 
 export default defineComponent({

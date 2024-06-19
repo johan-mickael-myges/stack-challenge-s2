@@ -7,7 +7,7 @@ const {
     createProduct,
     updateProduct,
     deleteProduct
-} = require('~controllers/admin/productController');
+} = require('~controllers/productController');
 
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);

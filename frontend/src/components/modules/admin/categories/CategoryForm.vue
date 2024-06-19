@@ -14,7 +14,7 @@ import { defineComponent, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useForm } from '@/composables/useForm.ts';
 import { z } from 'zod';
-import {useCategoryStore} from "@/stores/admin/categories.ts";
+import {useCategoryStore} from "@/stores/categories.ts";
 
 const categorySchema = z.object({
   id: z.number().optional(),

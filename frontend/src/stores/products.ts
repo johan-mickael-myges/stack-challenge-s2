@@ -13,7 +13,7 @@ const productSchema = z.object({
 
 export type Product = z.infer<typeof productSchema>;
 
-export const useProductStore = defineStore('adminProducts', {
+export const useProductStore = defineStore('products', {
     state: () => ({
         loading: false,
         products: [] as Product[],
@@ -24,7 +24,7 @@ export const useProductStore = defineStore('adminProducts', {
         async fetchProducts({ page = 1, itemsPerPage = 10, sortBy = [] as any } = {}) {
             this.loading = true;
             try {
-                const response = await apiClient.get('/admin/products', {
+                const response = await apiClient.get('/products', {
                     params: {
                         page: page,
                         limit: itemsPerPage,
@@ -42,7 +42,7 @@ export const useProductStore = defineStore('adminProducts', {
         async fetchProduct(id: number) {
             this.loading = true;
             try {
-                const response = await apiClient.get(`/admin/products/${id}`);
+                const response = await apiClient.get(`/products/${id}`);
                 this.product = productSchema.parse(response.data);
             } catch (error) {
                 throw error;
