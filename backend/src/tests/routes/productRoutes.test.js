@@ -47,5 +47,13 @@ describe('Product Routes', () => {
             expect(response.body).toHaveProperty('items');
             expect(response.body.items).toEqual(expect.arrayContaining(mockProducts));
         });
+
+        it('should return a 500 status code when an error occurs', async () => {
+            Product.findAndCountAll.mockRejectedValue(new Error('Database error'));
+
+            const response = await request(app).get('/products');
+
+            expect(response.statusCode).toBe(500);
+        });
     });
 });

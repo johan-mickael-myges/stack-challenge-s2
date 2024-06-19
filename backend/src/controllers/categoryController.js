@@ -1,7 +1,7 @@
 const { Category } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 
-const getAllCategories = async (req, res) => {
+const getAllCategories = async (req, res, next) => {
     try {
         let options = buildQueryOptions(req.query);
 
@@ -11,11 +11,11 @@ const getAllCategories = async (req, res) => {
             items: categories.rows,
         });
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
 
-const getCategoryById = async (req, res) => {
+const getCategoryById = async (req, res, next) => {
     try {
         const category = await Category.findByPk(req.params.id);
         if (!category) {
@@ -23,21 +23,21 @@ const getCategoryById = async (req, res) => {
         }
         res.status(200).json(category);
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
 
-const createCategory = async (req, res) => {
+const createCategory = async (req, res, next) => {
     try {
         const { name } = req.body;
         const newCategory = await Category.create({ name });
         res.status(201).json(newCategory);
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
 
-const updateCategory = async (req, res) => {
+const updateCategory = async (req, res, next) => {
     try {
         const { name } = req.body;
         const category = await Category.findByPk(req.params.id);
@@ -47,11 +47,11 @@ const updateCategory = async (req, res) => {
         await category.update({ name });
         res.json(category);
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
 
-const deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res, next) => {
     try {
         const category = await Category.findByPk(req.params.id);
         if (!category) {
@@ -60,7 +60,7 @@ const deleteCategory = async (req, res) => {
         await category.destroy();
         res.status(204).send();
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
 

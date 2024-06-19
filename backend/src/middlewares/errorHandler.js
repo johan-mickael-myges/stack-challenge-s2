@@ -1,6 +1,5 @@
 const errorHandler = (err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send({ error: err.message });
+    res.sendStatus(500);
 };
 
 module.exports = errorHandler;

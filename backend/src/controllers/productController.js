@@ -1,7 +1,7 @@
 const { Product } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 
-exports.getAllProducts = async (req, res) => {
+exports.getAllProducts = async (req, res, next) => {
     try {
         let options = buildQueryOptions(req.query);
 
@@ -11,11 +11,11 @@ exports.getAllProducts = async (req, res) => {
             items: products.rows,
         });
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
 
-exports.getProductById = async (req, res) => {
+exports.getProductById = async (req, res, next) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
@@ -23,20 +23,20 @@ exports.getProductById = async (req, res) => {
         }
         res.status(200).json(product);
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
 
-exports.createProduct = async (req, res) => {
+exports.createProduct = async (req, res, next) => {
     try {
         const product = await Product.create(req.body);
         res.status(201).json(product);
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
 
-exports.updateProduct = async (req, res) => {
+exports.updateProduct = async (req, res, next) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
@@ -45,11 +45,11 @@ exports.updateProduct = async (req, res) => {
         await product.update(req.body);
         res.status(200).json(product);
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
 
-exports.deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res, next) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
@@ -58,6 +58,6 @@ exports.deleteProduct = async (req, res) => {
         await product.destroy();
         res.status(204).send();
     } catch (error) {
-        res.status(500);
+        next(error);
     }
 };
