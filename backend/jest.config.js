@@ -6,4 +6,5 @@ module.exports = {
     roots: [
         "<rootDir>/src/tests"
     ],
+    testMatch: ['**/tests/**/*.test.js']
 };
