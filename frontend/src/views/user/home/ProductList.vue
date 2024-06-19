@@ -56,10 +56,8 @@ export default defineComponent({
   setup() {
     const store = useProductStore();
 
-    console.log(notFoundImage);
-
     onMounted(() => {
-      store.fetchProducts();
+      store.fetchProducts({itemsPerPage: 100});
     });
 
     const products = computed(() => store.products);
