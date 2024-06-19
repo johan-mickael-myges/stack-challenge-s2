@@ -1,7 +1,41 @@
 export const requiredRule = (field: string) => (v: string) => !!v || `${field} is required`;
 
+export const usernameRules = (required: boolean = true) => {
+    const rules: ((v: string) => boolean | string)[] = [
+        (v: string) => v.length <= 30 || 'Username must be less than 30 characters',
+        (v: string) => /^[a-zA-Z0-9_]+$/.test(v) || 'Username may only contain letters, numbers, and underscores'
+    ];
+    if (required) {
+        rules.unshift(requiredRule('Username'));
+    }
+    return rules;
+};
+
+export const firstnameRules = (required: boolean = true) => {
+    const rules: ((v: string) => boolean | string)[] = [
+        (v: string) => v.length <= 30 || 'First name must be less than 30 characters',
+        (v: string) => /^[a-zA-Z]+$/.test(v) || 'First name may only contain letters'
+    ];
+    if (required) {
+        rules.unshift(requiredRule('First name'));
+    }
+    return rules;
+}
+
+export const lastnameRules = (required: boolean = true) => {
+    const rules: ((v: string) => boolean | string)[] = [
+        (v: string) => v.length <= 30 || 'Last name must be less than 30 characters',
+        (v: string) => /^[a-zA-Z]+$/.test(v) || 'Last name may only contain letters'
+    ];
+    if (required) {
+        rules.unshift(requiredRule('Last name'));
+    }
+    return rules;
+}
+
+
 export const emailRules = (required: boolean = true) => {
-    const rules = [
+    const rules: ((v: string) => boolean | string)[] = [
         (v: string) => /.+@.+\..+/.test(v) || 'Email must be valid',
         (v: string) => v.length <= 254 || 'Email must be less than 254 characters'
     ];
@@ -10,6 +44,18 @@ export const emailRules = (required: boolean = true) => {
     }
     return rules;
 };
+
+export const numberRules = (required: boolean = true) => {
+    const rules: ((v: string) => boolean | string)[] = [
+        (v: string) => v.length >= 10 || 'Phone number must be at least 10 characters long',
+        (v: string) => v.length <= 15 || 'Phone number must be less than 15 characters',
+        (v: string) => /^\+?[0-9]+$/.test(v) || 'Phone number may only contain numbers'
+    ];
+    if (required) {
+        rules.unshift(requiredRule('Phone number'));
+    }
+    return rules;
+}
 
 export const passwordRules = (options: {
     required?: boolean,

@@ -2,7 +2,15 @@
 
 import {computed, defineComponent, ref} from 'vue';
 import {RegisterData} from "@/types";
-import {emailRules, passwordMatchRule, passwordRules} from "@/utils/validationRules.ts";
+import {
+  emailRules,
+  firstnameRules,
+  lastnameRules, numberRules,
+  passwordMatchRule,
+  passwordRules,
+  usernameRules
+} from "@/utils/validationRules.ts";
+import {useAuthStore} from "@/stores/auth.ts";
 
 export default defineComponent({
   name: 'Register',
@@ -16,13 +24,25 @@ export default defineComponent({
       type: Object as () => RegisterData,
       required: true,
       default: () => ({
+        username: '',
+        firstName: '',
+        lastName: '',
         email: '',
+        number: '',
         password: '',
         confirmPassword: '',
       })
     }
   },
   setup(props) {
+    const authStore = useAuthStore();
+
+    const register = async () => {
+      await authStore.register(props.data);
+    };
+    const loading = computed(() => authStore.loading);
+    const errors = computed(() => authStore.errors);
+
     let subtitle = 'Enter your information to register.';
     if (props.type === 'admin') {
       subtitle = 'Enter your information to register as an admin.';
@@ -30,6 +50,10 @@ export default defineComponent({
 
     const valid = ref(true);
 
+    const usernameValidationRules = computed(() => usernameRules());
+    const firstNameValidationRules = computed(() => firstnameRules());
+    const lastNameValidationRules = computed(() => lastnameRules());
+    const numberValidationRules = computed(() => numberRules());
     const emailValidationRules = emailRules();
     const passwordValidationRules = passwordRules({
       required: true,
@@ -42,8 +66,15 @@ export default defineComponent({
     const passwordMatchValidationRules = computed(() => passwordMatchRule(props.data.password));
 
     return {
+      loading,
+      register,
+      errors,
       subtitle,
       valid,
+      usernameValidationRules,
+      firstNameValidationRules,
+      lastNameValidationRules,
+      numberValidationRules,
       emailValidationRules,
       passwordValidationRules,
       passwordMatchValidationRules,
@@ -71,33 +102,68 @@ export default defineComponent({
           lazy-validation
       >
         <v-text-field
+            label="Username"
+            v-model="data.username"
+            :rules="usernameValidationRules"
+            :error-messages="errors.username && errors.username.map(e => e.msg)"
+            required
+            clearable
+        />
+        <v-text-field
+            label="First name"
+            v-model="data.firstname"
+            :rules="firstNameValidationRules"
+            :error-messages="errors.firstname && errors.firstname.map(e => e.msg)"
+            required
+            clearable
+        />
+        <v-text-field
+            label="Last name"
+            v-model="data.lastname"
+            :rules="lastNameValidationRules"
+            :error-messages="errors.lastname && errors.lastname.map(e => e.msg)"
+            required
+            clearable
+        />
+        <v-text-field
             label="Email"
             type="email"
             v-model="data.email"
-            required
             :rules="emailValidationRules"
+            :error-messages="errors.email && errors.email.map(e => e.msg)"
+            required
             clearable
         />
         <v-text-field
             label="Mot de passe"
             type="password"
             v-model="data.password"
-            required
             :rules="passwordValidationRules"
+            :error-messages="errors.password && errors.password.map(e => e.msg)"
+            required
             clearable
         />
         <v-text-field
             label="Confirm password"
             type="password"
             v-model="data.confirmPassword"
-            required
             :rules="passwordMatchValidationRules"
+            required
+            clearable
+        />
+        <v-text-field
+            label="Phone number"
+            type="number"
+            v-model="data.number"
+            :rules="numberValidationRules"
+            :error-messages="errors.number && errors.number.map(e => e.msg)"
+            required
             clearable
         />
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" block variant="flat">Validate</v-btn>
+      <v-btn color="primary" block variant="flat" @click="register">Validate</v-btn>
     </v-card-actions>
     <slot name="content.additional"></slot>
   </v-card>

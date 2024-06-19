@@ -34,6 +34,9 @@ module.exports = (sequelize) => {
             username: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                unique: {
+                    msg: 'Username already in use',
+                },
                 validate: {
                     isAlphanumeric: {
                         msg: 'Username must be alphanumeric',
@@ -73,6 +76,9 @@ module.exports = (sequelize) => {
             email: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                unique: {
+                    msg: 'Email already in use',
+                },
                 validate: {
                     isEmail: {
                         msg: 'Must be a valid email address',
