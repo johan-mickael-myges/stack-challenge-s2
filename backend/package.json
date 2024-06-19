@@ -2,10 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.js",
+  "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --watch ./src --ext js --exec 'node' src/app.js",
+    "test": "jest",
+    "start": "nodemon --watch ./src --ext js --exec 'node' src/server.js",
     "migrate": "npx sequelize-cli db:migrate --config src/config/config.js --migrations-path src/migrations",
     "generate:migration": "prompt -p 'Migration name: ' -d name -- npx sequelize-cli migration:generate --name $name --migrations-path src/migrations",
     "generate:seed": "prompt -p 'Seed name: ' -d name -- npx sequelize-cli seed:generate --name $name --seeders-path src/seeders",
