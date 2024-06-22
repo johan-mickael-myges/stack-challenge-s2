@@ -1,8 +1,14 @@
 require('module-alias/register');
+
 require('dotenv').config();
-require('dotenv').config({
-    path: '.env.local',
-});
+const env = process.env.NODE_ENV || 'development';
+if (env === 'development') {
+    require('dotenv').config({ path: '.env.local' });
+} else if (env === 'test') {
+    require('dotenv').config({ path: '.env.test' });
+} else if (env === 'production') {
+    require('dotenv').config({ path: '.env.production' });
+}
 
 const express = require('express');
 const bodyParser = require('body-parser');
