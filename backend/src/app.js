@@ -7,7 +7,7 @@ if (env === 'development') {
 } else if (env === 'test') {
     require('dotenv').config({ path: '.env.test' });
 } else if (env === 'production') {
-    require('dotenv').config({ path: '.env.production' });
+    require('dotenv').config({ path: '.env.prod' });
 }
 
 const express = require('express');
