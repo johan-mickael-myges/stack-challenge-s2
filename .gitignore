@@ -1,2 +1,7 @@
 .idea/
 database/
+
+backend/.env
+backend/.env.test
+backend/.env.production
+backend/.env.local
