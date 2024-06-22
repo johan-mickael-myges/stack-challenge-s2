@@ -4,7 +4,7 @@ import adminProductRoutes from './admin/productRoutes';
 import adminCategoryRoutes from './admin/categoryRoutes';
 import userSecurityRoutes from "@/routes/public/userSecurityRoutes.ts";
 import userProductRoutes from './user/productRoutes';
-import PageNotFound from "@/components/Pages/PageNotFound.vue";
+import PageNotFound from "@/components/Error/PageNotFound.vue";
 import adminSecurityRoutes from "@/routes/public/adminSecurityRoutes.ts";
 
 const routes: Array<RouteRecordRaw> = [

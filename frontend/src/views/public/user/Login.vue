@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
 import CenteredContainer from "@/components/Container/CenteredContainer.vue";
-import Login from "@/components/Pages/Login.vue";
+import Login from "@/components/Auth/Login.vue";
 import { LoginData } from '@/types';
 import logo from '@/assets/layalin_logo.png';
 
