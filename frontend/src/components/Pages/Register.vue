@@ -112,7 +112,6 @@ export default defineComponent({
                     :rules="usernameValidationRules"
                     :error-messages="errors.username && errors.username.map(e => e.msg)"
                     required
-                    clearable
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -123,7 +122,6 @@ export default defineComponent({
                     :rules="emailValidationRules"
                     :error-messages="errors.email && errors.email.map(e => e.msg)"
                     required
-                    clearable
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -133,7 +131,6 @@ export default defineComponent({
                     :rules="firstNameValidationRules"
                     :error-messages="errors.firstname && errors.firstname.map(e => e.msg)"
                     required
-                    clearable
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -143,7 +140,6 @@ export default defineComponent({
                     :rules="lastNameValidationRules"
                     :error-messages="errors.lastname && errors.lastname.map(e => e.msg)"
                     required
-                    clearable
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -154,7 +150,6 @@ export default defineComponent({
                     :rules="passwordValidationRules"
                     :error-messages="errors.password && errors.password.map(e => e.msg)"
                     required
-                    clearable
                 />
               </v-col>
               <v-col cols="12" md="6">
@@ -164,7 +159,6 @@ export default defineComponent({
                     v-model="data.confirmPassword"
                     :rules="passwordMatchValidationRules"
                     required
-                    clearable
                 />
               </v-col>
               <v-col cols="12">
@@ -175,7 +169,6 @@ export default defineComponent({
                     :rules="numberValidationRules"
                     :error-messages="errors.number && errors.number.map(e => e.msg)"
                     required
-                    clearable
                 />
               </v-col>
             </v-row>

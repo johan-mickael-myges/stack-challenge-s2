@@ -73,7 +73,6 @@ export default defineComponent({
                     v-model="data.email"
                     required
                     :rules="emailValidationRules"
-                    clearable
                 />
               </v-col>
               <v-col cols="12">
@@ -83,7 +82,6 @@ export default defineComponent({
                     v-model="data.password"
                     required
                     :rules="passwordValidationRules"
-                    clearable
                 />
               </v-col>
             </v-row>
