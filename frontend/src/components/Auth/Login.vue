@@ -1,8 +1,9 @@
 <script lang="ts">
 
-import {defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 import {LoginData} from "@/types";
 import {emailRules, passwordRules} from "@/utils/validationRules.ts";
+import {useAuthStore} from "@/stores/auth.ts";
 
 export default defineComponent({
   name: 'Login',
@@ -23,6 +24,14 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const authStore = useAuthStore();
+
+    const login = async () => {
+      await authStore.login(props.data);
+    }
+    const loading = computed(() => authStore.loading);
+    const hasError = computed(() => authStore.hasError);
+
     let subtitle = 'Enter your credentials';
     if (props.type === 'admin') {
       subtitle = 'Enter your admin credentials to access the dashboard.';
@@ -40,8 +49,16 @@ export default defineComponent({
       valid,
       emailValidationRules,
       passwordValidationRules,
+      login,
+      loading,
+      hasError,
     };
   },
+  data() {
+    return {
+      errorMessage: 'Invalid credentials.'
+    }
+  }
 });
 
 </script>
@@ -85,11 +102,14 @@ export default defineComponent({
                     :rules="passwordValidationRules"
                 />
               </v-col>
+              <v-col v-if="hasError" cols="12">
+                <v-alert type="error" variant="tonal">{{ errorMessage }}</v-alert>
+              </v-col>
             </v-row>
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" block variant="flat">Login</v-btn>
+          <v-btn :loading="loading" color="primary" block variant="flat" @click="login">Login</v-btn>
         </v-card-actions>
         <slot name="content.additional"></slot>
       </v-card>
