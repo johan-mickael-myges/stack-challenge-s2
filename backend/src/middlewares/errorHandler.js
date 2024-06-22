@@ -1,5 +1,10 @@
 const errorHandler = (err, req, res, next) => {
-    res.sendStatus(500);
+    if (err.isOperational) {
+        res.sendStatus(err.statusCode);
+    } else {
+        console.error('ERROR 💥', err);
+        res.sendStatus(500);
+    }
 };
 
 module.exports = errorHandler;
