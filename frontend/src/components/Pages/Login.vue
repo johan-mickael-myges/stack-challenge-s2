@@ -49,6 +49,7 @@ export default defineComponent({
 <template>
   <v-responsive>
     <v-container class="pa-0">
+      <slot name="header"></slot>
       <v-card
           class="px-2 py-4 mx-auto"
           :subtitle="subtitle"

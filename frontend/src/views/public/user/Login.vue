@@ -28,13 +28,15 @@ export default defineComponent({
 
 <template>
   <CenteredContainer>
-    <div>
-      <div class="flex justify-center mb-4">
-        <div>
-          <v-img :src="logo" width="100"></v-img>
-        </div>
-      </div>
+    <div class="shadow-lg shadow-gray-300 border">
       <Login :data="data">
+        <template v-slot:header>
+          <div class="flex justify-center py-4">
+            <div>
+              <v-img :src="logo" width="100"></v-img>
+            </div>
+          </div>
+        </template>
         <template v-slot:content.additional>
           <div class="text-center">
             <p class="text-gray-600">Doesn't have an account yet ?</p>
