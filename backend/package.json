@@ -42,6 +42,7 @@
   "_moduleAliases": {
     "~config": "src/config",
     "~controllers": "src/controllers",
+    "~errors": "src/errors",
     "~middlewares": "src/middlewares",
     "~models": "src/models",
     "~routes": "src/routes",
