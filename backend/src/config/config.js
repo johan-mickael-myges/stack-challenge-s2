@@ -1,3 +1,6 @@
+require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
+
 module.exports = {
     development: {
         username: process.env.POSTGRES_USER || '',
