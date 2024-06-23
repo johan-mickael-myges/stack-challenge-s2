@@ -1,7 +1,12 @@
 <template>
   <div class="p-5 gap-4">
     <h1 class="text-4xl mb-4">Bijoux</h1>
-    <div v-if="false">Loading...</div>
+    <div v-if="isLoading" class="text-center">
+        <v-progress-circular
+        color="black"
+        indeterminate
+      ></v-progress-circular>
+    </div>
     <div v-else>
       <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
 
@@ -37,13 +42,21 @@
           </div>
         </div>
       </div>
+      <div class="flex justify-center mt-10">
+        <v-pagination
+        class="w-full max-w-xl"
+          v-model="currentPage"
+          :length="totalPages"
+          rounded="circle"
+        ></v-pagination>
+    </div> 
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { useProductStore } from '@/stores/products';
-import { defineComponent, computed, onMounted, ref } from 'vue';
+import { defineComponent, computed, onMounted, ref, watch } from 'vue';
 import notFoundImage from '@/assets/not-found-image.png'
 
 export default defineComponent({
@@ -55,25 +68,43 @@ export default defineComponent({
     },
   setup() {
     const store = useProductStore();
+    const itemsPerPage = ref(10);
+    const currentPage = ref();
 
     onMounted(() => {
-      store.fetchProducts({itemsPerPage: 100});
+      store.fetchProducts();
     });
 
+    const isLoading = computed(() => store.loading);
     const products = computed(() => store.products);
+    const totalProducts = computed(() => store.total);
+    const totalPages = computed(() => Math.ceil(totalProducts.value / itemsPerPage.value));
+    
     const hoveredCard = ref<number | null>(null);
 
-    const handleMouseOver = (productId: number | undefined) => {
-    if (productId !== undefined) {
-        hoveredCard.value = productId;
-    }
-};
+    watch(currentPage, () => {
+      store.fetchProducts({ page: currentPage.value, itemsPerPage: itemsPerPage.value}); 
+    });
 
-    const handleMouseLeave = () => {
-    hoveredCard.value = null;
+    const handleMouseOver = (productId: number | undefined) => {
+      if (productId !== undefined) {
+          hoveredCard.value = productId;
+      }
     };
 
-    return {products, hoveredCard, handleMouseOver, handleMouseLeave};
+    const handleMouseLeave = () => {
+      hoveredCard.value = null;
+    };
+
+    return {
+      isLoading,
+      products, 
+      hoveredCard,
+      totalPages,
+      currentPage,
+      handleMouseOver, 
+      handleMouseLeave, 
+      };
   },
 });
 
