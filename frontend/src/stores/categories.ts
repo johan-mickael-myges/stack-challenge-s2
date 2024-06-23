@@ -15,16 +15,19 @@ export const useCategoryStore = defineStore('categories', {
         categories: [] as Category[],
         category: null as Category | null,
         total: 0,
+        currentPage: 1,
+        itemsPerPage: 10,
+        sortBy: [] as any,
     }),
     actions: {
-        async fetchCategories({ page = 1, itemsPerPage = 10, sortBy = [] as any } = {}) {
+        async fetchCategories() {
             this.loading = true;
             try {
                 const response = await apiClient.get('/categories', {
                     params: {
-                        page: page,
-                        limit: itemsPerPage,
-                        sortBy: sortBy,
+                        page: this.currentPage,
+                        limit: this.itemsPerPage,
+                        sortBy: this.sortBy,
                     },
                 });
                 this.categories = response.data.items;
@@ -55,6 +58,18 @@ export const useCategoryStore = defineStore('categories', {
         },
         async deleteCategory(id: number, signal?: AbortSignal) {
             await apiClient.delete(`/categories/${id}`, { signal });
+            await this.fetchCategories();
+        },
+        async setPage(page: number) {
+            this.currentPage = page;
+            await this.fetchCategories();
+        },
+        async setItemsPerPage(itemsPerPage: number) {
+            this.itemsPerPage = itemsPerPage;
+            await this.fetchCategories();
+        },
+        async setSortBy(sortBy: any) {
+            this.sortBy = sortBy;
             await this.fetchCategories();
         },
     },
