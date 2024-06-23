@@ -44,7 +44,7 @@
       </div>
       <div class="flex justify-center mt-10">
         <v-pagination
-        class="w-full max-w-xl"
+          class="w-full max-w-xl"
           v-model="currentPage"
           :length="totalPages"
           rounded="circle"
@@ -68,8 +68,8 @@ export default defineComponent({
     },
   setup() {
     const store = useProductStore();
-    const itemsPerPage = ref(10);
-    const currentPage = ref();
+    const itemsPerPage = ref(store.itemsPerPage);
+    const currentPage = ref(store.currentPage);
 
     onMounted(() => {
       store.fetchProducts();
@@ -79,11 +79,14 @@ export default defineComponent({
     const products = computed(() => store.products);
     const totalProducts = computed(() => store.total);
     const totalPages = computed(() => Math.ceil(totalProducts.value / itemsPerPage.value));
-    
     const hoveredCard = ref<number | null>(null);
 
-    watch(currentPage, () => {
-      store.fetchProducts({ page: currentPage.value, itemsPerPage: itemsPerPage.value}); 
+    watch(currentPage, (newPage) => {
+      store.setPage(newPage);
+    });
+
+    watch(itemsPerPage, (newItemsPerPage) => {
+      store.setItemsPerPage(newItemsPerPage);
     });
 
     const handleMouseOver = (productId: number | undefined) => {
@@ -98,13 +101,13 @@ export default defineComponent({
 
     return {
       isLoading,
-      products, 
+      products,
       hoveredCard,
       totalPages,
       currentPage,
-      handleMouseOver, 
-      handleMouseLeave, 
-      };
+      handleMouseOver,
+      handleMouseLeave,
+    };
   },
 });
 

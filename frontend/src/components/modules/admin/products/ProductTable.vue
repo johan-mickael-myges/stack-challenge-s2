@@ -63,9 +63,16 @@ export default defineComponent({
       }
     };
 
+    const loadItems = async (options: { page: number; itemsPerPage: number; sortBy: any }) => {
+      await store.setPage(options.page);
+      await store.setItemsPerPage(options.itemsPerPage);
+      await store.setSortBy(options.sortBy);
+    };
+
     return {
       loading,
       items,
+      loadItems,
       totalItems,
       deleteProduct,
       store,
@@ -83,10 +90,6 @@ export default defineComponent({
     };
   },
   methods: {
-    async loadItems({page, itemsPerPage, sortBy}) {
-      await this.store.fetchProducts({page, itemsPerPage, sortBy});
-    },
-
     async exportCSVHandler() {
       await this.exportCSV(this.items, this.headers, ['actions'], 'products');
     }

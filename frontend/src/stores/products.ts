@@ -19,16 +19,19 @@ export const useProductStore = defineStore('products', {
         products: [] as Product[],
         product: null as Product | null,
         total: 0,
+        currentPage: 1,
+        itemsPerPage: 10,
+        sortBy: [] as any,
     }),
     actions: {
-        async fetchProducts({ page = 1, itemsPerPage = 10, sortBy = [] as any } = {}) {
+        async fetchProducts() {
             this.loading = true;
             try {
                 const response = await apiClient.get('/products', {
                     params: {
-                        page: page,
-                        limit: itemsPerPage,
-                        sortBy: sortBy,
+                        page: this.currentPage,
+                        limit: this.itemsPerPage,
+                        sortBy: this.sortBy,
                     },
                 });
                 this.products = response.data.items;
@@ -62,5 +65,17 @@ export const useProductStore = defineStore('products', {
             await apiClient.delete(`/admin/products/${id}`, { signal });
             await this.fetchProducts();
         },
+        async setPage(page: number) {
+            this.currentPage = page;
+            await this.fetchProducts();
+        },
+        async setItemsPerPage(itemsPerPage: number) {
+            this.itemsPerPage = itemsPerPage;
+            await this.fetchProducts();
+        },
+        async setSortBy(sortBy: any) {
+            this.sortBy = sortBy;
+            await this.fetchProducts();
+        }
     },
 });
