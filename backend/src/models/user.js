@@ -14,7 +14,7 @@ class User extends Model {
     }
 
     static async hashPassword(password) {
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(process.env.PASSWORD_SALT_ROUNDS);
         return bcrypt.hash(password, salt);
     }
 

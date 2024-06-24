@@ -2,10 +2,19 @@
 
 const bcrypt = require('bcrypt');
 
+require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
+
+const hashRounds = process.env.PASSWORD_SALT_ROUNDS;
+
+if (!hashRounds) {
+    throw new Error('PASSWORD_SALT_ROUNDS is not set in .env files');
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        // add one admin
+        const salt = await bcrypt.genSalt(Number(hashRounds));
         await queryInterface.bulkInsert('users', [
             {
                 id: 1,
@@ -14,7 +23,7 @@ module.exports = {
                 lastname: 'Admin',
                 email: 'admin@layalin.com',
                 number: '0769348744',
-                password: await bcrypt.hash('admin', 10),
+                password: await bcrypt.hash('admin', salt),
                 createdAt: new Date(),
                 updatedAt: new Date()
             }
