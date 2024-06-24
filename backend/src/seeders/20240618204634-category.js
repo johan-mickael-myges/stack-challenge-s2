@@ -16,7 +16,7 @@ module.exports = {
       createdAt: new Date(),
       updatedAt: new Date(),
     }));
-
+    await queryInterface.bulkDelete('categories', null, {});
     await queryInterface.bulkInsert('categories', categoryArray, {});
   },
 
