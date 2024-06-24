@@ -19,7 +19,7 @@ exports.getProductById = async (req, res, next) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404);
+            return res.sendStatus(404);
         }
         res.status(200).json(product);
     } catch (error) {
@@ -40,7 +40,7 @@ exports.updateProduct = async (req, res, next) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404);
+            return res.sendStatus(404);
         }
         await product.update(req.body);
         res.status(200).json(product);
@@ -53,7 +53,7 @@ exports.deleteProduct = async (req, res, next) => {
     try {
         const product = await Product.findByPk(req.params.id);
         if (!product) {
-            return res.status(404);
+            return res.sendStatus(404);
         }
         await product.destroy();
         res.status(204).send();

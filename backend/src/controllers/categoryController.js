@@ -19,7 +19,7 @@ const getCategoryById = async (req, res, next) => {
     try {
         const category = await Category.findByPk(req.params.id);
         if (!category) {
-            return res.status(404);
+            return res.sendStatus(404);
         }
         res.status(200).json(category);
     } catch (error) {
@@ -42,7 +42,7 @@ const updateCategory = async (req, res, next) => {
         const { name } = req.body;
         const category = await Category.findByPk(req.params.id);
         if (!category) {
-            return res.status(404);
+            return res.sendStatus(404);
         }
         await category.update({ name });
         res.json(category);
@@ -55,7 +55,7 @@ const deleteCategory = async (req, res, next) => {
     try {
         const category = await Category.findByPk(req.params.id);
         if (!category) {
-            return res.status(404);
+            return res.sendStatus(404);
         }
         await category.destroy();
         res.status(204).send();
