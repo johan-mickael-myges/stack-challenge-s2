@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 require('dotenv').config({ path: '.env.local' });
 
+const { ROLE_ADMIN, ROLE_USER, ROLE_STORE_KEEPER } = require('../constants/roles');
+
 const hashRounds = process.env.PASSWORD_SALT_ROUNDS;
 
 if (!hashRounds) {
@@ -32,7 +34,7 @@ module.exports = {
         await queryInterface.bulkInsert('user_roles', [
             {
                 userId: 1,
-                roleId: 1,
+                roleId: ROLE_ADMIN,
             }
         ]);
     },

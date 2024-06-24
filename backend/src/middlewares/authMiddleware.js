@@ -1,11 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { UnauthorizedError } = require('~errors/CustomErrors');
-
-const secretKey = process.env.JWT_SECRET;
-
-if (!secretKey) {
-    throw new Error('JWT_SECRET environment variable is required');
-}
+const config = require('~config/config');
 
 const authenticateToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
@@ -13,7 +8,7 @@ const authenticateToken = (req, res, next) => {
         return next(new UnauthorizedError('Access denied'));
     }
 
-    jwt.verify(token, secretKey, (err, user) => {
+    jwt.verify(token, config.jwtSecret, (err, user) => {
         if (err) {
             return next(new UnauthorizedError('Invalid token'));
         }

@@ -1,15 +1,11 @@
 const bcrypt = require('bcrypt');
+const config = require('~config/config');
+const { ROLE_ADMIN, ROLE_USER, ROLE_STORE_KEEPER } = require('~constants/roles');
 const { User } = require('~models');
+const { Role } = require('~models');
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('~errors/UnauthorizedError');
 const BadRequestError = require('~errors/BadRequestError');
-
-const secretKey = process.env.JWT_SECRET;
-const jwtExpiresIn = process.env.JWT_EXPIRES_IN || '1h';
-
-if (!secretKey) {
-    throw new Error('JWT_SECRET environment variable is required');
-}
 
 exports.registerUser = async (userData) => {
     const existingUser = await User.findOne({ where: { email: userData.email } });
@@ -17,7 +13,12 @@ exports.registerUser = async (userData) => {
         throw new BadRequestError('User with this email already exists');
     }
 
-    return await User.create(userData);
+    const user = await User.create(userData);
+
+    const role = await Role.findOne({ where: { id: ROLE_USER } });
+    await user.addRole(role);
+
+    return user;
 };
 
 exports.loginUser = async (email, password) => {
@@ -33,7 +34,7 @@ exports.loginUser = async (email, password) => {
         throw new UnauthorizedError('Invalid email or password');
     }
 
-    const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: jwtExpiresIn });
+    const token = jwt.sign({ userId: user.id }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
 
     return { user, token };
 };

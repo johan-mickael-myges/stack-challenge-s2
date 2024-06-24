@@ -1,10 +1,10 @@
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const config = require('~config/config');
 
 const errorHandler = (err, req, res, next) => {
     if (err.isOperational) {
         res.sendStatus(err.statusCode);
     } else {
-        if (NODE_ENV === 'development') {
+        if (config.env === 'development') {
             console.error(err);
         }
         res.sendStatus(500);

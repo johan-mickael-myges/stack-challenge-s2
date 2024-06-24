@@ -1,7 +1,13 @@
 require('dotenv').config();
-require('dotenv').config({ path: '.env.local' });
 
-module.exports = {
+if (process.env.NODE_ENV === 'development') {
+    require('dotenv').config({
+        path: '.env.local',
+    });
+}
+
+const config = {
+    env: process.env.NODE_ENV || 'development',
     development: {
         username: process.env.POSTGRES_USER || '',
         password: process.env.POSTGRES_PASSWORD || '',
@@ -23,4 +29,17 @@ module.exports = {
         host: process.env.POSTGRES_HOST || '',
         dialect: 'postgres',
     },
+    jwtSecret: process.env.JWT_SECRET,
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    passwordSaltRounds: parseInt(process.env.PASSWORD_SALT_ROUNDS, 10),
 };
+
+if (!config.jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is required');
+}
+
+if (isNaN(config.passwordSaltRounds)) {
+    throw new Error('PASSWORD_SALT_ROUNDS environment variable must be a valid number');
+}
+
+module.exports = config;

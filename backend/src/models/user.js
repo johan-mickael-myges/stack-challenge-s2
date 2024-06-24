@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const bcrypt = require('bcrypt');
+const config = require('~config/config');
 
 class User extends Model {
     static associate(models) {
@@ -14,7 +15,7 @@ class User extends Model {
     }
 
     static async hashPassword(password) {
-        const salt = await bcrypt.genSalt(process.env.PASSWORD_SALT_ROUNDS);
+        const salt = await bcrypt.genSalt(config.passwordSaltRounds);
         return bcrypt.hash(password, salt);
     }
 
