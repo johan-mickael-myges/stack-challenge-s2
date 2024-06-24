@@ -5,6 +5,7 @@ import { z } from 'zod';
 const productSchema = z.object({
     id: z.number().optional(),
     name: z.string(),
+    brandId: z.number().nullable(),
     reference: z.string(),
     description: z.string().optional(),
     price: z.number(),

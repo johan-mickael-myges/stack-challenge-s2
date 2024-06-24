@@ -46,7 +46,7 @@
           <v-icon size="20px" class="absolute top-0 right-0">mdi-heart-outline</v-icon>
         </div>
         <span class="text-xl mt-2">{{ product.name }}</span>
-        <span class="text-xs text-gray-600">Cartier</span>
+        <span v-if="brand" class="text-xs text-gray-600">{{ brand }}</span>
         <span class="text-[0.855rem] mt-[0.2rem]">{{ product.price }} €</span>
         <p class="text-sm my-2">{{ product.description }}</p>
         <button class="bg-black text-white py-4 px-6 rounded-full text-sm font-medium cursor-pointer my-4">Place in Cart</button>
@@ -59,6 +59,7 @@
 <script lang="ts">
 import { computed, onUnmounted, defineComponent, onMounted, ref } from 'vue';
 import { useProductStore } from '@/stores/products';
+import { useBrandStore } from '@/stores/brands';
 import Heading from "@/components/Typography/Heading.vue";
 import { useRoute } from "vue-router";
 import notFoundImage from '@/assets/not-found-image.png';
@@ -71,14 +72,17 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const store = useProductStore();
-    const productId = ref<number | null>(null);
+    const brandStore = useBrandStore()
     const isMdOrLarger = ref(window.innerWidth >= 768)
     const currentImageIndex = ref(0);
 
     onMounted(() => {
       if (route.params.id) {
         store.fetchProduct(Number(route.params.id));
-        productId.value = Number(route.params.id);
+        
+        if(store.product?.brandId){
+          brandStore.fetchBrand(store.product.brandId);
+        }
       }
       window.addEventListener('resize', updateWindowSize);
     });
@@ -88,7 +92,8 @@ export default defineComponent({
     });
 
     const product = computed(() => store.product);
-
+    const brand = computed(() => brandStore.brand?.name);
+    
     const updateWindowSize = () => {
       isMdOrLarger.value = window.innerWidth >= 768;
     };
@@ -107,8 +112,8 @@ export default defineComponent({
     };
 
     return {
-      productId,
       product,
+      brand,
       currentImageIndex,
       nextImage,
       prevImage,
