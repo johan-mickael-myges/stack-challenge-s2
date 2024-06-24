@@ -19,7 +19,7 @@ const getBrandById = async (req, res, next) => {
     try {
         const brand = await Brand.findByPk(req.params.id);
         if (!brand) {
-            return res.status(404);
+            return res.sendStatus(404);
         }
         res.status(200).json(brand);
     } catch (error) {
@@ -45,7 +45,7 @@ const updateBrand = async (req, res, next) => {
         const { name } = req.body;
         const brand = await Brand.findByPk(req.params.id);
         if (!brand) {
-            return res.status(404);
+            return res.sendStatus(404);
         }
         await brand.update({ name });
         res.json(brand);
@@ -61,10 +61,10 @@ const deleteBrand = async (req, res, next) => {
     try {
         const brand = await Brand.findByPk(req.params.id);
         if (!brand) {
-            return res.status(404);
+            return res.sendStatus(404);
         }
         await brand.destroy();
-        res.status(204).send();
+        res.sendStatus(204);
     } catch (error) {
         next(error);
     }
