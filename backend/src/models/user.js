@@ -22,6 +22,12 @@ class User extends Model {
     async validatePassword(password) {
         return bcrypt.compare(password, this.password);
     }
+
+    toJSON() {
+        const user = { ...this.get() };
+        delete user.password;
+        return user;
+    }
 }
 
 module.exports = (sequelize) => {

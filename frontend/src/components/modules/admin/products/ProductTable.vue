@@ -34,6 +34,7 @@ import {useCSVExport} from "@/composables/useCSVExport.ts";
 import Heading from "@/components/Typography/Heading.vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import {Header} from "@/components/Table/types/Header.ts";
+import {useAuthStore} from "@/stores/auth.ts";
 
 export default defineComponent({
   name: 'ProductTable',
@@ -43,30 +44,35 @@ export default defineComponent({
     DeleteButton,
   },
   setup() {
-    const store = useProductStore();
+    const authStore = useAuthStore();
+    const productStore = useProductStore();
     const {exportCSV} = useCSVExport();
 
+    console.log('isAuthenticated', authStore.isLoggedIn);
+    console.log('token', authStore.token);
+    console.log('user', authStore.user);
+
     onMounted(async () => {
-      await store.fetchProducts();
+      await productStore.fetchProducts();
     });
 
-    const items = computed(() => store.products);
-    const totalItems = computed(() => store.total);
-    const loading = computed(() => store.loading);
+    const items = computed(() => productStore.products);
+    const totalItems = computed(() => productStore.total);
+    const loading = computed(() => productStore.loading);
 
     const deleteProduct = async (id: number | undefined) => {
       if (!id) return;
       try {
-        await store.deleteProduct(id);
+        await productStore.deleteProduct(id);
       } catch (error) {
         throw new Error('An error occurred while trying to delete the item.');
       }
     };
 
     const loadItems = async (options: { page: number; itemsPerPage: number; sortBy: any }) => {
-      await store.setPage(options.page);
-      await store.setItemsPerPage(options.itemsPerPage);
-      await store.setSortBy(options.sortBy);
+      await productStore.setPage(options.page);
+      await productStore.setItemsPerPage(options.itemsPerPage);
+      await productStore.setSortBy(options.sortBy);
     };
 
     return {
@@ -75,7 +81,7 @@ export default defineComponent({
       loadItems,
       totalItems,
       deleteProduct,
-      store,
+      store: productStore,
       exportCSV,
     };
   },

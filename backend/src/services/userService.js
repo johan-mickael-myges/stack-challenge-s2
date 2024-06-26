@@ -22,7 +22,14 @@ exports.registerUser = async (userData) => {
 };
 
 exports.loginUser = async (email, password) => {
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({
+        where: { email },
+        include: {
+            model: Role,
+            attributes: ['name'],
+            through: { attributes: [] }
+        }
+    });
 
     if (!user) {
         throw new UnauthorizedError('Invalid email or password');
@@ -34,7 +41,13 @@ exports.loginUser = async (email, password) => {
         throw new UnauthorizedError('Invalid email or password');
     }
 
-    const token = jwt.sign({ userId: user.id }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
+    const roles = user.Roles.map(role => role.name);
+
+    const token = jwt.sign(
+            { userId: user.id, roles },
+            config.jwtSecret,
+            { expiresIn: config.jwtExpiresIn }
+    );
 
     return { user, token };
 };
