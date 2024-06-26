@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {computed, ref} from 'vue';
+import {computed, reactive, ref} from 'vue';
 import {ExpressError, LoginData, RegisterData} from '@/types';
 import apiClient from "@/config/axios.ts";
 
@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
     const hasError = ref(false);
     const errors = ref<Record<string, ExpressError[]>>({});
     const token = ref<string | null>(localStorage.getItem('auth_token'));
-    const user = ref({}); // Adjust type as necessary
+    const user = reactive<{ [key: string]: any }>({});
 
     const resetState = () => {
         loading.value = false;
@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
         errors.value = {};
     }
 
-    const setToken = (newToken: string | null) => {
+    const setToken = async (newToken: string | null) => {
         token.value = newToken;
         if (newToken) {
             localStorage.setItem('auth_token', newToken);
@@ -50,8 +50,8 @@ export const useAuthStore = defineStore('auth', () => {
         resetState();
         try {
             const response = await apiClient.post('/auth/login', data);
-            setToken(response.data.token);
-            user.value = response.data.user;
+            await setToken(response.data.token);
+            Object.assign(user, response.data.user);
         } catch (err: any) {
             hasError.value = true;
             throw err;
@@ -60,9 +60,9 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    const logout = () => {
-        setToken(null);
-        user.value = {};
+    const logout = async () => {
+        await setToken(null);
+        Object.keys(user).forEach(key => delete user[key]);
     }
 
     const isLoggedIn = computed(() => !!token.value);

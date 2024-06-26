@@ -4,6 +4,7 @@ import {computed, defineComponent, ref} from 'vue';
 import {LoginData} from "@/types";
 import {emailRules, passwordRules} from "@/utils/validationRules.ts";
 import {useAuthStore} from "@/stores/auth.ts";
+import {useGoToUrl} from "@/composables/useGoToUrl.ts";
 
 export default defineComponent({
   name: 'Login',
@@ -25,9 +26,17 @@ export default defineComponent({
   },
   setup(props) {
     const authStore = useAuthStore();
+    const { goToByPath } = useGoToUrl();
 
     const login = async () => {
-      await authStore.login(props.data);
+      try {
+        await authStore.login(props.data);
+        // window.location.href = new URLSearchParams(window.location.search).get('redirect') || '/';
+        const redirectPath = new URLSearchParams(window.location.search).get('redirect') || '/';
+        goToByPath(redirectPath);
+      } catch (error) {
+        console.error(error);
+      }
     }
     const loading = computed(() => authStore.loading);
     const hasError = computed(() => authStore.hasError);

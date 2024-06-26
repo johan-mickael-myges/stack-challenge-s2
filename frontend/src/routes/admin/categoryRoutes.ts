@@ -12,6 +12,9 @@ const routes: Array<RouteRecordRaw> = [
             { path: 'new', name: 'AdminCategoryForm', component: AdminCategoryForm },
             { path: 'edit/:id', name: 'AdminCategoryEdit', component: AdminCategoryForm },
         ],
+        meta: {
+            requiresAuth: true,
+        }
     }
 ];
 

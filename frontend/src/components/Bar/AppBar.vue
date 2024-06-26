@@ -2,7 +2,9 @@
 import { useGoToUrl } from "@/composables/useGoToUrl.ts";
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-const { login } = useGoToUrl();
+const { goToByName } = useGoToUrl();
+const login = () => goToByName('login');
+
 const isSmallScreen = ref(false);
 
 const handleResize = () => {
