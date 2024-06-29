@@ -1,6 +1,6 @@
 <template>
-  <div class="p-5 gap-4">
-    <h1 class="text-4xl mb-4">Bijoux</h1>
+  <div class="gap-4">
+    <h1 class="text-lg mb-4 font-semibold">Bijoux</h1>
     <div v-if="isLoading" class="text-center">
         <v-progress-circular
         color="black"
@@ -8,7 +8,7 @@
       ></v-progress-circular>
     </div>
     <div v-else>
-      <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-4 mt-7">
 
         <div v-for="product in products" :key="product.id">
 
@@ -16,11 +16,26 @@
                   @mouseover="handleMouseOver(product.id)" 
                   @mouseleave="handleMouseLeave()"
                   @click="$router.push(`/product/${product.id}`)">
-            <v-img v-if="product.images" :src="product.images.length != 0 ? product.images[0] : notFoundImage ">
+
+          <v-progress-linear 
+                v-if="loading" 
+                indeterminate 
+                color="black" 
+                height="3" 
+                class="absolute top-0 left-0 w-full z-10">
+          </v-progress-linear>
+
+            <v-img v-if="product.images" 
+              @load="loading = false"
+              @error="loading = false"
+              @progress="loading = true" 
+              :src="product.images.length != 0 ? 
+                  product.images[0] : notFoundImage "
+            >
 
               <template v-if="hoveredCard === product.id">
                 <v-card-actions class="absolute bottom-0 left-0 w-full z-10 text-center bg-black bg-opacity-70 transition-opacity duration-700">
-                  <v-btn color="white" block prepend-icon="mdi-cart-plus">
+                  <v-btn color="white" block prepend-icon="mdi-cart-plus" @click.stop="console.log('modifier par une fonction addCart')">
                     <v-icon color="white"></v-icon>
                     <span> Ajouter au panier</span>
                   </v-btn>
@@ -63,6 +78,7 @@ export default defineComponent({
     name: 'ProductList',
     data() {
       return {
+        loading: true,
         notFoundImage,
       }
     },
