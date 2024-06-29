@@ -1,6 +1,6 @@
-const { User } = require('~models');
 const { validationResult } = require('express-validator');
 const userService = require('~services/userService');
+const { env } = require("~config/config");
 
 exports.registerUser = async (req, res, next) => {
     try {
@@ -22,6 +22,11 @@ exports.loginUser = async (req, res, next) => {
 
     try {
         const { user, token } = await userService.loginUser(email, password);
+        res.cookie('token', token, {
+            httpOnly: true ,
+            secure: env === 'production',
+            maxAge: 60 * 60 * 1000,
+        });
         res.status(200).json({ user, token });
     } catch (error) {
         next(error);
