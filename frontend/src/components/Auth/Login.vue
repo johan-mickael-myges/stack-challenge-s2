@@ -31,7 +31,6 @@ export default defineComponent({
     const login = async () => {
       try {
         await authStore.login(props.data);
-        // window.location.href = new URLSearchParams(window.location.search).get('redirect') || '/';
         const redirectPath = new URLSearchParams(window.location.search).get('redirect') || '/';
         goToByPath(redirectPath);
       } catch (error) {
