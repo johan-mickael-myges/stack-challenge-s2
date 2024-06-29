@@ -32,3 +32,8 @@ exports.loginUser = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.logoutUser = async (req, res, next) => {
+    res.clearCookie('token');
+    res.sendStatus(200);
+}

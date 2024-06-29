@@ -48,10 +48,6 @@ export default defineComponent({
     const productStore = useProductStore();
     const {exportCSV} = useCSVExport();
 
-    console.log('isAuthenticated', authStore.isLoggedIn);
-    console.log('token', authStore.token);
-    console.log('user', authStore.user);
-
     onMounted(async () => {
       await productStore.fetchProducts();
     });

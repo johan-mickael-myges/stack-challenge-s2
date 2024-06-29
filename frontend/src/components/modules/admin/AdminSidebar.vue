@@ -10,34 +10,24 @@
       </v-list-item>
     </div>
     <v-divider></v-divider>
-    <v-list-item
-        v-for="item in items"
-        :key="item.title"
-        link
-        :to="item.to"
-    >
-      <template v-slot:prepend>
-        <v-icon>{{ item.icon }}</v-icon>
-      </template>
-      <v-list-item-title>{{ item.title }}</v-list-item-title>
-    </v-list-item>
+    <v-list :items="items" />
+    <slot name="custom-items"></slot>
+    <slot name="footer"></slot>
   </v-navigation-drawer>
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, ref} from 'vue';
+import {AdminSidebarItem} from "@/types";
 
 export default defineComponent({
-  name: 'Sidebar',
-  data() {
-    return {
-      items: [
-        {title: 'Products', icon: 'mdi-view-list', to: {name: 'AdminProductList'}},
-        {title: 'Categories', icon: 'mdi-folder-outline', to: {name: 'AdminCategoryList'}},
-      ],
-    };
+  name: 'AdminSidebar',
+  props: {
+    items: {
+      type: Object as () => AdminSidebarItem[],
+      required: true,
+    },
   },
-
   setup() {
     const rail = ref(false);
     const menuIcon = computed(() => (rail.value ? 'mdi-menu-close' : 'mdi-menu-open'));

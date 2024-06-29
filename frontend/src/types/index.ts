@@ -1,3 +1,5 @@
+import {RouteLocationRaw} from "vue-router";
+
 export interface LoginData {
     email: string;
     password: string;
@@ -28,4 +30,14 @@ export interface ExpressError {
     "msg": string,
     "path": string,
     "location": string
+}
+
+export interface AdminSidebarItem {
+    title: string;
+    props: {
+        to?: RouteLocationRaw;
+        prependIcon: string;
+        color: string;
+        onClick?: () => void;
+    };
 }

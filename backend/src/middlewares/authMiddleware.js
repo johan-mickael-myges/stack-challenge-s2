@@ -6,6 +6,7 @@ const config = require('~config/config');
 const authenticateToken = (requiredRoles = []) => {
     return (req, res, next) => {
         const { token } = req.cookies;
+        console.log(token);
         if (!token) {
             return next(new UnauthorizedError());
         }
@@ -14,8 +15,6 @@ const authenticateToken = (requiredRoles = []) => {
             if (err) {
                 return next(new UnauthorizedError());
             }
-
-            console.log(user);
 
             req.user = user;
 
