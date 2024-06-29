@@ -37,6 +37,7 @@ export default defineComponent({
 
     const initialData = {
       id: undefined,
+      brandId: null,
       name: '',
       reference: '',
       description: '',
