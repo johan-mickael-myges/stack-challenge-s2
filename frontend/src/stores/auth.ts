@@ -1,28 +1,20 @@
 import { defineStore } from 'pinia';
-import {computed, reactive, ref} from 'vue';
+import {reactive, ref} from 'vue';
 import {ExpressError, LoginData, RegisterData} from '@/types';
 import apiClient from "@/config/axios.ts";
+import {useToken} from "@/composables/useToken.ts";
 
 export const useAuthStore = defineStore('auth', () => {
     const loading = ref(false);
     const hasError = ref(false);
     const errors = ref<Record<string, ExpressError[]>>({});
-    const token = ref<string | null>(localStorage.getItem('auth_token'));
     const user = reactive<{ [key: string]: any }>({});
+    const { token, decodedToken, isLoggedIn, setToken } = useToken();
 
     const resetState = () => {
         loading.value = false;
         hasError.value = false;
         errors.value = {};
-    }
-
-    const setToken = async (newToken: string | null) => {
-        token.value = newToken;
-        if (newToken) {
-            localStorage.setItem('auth_token', newToken);
-        } else {
-            localStorage.removeItem('auth_token');
-        }
     }
 
     const register = async (data: RegisterData) => {
@@ -65,8 +57,6 @@ export const useAuthStore = defineStore('auth', () => {
         Object.keys(user).forEach(key => delete user[key]);
     }
 
-    const isLoggedIn = computed(() => !!token.value);
-
     return {
         loading,
         errors,
@@ -74,8 +64,9 @@ export const useAuthStore = defineStore('auth', () => {
         register,
         login,
         logout,
-        token,
         user,
+        token,
+        decodedToken,
         isLoggedIn,
     };
 });
