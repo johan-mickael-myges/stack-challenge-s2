@@ -49,16 +49,34 @@ export const useBrandStore = defineStore('brands', {
             }
         },
         async createBrand(brand: Brand, signal?: AbortSignal) {
-            await apiClient.post('/brands', BrandsSchema.parse(brand), { signal });
-            await this.fetchBrands();
+            try {
+                const response = await apiClient.post('/brands', BrandsSchema.parse(brand), { signal });
+                this.brands.push(response.data);
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async updateBrand(brand: Brand, signal?: AbortSignal) {
-            await apiClient.put(`/brands/${brand.id}`, BrandsSchema.parse(brand), { signal });
-            await this.fetchBrands();
+            try {
+                await apiClient.put(`/brands/${brand.id}`, BrandsSchema.parse(brand), { signal });
+                await this.fetchBrands();
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async deleteBrand(id: number, signal?: AbortSignal) {
-            await apiClient.delete(`/brands/${id}`, { signal });
-            await this.fetchBrands();
+            try {
+                await apiClient.delete(`/brands/${id}`, { signal });
+                await this.fetchBrands();
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async setPage(page: number) {
             this.currentPage = page;

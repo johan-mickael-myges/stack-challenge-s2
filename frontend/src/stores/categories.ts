@@ -49,16 +49,34 @@ export const useCategoryStore = defineStore('categories', {
             }
         },
         async createCategory(category: Category, signal?: AbortSignal) {
-            await apiClient.post('//categories', categoriesSchema.parse(category), { signal });
-            await this.fetchCategories();
+            try {
+                const response = await apiClient.post('/categories', categoriesSchema.parse(category), { signal });
+                this.categories.push(response.data);
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async updateCategory(category: Category, signal?: AbortSignal) {
-            await apiClient.put(`/categories/${category.id}`, categoriesSchema.parse(category), { signal });
-            await this.fetchCategories();
+            try {
+                await apiClient.put(`/categories/${category.id}`, categoriesSchema.parse(category), { signal });
+                await this.fetchCategories();
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async deleteCategory(id: number, signal?: AbortSignal) {
-            await apiClient.delete(`/categories/${id}`, { signal });
-            await this.fetchCategories();
+            try {
+                await apiClient.delete(`/categories/${id}`, { signal });
+                this.categories = this.categories.filter((category) => category.id !== id);
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async setPage(page: number) {
             this.currentPage = page;

@@ -26,28 +26,4 @@ const router = createRouter({
     routes,
 });
 
-// Navigation Guard to protect routes
-router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-    const authStore = useAuthStore();
-
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (!authStore.isLoggedIn) {
-            next({
-                path: '/login',
-                query: { redirect: to.fullPath },
-            });
-        } else {
-            next();
-        }
-    } else if (to.matched.some(record => record.meta.guest)) {
-        if (authStore.isLoggedIn) {
-            next({ path: '/dashboard' });
-        } else {
-            next();
-        }
-    } else {
-        next();
-    }
-});
-
 export default router;

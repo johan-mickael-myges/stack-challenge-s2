@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authenticateToken = require('~middlewares/authMiddleware');
 
 const {
     getAllProducts,
@@ -11,8 +12,8 @@ const {
 
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);
-router.post('/', createProduct);
-router.put('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
+router.post('/', authenticateToken(['ROLE_ADMIN']), createProduct);
+router.put('/:id', authenticateToken(['ROLE_ADMIN']), updateProduct);
+router.delete('/:id', authenticateToken(['ROLE_ADMIN']), deleteProduct);
 
 module.exports = router;

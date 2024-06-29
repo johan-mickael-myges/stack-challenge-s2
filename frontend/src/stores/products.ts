@@ -55,16 +55,34 @@ export const useProductStore = defineStore('products', {
             }
         },
         async createProduct(product: Product, signal?: AbortSignal) {
-            await apiClient.post('/admin/products', productSchema.parse(product), { signal });
-            await this.fetchProducts();
+            try {
+                const response = await apiClient.post('/products', productSchema.parse(product), { signal });
+                this.products.push(response.data);
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async updateProduct(product: Product, signal?: AbortSignal) {
-            await apiClient.put(`/admin/products/${product.id}`, productSchema.parse(product), { signal });
-            await this.fetchProducts();
+            try {
+                await apiClient.put(`/products/${product.id}`, productSchema.parse(product), { signal });
+                await this.fetchProducts();
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async deleteProduct(id: number, signal?: AbortSignal) {
-            await apiClient.delete(`/admin/products/${id}`, { signal });
-            await this.fetchProducts();
+            try {
+                await apiClient.delete(`/products/${id}`, { signal });
+                await this.fetchProducts();
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         },
         async setPage(page: number) {
             this.currentPage = page;
