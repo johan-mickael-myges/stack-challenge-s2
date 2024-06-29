@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useGoToUrl } from "@/composables/useGoToUrl.ts";
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import CustomAutocomplete from "./CustomAutocomplete.vue";
+import CategoryButtons from "./CategoryButtons.vue";
 
 const { goToByName } = useGoToUrl();
 const login = () => goToByName('login');
@@ -8,6 +10,9 @@ const login = () => goToByName('login');
 const isSmallScreen = ref(false);
 const isMediumScreen = ref(false);
 const isLargerScreen = ref(false);
+
+const items = ref(['item1', 'item2', 'item3']);
+const categories = ref(['Bagues', 'Boucles d\'oreilles', 'Colliers', 'Bracelets', 'Montres']);
 
 const handleResize = () => {
   isLargerScreen.value = window.innerWidth < 882;
@@ -36,18 +41,7 @@ onBeforeUnmount(() => {
             <span class="text-lowercase">filtrer</span>
           </v-btn>
           <div v-if="!isLargerScreen" class="pt-6 pl-2 w-[20vw]">
-                <v-autocomplete
-                  :items="items"
-                  density="comfortable"
-                  menu-icon=""
-                  placeholder="rechercher"
-                  prepend-inner-icon="mdi-magnify"
-                  theme="light"
-                  variant="solo"
-                  auto-select-first
-                  item-props
-                  rounded
-                ></v-autocomplete>
+            <CustomAutocomplete :items="items" :rounded="true" />
           </div>
         </v-row>
       </v-col>
@@ -74,44 +68,17 @@ onBeforeUnmount(() => {
           <v-icon size="20px">mdi-cart-outline</v-icon>
         </v-btn>
       </v-col>
-
     </v-row>
   </v-app-bar>
   {# @TODO mettre dynamiquement elements du menu, en fonction de la selection de la categorie de l'admin #}
   <v-app-bar v-if="!isMediumScreen" elevation="1" height="40" class="pb-3">
-    <v-row class="justify-center max-w-4xl mx-auto" >
-    <v-col class="text-center">
-      <v-btn text>Bagues</v-btn>
-    </v-col>
-    <v-col class="text-center">
-      <v-btn text>Boucles d'oreilles</v-btn>
-    </v-col>
-    <v-col class="text-center">
-      <v-btn text>Colliers</v-btn>
-    </v-col>
-    <v-col class="text-center">
-      <v-btn text>Bracelets</v-btn>
-    </v-col>
-    <v-col class="text-center">
-      <v-btn text>Montres</v-btn>
-    </v-col>
-  </v-row>
+    <CategoryButtons :categories="categories" />
 </v-app-bar>
+
 <v-app-bar elevation="0" height="60" v-if="isLargerScreen">
   <div :class="[{'pt-[2.5vh]': !isMediumScreen, ['pt-[1vh]']: isMediumScreen}, 'w-full']">
-                  <v-autocomplete
-                    :items="items"
-                    density="comfortable"
-                    menu-icon=""
-                    placeholder="rechercher"
-                    prepend-inner-icon="mdi-magnify"
-                    theme="light"
-                    variant="solo"
-                    auto-select-first
-                    item-props
-                  ></v-autocomplete>
-    </div>
-
+    <CustomAutocomplete :items="items" />
+  </div>
 </v-app-bar>
 </template>
 
