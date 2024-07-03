@@ -10,7 +10,7 @@ const {
     updateCategory
 } = require('~controllers/categoryController');
 
-router.get('/', getAllCategories);
+router.get('/', checkRoles([], false), getAllCategories);
 router.get('/:id', getCategoryById);
 router.post('/', checkRoles(['ROLE_ADMIN']), createCategory);
 router.put('/:id', checkRoles(['ROLE_ADMIN']), updateCategory);
