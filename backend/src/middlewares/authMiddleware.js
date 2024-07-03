@@ -3,10 +3,9 @@ const ForbiddenError = require('~errors/ForbiddenError');
 const UnauthorizedError = require('~errors/UnauthorizedError');
 const config = require('~config/config');
 
-const authenticateToken = (requiredRoles = []) => {
+const checkRoles = (requiredRoles = []) => {
     return (req, res, next) => {
         const { token } = req.cookies;
-        console.log(token);
         if (!token) {
             return next(new UnauthorizedError());
         }
@@ -27,4 +26,4 @@ const authenticateToken = (requiredRoles = []) => {
     };
 };
 
-module.exports = authenticateToken;
+module.exports = checkRoles;

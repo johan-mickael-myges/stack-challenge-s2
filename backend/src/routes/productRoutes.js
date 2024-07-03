@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const authenticateToken = require('~middlewares/authMiddleware');
+const checkRoles = require('~middlewares/authMiddleware');
 
 const {
     getAllProducts,
@@ -12,8 +12,8 @@ const {
 
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);
-router.post('/', authenticateToken(['ROLE_ADMIN']), createProduct);
-router.put('/:id', authenticateToken(['ROLE_ADMIN']), updateProduct);
-router.delete('/:id', authenticateToken(['ROLE_ADMIN']), deleteProduct);
+router.post('/', checkRoles(['ROLE_ADMIN']), createProduct);
+router.put('/:id', checkRoles(['ROLE_ADMIN']), updateProduct);
+router.delete('/:id', checkRoles(['ROLE_ADMIN']), deleteProduct);
 
 module.exports = router;
