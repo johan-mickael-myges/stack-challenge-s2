@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/add', cartController.addToCart);
 router.get('/:userId', cartController.getCartItems);
-
+router.delete('/:userId/:productId', cartController.removeFromCart);
 // router.post('/add', (req, res, next) => {
 //     console.log('Route /cart/add hit');
 //     next();

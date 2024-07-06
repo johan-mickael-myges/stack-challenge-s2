@@ -3,6 +3,7 @@ import { useGoToUrl } from "@/composables/useGoToUrl.ts";
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import CustomAutocomplete from "./CustomAutocomplete.vue";
 import CategoryButtons from "./CategoryButtons.vue";
+import { useRouter } from 'vue-router';
 
 const { goToByName } = useGoToUrl();
 const login = () => goToByName('login');
@@ -28,6 +29,11 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
+
+const router = useRouter();
+const goToCart = () => router.push({ name: 'UserCart' });
+const goToHome = () => router.push('/'); 
+
 </script>
 
 <template>
@@ -48,9 +54,9 @@ onBeforeUnmount(() => {
 
       <v-col>
         <div v-if="isSmallScreen" class="d-flex justify-center">
-          <img src="@/assets/layalin_logo.png" alt="Logo_Layalin" class="h-10">
+          <img src="@/assets/layalin_logo.png" alt="Logo_Layalin" class="h-10" @click="goToHome"> <!-- Make the logo clickable -->
         </div>
-        <v-app-bar-title v-else class="font-weight-bold d-flex justify-center">
+        <v-app-bar-title v-else class="font-weight-bold d-flex justify-center" @click="goToHome"> <!-- Make the text clickable -->
           LAYALIN
         </v-app-bar-title>
       </v-col>
@@ -64,26 +70,27 @@ onBeforeUnmount(() => {
           <v-icon size="20px">mdi-account-outline</v-icon>
         </v-btn>
 
-        <v-btn icon>
+        <v-btn icon @click="goToCart">
           <v-icon size="20px">mdi-cart-outline</v-icon>
         </v-btn>
       </v-col>
     </v-row>
   </v-app-bar>
-  {# @TODO mettre dynamiquement elements du menu, en fonction de la selection de la categorie de l'admin #}
+  <!-- @TODO mettre dynamiquement elements du menu, en fonction de la selection de la categorie de l'admin -->
   <v-app-bar v-if="!isMediumScreen" elevation="1" height="40" class="pb-3">
     <CategoryButtons :categories="categories" />
-</v-app-bar>
+  </v-app-bar>
 
-<v-app-bar elevation="0" height="60" v-if="isLargerScreen">
-  <div :class="[{'pt-[2.5vh]': !isMediumScreen, ['pt-[1vh]']: isMediumScreen}, 'w-full']">
-    <CustomAutocomplete :items="items" />
-  </div>
-</v-app-bar>
+  <v-app-bar elevation="0" height="60" v-if="isLargerScreen">
+    <div :class="[{'pt-[2.5vh]': !isMediumScreen, ['pt-[1vh]']: isMediumScreen}, 'w-full']">
+      <CustomAutocomplete :items="items" />
+    </div>
+  </v-app-bar>
 </template>
 
 <style scoped>
 .v-app-bar-title {
   letter-spacing: 3px;
+  cursor: pointer; 
 }
 </style>

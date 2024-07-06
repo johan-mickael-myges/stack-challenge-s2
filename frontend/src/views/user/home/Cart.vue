@@ -16,6 +16,9 @@
               <v-card-subtitle>{{ item.Product.price }} €</v-card-subtitle>
               <v-card-text>
                 Quantity: {{ item.quantity }}
+                <v-btn icon @click="removeFromCart(item.Product.id)">
+                  <v-icon size="20px">mdi-delete</v-icon>
+                </v-btn>
               </v-card-text>
             </v-card>
           </div>
@@ -56,7 +59,7 @@
       const isLoading = ref(true);
       const userId = 1; // Dummy user ID for now
   
-      onMounted(async () => {
+      const fetchCartItems = async () => {
         try {
           const response = await axios.get(`http://localhost:8000/cart/${userId}`);
           cartItems.value = response.data.CartItems;
@@ -65,11 +68,24 @@
         } finally {
           isLoading.value = false;
         }
-      });
+      };
+  
+      const removeFromCart = async (productId: number) => {
+        try {
+          await axios.delete(`http://localhost:8000/cart/${userId}/${productId}`);
+          // Remove the item from the cartItems array
+          cartItems.value = cartItems.value.filter(item => item.Product.id !== productId);
+        } catch (error) {
+          console.error('Failed to remove item from cart:', error);
+        }
+      };
+  
+      onMounted(fetchCartItems);
   
       return {
         cartItems,
-        isLoading
+        isLoading,
+        removeFromCart
       };
     }
   });
