@@ -17,8 +17,8 @@ class Product extends Model {
             otherKey: 'promotionId',
             timestamps: false
         });
-        Product.hasMany(models.CartItem);
-        Product.hasMany(models.OrderItem);
+        Product.hasMany(models.CartItem, { foreignKey: 'productId' });
+        Product.hasMany(models.OrderItem, { foreignKey: 'productId' });
     }
 }
 

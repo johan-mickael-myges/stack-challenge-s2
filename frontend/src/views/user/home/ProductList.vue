@@ -35,7 +35,7 @@
 
               <template v-if="hoveredCard === product.id">
                 <v-card-actions class="absolute bottom-0 left-0 w-full z-10 text-center bg-black bg-opacity-70 transition-opacity duration-700">
-                  <v-btn color="white" block prepend-icon="mdi-cart-plus" @click.stop="console.log('modifier par une fonction addCart')">
+                  <v-btn color="white" block prepend-icon="mdi-cart-plus" @click.stop="addProductToCart(product.id)">
                     <v-icon color="white"></v-icon>
                     <span> Ajouter au panier</span>
                   </v-btn>
@@ -72,7 +72,8 @@
 <script lang="ts">
 import { useProductStore } from '@/stores/products';
 import { defineComponent, computed, onMounted, ref, watch } from 'vue';
-import notFoundImage from '@/assets/not-found-image.png'
+import notFoundImage from '@/assets/not-found-image.png';
+import { addToCart as addProductToCartService } from '@/services/cartService'; // Import the addToCart service
 
 export default defineComponent({
     name: 'ProductList',
@@ -115,6 +116,18 @@ export default defineComponent({
       hoveredCard.value = null;
     };
 
+    const addProductToCart = async (productId: number) => {
+    const userId = 1; // Dummy user ID
+    const quantity = 1;
+
+        try {
+            const response = await addProductToCartService(productId, userId, quantity);
+            console.log('Cart:', response.cartItem); // This will log the cart item
+        } catch (error) {
+            console.error('Failed to add product to cart:', error);
+        }
+    };
+
     return {
       isLoading,
       products,
@@ -123,8 +136,8 @@ export default defineComponent({
       currentPage,
       handleMouseOver,
       handleMouseLeave,
+      addProductToCart, // Expose the function to the template
     };
   },
 });
-
 </script>
