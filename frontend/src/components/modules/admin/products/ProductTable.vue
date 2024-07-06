@@ -1,5 +1,7 @@
 <template>
-  <DataTable
+  <div>
+    <input type="text" v-model="searchQuery" placeholder="Search for a product" @input="onSearchInput" />
+    <DataTable
       :headers="headers"
       :items="items"
       :items-length="totalItems"
@@ -7,33 +9,34 @@
       loading-text="Loading... Please wait"
       multi-sort
       @update:options="loadItems"
-  >
-    <template v-slot:top.title>
-      <Heading tag="h3">List of products</Heading>
-    </template>
-    <template v-slot:top.actions>
-      <v-btn color="secondary" @click="exportCSVHandler">Export CSV</v-btn>
-      <v-btn color="primary" variant="flat" @click="$router.push('/admin/products/new')">Add New Product</v-btn>
-    </template>
-    <template v-slot:item.actions="{ item }">
-      <div class="flex justify-end">
-        <v-btn variant="text" density="compact" icon="mdi-pencil"
-               @click="$router.push(`/admin/products/edit/${item.id}`)"></v-btn>
-        <DeleteButton variant="text" density="compact" icon="mdi-delete"
-                      :deleteFunction="() => deleteProduct(item.id)"/>
-      </div>
-    </template>
-  </DataTable>
+    >
+      <template v-slot:top.title>
+        <Heading tag="h3">List of products</Heading>
+      </template>
+      <template v-slot:top.actions>
+        <v-btn color="secondary" @click="exportCSVHandler">Export CSV</v-btn>
+        <v-btn color="primary" variant="flat" @click="$router.push('/admin/products/new')">Add New Product</v-btn>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <div class="flex justify-end">
+          <v-btn variant="text" density="compact" icon="mdi-pencil"
+                 @click="$router.push(`/admin/products/edit/${item.id}`)"></v-btn>
+          <DeleteButton variant="text" density="compact" icon="mdi-delete"
+                        :deleteFunction="() => deleteProduct(item.id)"/>
+        </div>
+      </template>
+    </DataTable>
+  </div>
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, onMounted} from 'vue';
-import {useProductStore} from "@/stores/admin/products.ts";
+import { defineComponent, computed, onMounted, ref } from 'vue';
+import { useProductStore } from "@/stores/admin/products.ts";
 import DeleteButton from '@/components/Button/DeleteButton.vue';
-import {useCSVExport} from "@/composables/useCSVExport.ts";
+import { useCSVExport } from "@/composables/useCSVExport.ts";
 import Heading from "@/components/Typography/Heading.vue";
 import DataTable from "@/components/Table/DataTable.vue";
-import {Header} from "@/components/Table/types/Header.ts";
+import { Header } from "@/components/Table/types/Header.ts";
 
 export default defineComponent({
   name: 'ProductTable',
@@ -44,7 +47,8 @@ export default defineComponent({
   },
   setup() {
     const store = useProductStore();
-    const {exportCSV} = useCSVExport();
+    const { exportCSV } = useCSVExport();
+    const searchQuery = ref('');
 
     onMounted(async () => {
       await store.fetchProducts();
@@ -63,6 +67,14 @@ export default defineComponent({
       }
     };
 
+    const loadItems = async ({ page, itemsPerPage, sortBy }: any) => {
+      await store.fetchProducts({ page, itemsPerPage, sortBy, search: searchQuery.value });
+    };
+
+    const onSearchInput = () => {
+      loadItems({ page: 1, itemsPerPage: 10, sortBy: [] });
+    };
+
     return {
       loading,
       items,
@@ -70,23 +82,22 @@ export default defineComponent({
       deleteProduct,
       store,
       exportCSV,
+      searchQuery,
+      onSearchInput,  // Ensure this is returned
+      loadItems,  // Ensure this is returned
     };
   },
   data() {
     return {
       headers: [
-        {title: 'Name', value: 'name', sortable: true},
-        {title: 'Reference', value: 'reference', sortable: true},
-        {title: 'Price', value: 'price', sortable: true},
-        {title: '', value: 'actions', sortable: false},
+        { title: 'Name', value: 'name', sortable: true },
+        { title: 'Reference', value: 'reference', sortable: true },
+        { title: 'Price', value: 'price', sortable: true },
+        { title: '', value: 'actions', sortable: false },
       ] as Header[],
     };
   },
   methods: {
-    async loadItems({page, itemsPerPage, sortBy}) {
-      await this.store.fetchProducts({page, itemsPerPage, sortBy});
-    },
-
     async exportCSVHandler() {
       await this.exportCSV(this.items, this.headers, ['actions'], 'products');
     }

@@ -1,4 +1,4 @@
-import {defineStore} from 'pinia';
+import { defineStore } from 'pinia';
 import apiClient from '@/config/axios';
 import { z } from 'zod';
 
@@ -13,6 +13,13 @@ const productSchema = z.object({
 
 export type Product = z.infer<typeof productSchema>;
 
+interface FetchProductsParams {
+    page?: number;
+    itemsPerPage?: number;
+    sortBy?: any;
+    search?: string;
+}
+
 export const useProductStore = defineStore('adminProducts', {
     state: () => ({
         loading: false,
@@ -21,14 +28,15 @@ export const useProductStore = defineStore('adminProducts', {
         total: 0,
     }),
     actions: {
-        async fetchProducts({ page = 1, itemsPerPage = 10, sortBy = [] as any } = {}) {
+        async fetchProducts(params: FetchProductsParams = {}) {
             this.loading = true;
             try {
                 const response = await apiClient.get('/admin/products', {
                     params: {
-                        page: page,
-                        limit: itemsPerPage,
-                        sortBy: sortBy,
+                        page: params.page || 1,
+                        limit: params.itemsPerPage || 10,
+                        sortBy: params.sortBy || [],
+                        search: params.search || '',
                     },
                 });
                 this.products = response.data.items;
