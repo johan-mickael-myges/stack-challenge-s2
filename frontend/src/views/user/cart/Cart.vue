@@ -2,7 +2,7 @@
   <v-container class="cart-page py-4">
     <v-row>
       <v-col cols="12">
-        <h1 class="text-lg mb-4 font-semibold">Your Cart</h1>
+        <h1 class="text-lg mb-4 font-semibold">Mon Panier: </h1>
       </v-col>
       <v-col v-if="isLoading" cols="12" class="text-center">
         <v-progress-circular color="black" indeterminate></v-progress-circular>
@@ -11,7 +11,7 @@
         <!-- Product List -->
         <v-col cols="8">
           <div v-if="cartItems.length === 0" class="p-4 bg-white rounded shadow">
-            <p>Your cart is empty.</p>
+            <p>Votre panier est actuellement vide.</p>
           </div>
           <div v-else>
             <div v-for="item in cartItems" :key="item.id" class="cart-item mb-4">
@@ -21,7 +21,7 @@
                   <v-card-title>{{ item.Product.name }}</v-card-title>
                   <v-card-subtitle>{{ item.Product.price }} €</v-card-subtitle>
                   <div>
-                    Quantity: {{ item.quantity }}
+                    Quantité: {{ item.quantity }}
                     <v-btn icon @click="removeFromCart(item.Product.id)">
                       <v-icon size="20px">mdi-delete</v-icon>
                     </v-btn>
@@ -35,9 +35,9 @@
         <v-col cols="4">
           <v-card class="p-4 bg-white rounded shadow">
             <div class="mb-4">
-              <p class="text-lg font-semibold">Summary</p>
-              <p>Total Price: {{ totalPrice }} €</p>
-              <p>Shipping Cost: (Empty for now)</p>
+              <p class="text-lg font-semibold">Total</p>
+              <p>Sous-total: {{ totalPrice }} €</p>
+              <p>Livraison: (à ajouter)</p>
             </div>
             <div id="paypal-button-container"></div>
           </v-card>
