@@ -71,10 +71,11 @@
 </template>
 
 <script lang="ts">
+
+import {useCartStore} from "@/stores/cart.ts";
 import {useProductStore} from '@/stores/products';
 import {defineComponent, computed, onMounted, ref, watch} from 'vue';
 import notFoundImage from '@/assets/not-found-image.png';
-import {addToCart as addProductToCartService} from '@/services/cartService'; // Import the addToCart service
 
 export default defineComponent({
   name: 'ProductList',
@@ -86,6 +87,8 @@ export default defineComponent({
   },
   setup() {
     const store = useProductStore();
+    const cartStore = useCartStore();
+
     const itemsPerPage = ref(store.itemsPerPage);
     const currentPage = ref(store.currentPage);
 
@@ -118,15 +121,7 @@ export default defineComponent({
     };
 
     const addProductToCart = async (productId: number) => {
-      const userId = 1; // Dummy user ID
-      const quantity = 1;
-
-      try {
-        const response = await addProductToCartService(productId, userId, quantity);
-        console.log('Panier:', response.cartItem); // This will log the cart item
-      } catch (error) {
-        console.error('Échec de l\'ajout du produit au panier:', error);
-      }
+      await cartStore.addToCart(productId, 1);
     };
 
     return {
@@ -137,7 +132,7 @@ export default defineComponent({
       currentPage,
       handleMouseOver,
       handleMouseLeave,
-      addProductToCart, // Expose the function to the template
+      addProductToCart,
     };
   },
 });

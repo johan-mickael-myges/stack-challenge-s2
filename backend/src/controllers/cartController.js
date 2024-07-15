@@ -1,21 +1,23 @@
 const { Cart, CartItem, Product, User } = require('../models');
 
-exports.addToCart = async (req, res) => {
+exports.addToCart = async (req, res, next) => {
     try {
-        const { productId, userId = 1, quantity } = req.body;
+        const { productId, quantity } = req.body;
 
-        // Find the product by its ID
-        const product = await Product.findByPk(productId);
-
-        if (!product) {
-            return res.sendStatus(404);
-        }
+        const userId = req.user.userId;
 
         // Find the user's cart or create a new one if it doesn't exist
         let cart = await Cart.findOne({ where: { userId } });
 
         if (!cart) {
             cart = await Cart.create({ userId });
+        }
+
+        // Find the product by its ID
+        const product = await Product.findByPk(productId);
+
+        if (!product) {
+            return res.sendStatus(404);
         }
 
         // Check if the product is already in the cart
@@ -35,9 +37,9 @@ exports.addToCart = async (req, res) => {
         next(error);
     }
 };
-exports.getCartItems = async (req, res) => {
+exports.getCartItems = async (req, res, next) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user.userId;
 
         // Verify that the user exists
         const user = await User.findByPk(userId);
@@ -57,9 +59,10 @@ exports.getCartItems = async (req, res) => {
         next(error);
     }
 };
-exports.removeFromCart = async (req, res) => {
+exports.removeFromCart = async (req, res, next) => {
     try {
-        const { userId, productId } = req.params;
+        const { productId } = req.params;
+        const userId = req.user.userId;
 
         // Verify that the user exists
         const user = await User.findByPk(userId);
