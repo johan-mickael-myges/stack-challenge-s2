@@ -44,6 +44,7 @@ export default defineComponent({
 
     onMounted(async () => {
       await store.fetchCategories();
+      await store.countCategories();
     });
 
     const items = computed(() => store.categories);

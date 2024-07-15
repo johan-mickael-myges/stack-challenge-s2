@@ -2,15 +2,21 @@ const { Product } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 const repository = require("~repositories/productRepository");
 
+exports.countProducts = async (req, res, next) => {
+    try {
+        const count = await repository.count(req.user);
+        res.status(200).json(count);
+    } catch (error) {
+        next(error);
+    }
+}
+
 exports.getAllProducts = async (req, res, next) => {
     try {
         let options = buildQueryOptions(req.query);
 
-        const products = await repository.all(options, req.user);
-        res.status(200).json({
-            total: products.count,
-            items: products.rows,
-        });
+        const products = await repository.all(options);
+        res.status(200).json(products);
     } catch (error) {
         next(error);
     }
@@ -18,7 +24,7 @@ exports.getAllProducts = async (req, res, next) => {
 
 exports.getProductById = async (req, res, next) => {
     try {
-        const product = await repository.one(req.params.id, {});
+        const product = await repository.one(req.params.id);
         if (!product) {
             return res.sendStatus(404);
         }
@@ -57,7 +63,7 @@ exports.deleteProduct = async (req, res, next) => {
             return res.sendStatus(404);
         }
         await product.destroy();
-        res.status(204).send();
+        res.sendStatus(204);
     } catch (error) {
         next(error);
     }

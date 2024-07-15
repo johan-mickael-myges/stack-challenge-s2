@@ -3,6 +3,7 @@ const router = express.Router();
 const checkRoles = require("~middlewares/authMiddleware");
 
 const {
+    countCategories,
     getAllCategories,
     getCategoryById,
     createCategory,
@@ -10,6 +11,7 @@ const {
     updateCategory
 } = require('~controllers/categoryController');
 
+router.get('/count', countCategories);
 router.get('/', checkRoles([], false), getAllCategories);
 router.get('/:id', getCategoryById);
 router.post('/', checkRoles(['ROLE_ADMIN']), createCategory);

@@ -25,6 +25,14 @@ export const useProductStore = defineStore('products', {
         sortBy: [] as any,
     }),
     actions: {
+        async countProducts() {
+            try {
+                const response = await apiClient.get('/products/count');
+                this.total = response.data;
+            } catch (error) {
+                throw error;
+            }
+        },
         async fetchProducts() {
             this.loading = true;
             try {
@@ -35,8 +43,7 @@ export const useProductStore = defineStore('products', {
                         sortBy: this.sortBy,
                     },
                 });
-                this.products = response.data.items;
-                this.total = response.data.total;
+                this.products = response.data;
             } catch (error) {
                 throw error;
             } finally {

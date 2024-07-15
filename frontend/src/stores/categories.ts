@@ -20,6 +20,14 @@ export const useCategoryStore = defineStore('categories', {
         sortBy: [] as any,
     }),
     actions: {
+        async countCategories() {
+            try {
+                const response = await apiClient.get('/categories/count');
+                this.total = response.data;
+            } catch (error) {
+                throw error;
+            }
+        },
         async fetchCategories() {
             this.loading = true;
             try {
@@ -30,8 +38,7 @@ export const useCategoryStore = defineStore('categories', {
                         sortBy: this.sortBy,
                     },
                 });
-                this.categories = response.data.items;
-                this.total = response.data.total;
+                this.categories = response.data;
             } catch (error) {
                 throw error;
             } finally {

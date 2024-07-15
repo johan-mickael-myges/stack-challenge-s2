@@ -3,6 +3,7 @@ const router = express.Router();
 const checkRoles = require('~middlewares/authMiddleware');
 
 const {
+    countProducts,
     getAllProducts,
     getProductById,
     createProduct,
@@ -10,6 +11,7 @@ const {
     deleteProduct
 } = require('~controllers/productController');
 
+router.get('/count', countProducts);
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);
 router.post('/', checkRoles(['ROLE_ADMIN']), createProduct);

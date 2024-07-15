@@ -50,6 +50,7 @@ export default defineComponent({
 
     onMounted(async () => {
       await productStore.fetchProducts();
+      await productStore.countProducts();
     });
 
     const items = computed(() => productStore.products);

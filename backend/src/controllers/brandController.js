@@ -1,15 +1,13 @@
 const { Brand } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
+const BadRequestError = require('~errors/BadRequestError');
 
 const getAllBrands = async (req, res, next) => {
     try {
         let options = buildQueryOptions(req.query);
 
-        const brands = await Brand.findAndCountAll(options);
-        res.status(200).json({
-            total: brands.count,
-            items: brands.rows,
-        });
+        const brands = await Brand.findAll(options);
+        res.status(200).json(brands);
     } catch (error) {
         next(error);
     }
@@ -34,7 +32,7 @@ const createBrand = async (req, res, next) => {
         res.status(201).json(newBrand);
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(400).json({ error: 'Brand name must be unique' });
+            throw new BadRequestError('Le nom de la marque doit être unique');
         }
         next(error);
     }
@@ -51,7 +49,7 @@ const updateBrand = async (req, res, next) => {
         res.json(brand);
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(400).json({ error: 'Brand name must be unique' });
+            throw new BadRequestError('Le nom de la marque doit être unique');
         }
         next(error);
     }
