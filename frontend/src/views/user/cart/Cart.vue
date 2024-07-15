@@ -4,25 +4,25 @@
       <v-col cols="12">
         <h1 class="text-lg mb-4 font-semibold">Mon Panier: </h1>
       </v-col>
-      <v-col v-if="isLoading" cols="12" class="text-center">
+      <v-col v-if="loading" cols="12" class="text-center">
         <v-progress-circular color="black" indeterminate></v-progress-circular>
       </v-col>
       <v-col v-else cols="12" class="d-flex">
         <!-- Product List -->
         <v-col cols="8">
-          <div v-if="cartItems.length === 0" class="p-4 bg-white rounded shadow">
+          <div v-if="cartIsEmpty" class="p-4 bg-white rounded shadow">
             <p>Votre panier est actuellement vide.</p>
           </div>
           <div v-else>
-            <div v-for="item in cartItems" :key="item.id" class="cart-item mb-4">
+            <div v-for="item in cart.CartItems" :key="item.id" class="cart-item mb-4">
               <v-card class="d-flex">
-                <v-img :src="item.Product.images.length ? item.Product.images[0] : notFoundImage" class="cart-item-image w-24 h-24 mr-4"></v-img>
+                <v-img :src="cartItemHasImage(item) ? item.Product.images[0] : notFoundImage" class="cart-item-image w-24 h-24 mr-4"></v-img>
                 <v-card-text>
                   <v-card-title>{{ item.Product.name }}</v-card-title>
                   <v-card-subtitle>{{ item.Product.price }} €</v-card-subtitle>
                   <div>
                     Quantité: {{ item.quantity }}
-                    <v-btn icon @click="removeFromCart(item.Product.id)">
+                    <v-btn icon @click="removeProductFromCart(item.Product.id)">
                       <v-icon size="20px">mdi-delete</v-icon>
                     </v-btn>
                   </div>
@@ -51,6 +51,7 @@
 import { defineComponent, ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import axios from 'axios';
 import notFoundImage from '@/assets/not-found-image.png';
+import {useCartStore} from "@/stores/cart.ts";
 
 interface Product {
   id: number;
@@ -77,20 +78,28 @@ export default defineComponent({
     };
   },
   setup() {
-    const cartItems = ref<CartItem[]>([]);
-    const isLoading = ref(true);
+    const store = useCartStore();
+
+    const loading = computed(() => store.loading);
+    const cart = computed(() => store.cart);
+    const totalPrice = computed(() => store.cartTotal)
+
+    const fetchCart = store.fetchCart;
+    const removeProductFromCart = store.removeProductFromCart;
+
     const paypalLoaded = ref(false);
     const paypalRendered = ref(false);
-    const userId = 1; // Dummy user ID for now
+
+    const cartIsEmpty = computed(() => {
+      return !cart.value || !cart.value.CartItems || cart.value.CartItems.length === 0;
+    });
 
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/cart/${userId}`);
-        cartItems.value = response.data.CartItems;
+        await fetchCart();
       } catch (error) {
         console.error('Failed to fetch cart items:', error);
       } finally {
-        isLoading.value = false;
         nextTick(() => {
           if (paypalLoaded.value && !paypalRendered.value) {
             setupPayPalButton();
@@ -98,21 +107,6 @@ export default defineComponent({
         });
       }
     };
-
-    const removeFromCart = async (productId: number) => {
-      try {
-        await axios.delete(`http://localhost:8000/cart/${userId}/${productId}`);
-        cartItems.value = cartItems.value.filter(item => item.Product.id !== productId);
-      } catch (error) {
-        console.error('Failed to remove item from cart:', error);
-      }
-    };
-
-    const totalPrice = computed(() => {
-      return cartItems.value.reduce((total, item) => {
-        return total + item.Product.price * item.quantity;
-      }, 0);
-    });
 
     const loadPayPalScript = async () => {
       if (document.getElementById('paypal-sdk')) {
@@ -211,11 +205,17 @@ export default defineComponent({
     });
 
     return {
-      cartItems,
-      isLoading,
+      cart,
+      cartIsEmpty,
+      loading,
       totalPrice,
-      removeFromCart
+      removeProductFromCart,
     };
+  },
+  methods: {
+    cartItemHasImage(item: any) {
+      return item.Product && item.Product.images && item.Product.images.length > 0;
+    },
   }
 });
 </script>

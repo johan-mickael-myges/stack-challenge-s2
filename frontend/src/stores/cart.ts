@@ -90,4 +90,12 @@ export const useCartStore = defineStore('carts', {
             }
         }
     },
+    getters: {
+        cartTotal(): Number {
+            if (!this.cart) {
+                return 0;
+            }
+            return this.cart.CartItems.reduce((total, item) => total + item.Product.price * item.quantity, 0);
+        },
+    }
 });
