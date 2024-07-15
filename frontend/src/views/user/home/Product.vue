@@ -115,10 +115,10 @@ export default defineComponent({
         const userId = 1; // Dummy user ID for now provisoire
         const quantity = 1; 
         await axios.post(`http://localhost:8000/cart/add`, { productId: product.value.id, userId, quantity });
-        alert('Product added to cart successfully!');
+        alert('Le produit a été ajouté au panier.');
       } catch (error) {
         console.error('Failed to add product to cart:', error);
-        alert('Failed to add product to cart.');
+        alert('Échec de l\'ajout du produit au panier');
       }
     };
     return {

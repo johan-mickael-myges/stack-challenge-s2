@@ -1,12 +1,12 @@
 <template>
     <div class="cart-page">
-      <h1 class="text-lg mb-4 font-semibold">Your Cart</h1>
+      <h1 class="text-lg mb-4 font-semibold">Votre panier</h1>
       <div v-if="isLoading" class="text-center">
         <v-progress-circular color="black" indeterminate></v-progress-circular>
       </div>
       <div v-else>
         <div v-if="cartItems.length === 0">
-          <p>Your cart is empty.</p>
+          <p>Votre panier est vide.</p>
         </div>
         <div v-else>
           <div v-for="item in cartItems" :key="item.id" class="cart-item">
@@ -15,7 +15,7 @@
               <v-card-title>{{ item.Product.name }}</v-card-title>
               <v-card-subtitle>{{ item.Product.price }} €</v-card-subtitle>
               <v-card-text>
-                Quantity: {{ item.quantity }}
+                Quantité: {{ item.quantity }}
                 <v-btn icon @click="removeFromCart(item.Product.id)">
                   <v-icon size="20px">mdi-delete</v-icon>
                 </v-btn>

@@ -13,32 +13,32 @@ class Category extends Model {
 
 module.exports = (sequelize) => {
     Category.init(
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true,
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true,
-                validate: {
-                    notEmpty: {
-                        msg: 'Name is required',
-                    },
-                    len: {
-                        args: [1, 255],
-                        msg: 'Name must be between 1 and 255 characters',
-                    },
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
                 },
+                name: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    unique: true,
+                    validate: {
+                        notEmpty: {
+                            msg: 'Le nom est requis',
+                        },
+                        len: {
+                            args: [1, 255],
+                            msg: 'Le nom doit comporter entre 1 et 255 caractères',
+                        },
+                    },
+                }
+            },
+            {
+                sequelize,
+                tableName: 'categories',
+                timestamps: true
             }
-        },
-        {
-            sequelize,
-            tableName: 'categories',
-            timestamps: true
-        }
     );
 
     return Category;

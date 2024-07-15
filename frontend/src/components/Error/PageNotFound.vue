@@ -1,12 +1,12 @@
 <template>
   <CenteredContainer>
     <h1 class="text-4xl">
-      Page Not Found
+      Page non trouvée
     </h1>
     <p class="text-gray-700">
-      The page you are looking for does not exist.
+      La page que vous cherchez n'existe pas.
     </p>
-    <router-link to="/">Go back to Home</router-link>
+    <router-link to="/">Retourner à l'accueil</router-link>
   </CenteredContainer>
 </template>
 
@@ -16,6 +16,6 @@ import CenteredContainer from "@/components/Container/CenteredContainer.vue";
 
 export default defineComponent({
   name: 'PageNotFound',
-  components: {CenteredContainer},
+  components: { CenteredContainer },
 });
 </script>

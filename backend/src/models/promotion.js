@@ -13,71 +13,71 @@ class Promotion extends Model {
 
 module.exports = (sequelize) => {
     Promotion.init(
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true,
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    notEmpty: {
-                        msg: 'Name is required'
-                    },
-                    len: {
-                        args: [3, 255],
-                        msg: 'Name must be between 3 and 255 characters'
-                    }
-                }
-            },
-            discountPercentage: {
-                type: DataTypes.FLOAT,
-                allowNull: false,
-                validate: {
-                    isFloat: {
-                        msg: 'Discount percentage must be a float value'
-                    },
-                    min: {
-                        args: [0],
-                        msg: 'Discount percentage must be at least 0'
-                    },
-                    max: {
-                        args: [100],
-                        msg: 'Discount percentage must be at most 100'
-                    }
-                }
-            },
-            startDate: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                validate: {
-                    isDate: {
-                        msg: 'Start date must be a valid date'
-                    }
-                }
-            },
-            endDate: {
-                type: DataTypes.DATE,
-                allowNull: false,
-                validate: {
-                    isDate: {
-                        msg: 'End date must be a valid date'
-                    },
-                    isAfterStartDate(value) {
-                        if (this.startDate && new Date(value) <= new Date(this.startDate)) {
-                            throw new Error('End date must be after start date');
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
+                },
+                name: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        notEmpty: {
+                            msg: 'Le nom est requis'
+                        },
+                        len: {
+                            args: [3, 255],
+                            msg: 'Le nom doit comporter entre 3 et 255 caractères'
                         }
                     }
-                }
+                },
+                discountPercentage: {
+                    type: DataTypes.FLOAT,
+                    allowNull: false,
+                    validate: {
+                        isFloat: {
+                            msg: 'Le pourcentage de réduction doit être une valeur flottante'
+                        },
+                        min: {
+                            args: [0],
+                            msg: 'Le pourcentage de réduction doit être au moins de 0'
+                        },
+                        max: {
+                            args: [100],
+                            msg: 'Le pourcentage de réduction doit être au plus de 100'
+                        }
+                    }
+                },
+                startDate: {
+                    type: DataTypes.DATE,
+                    allowNull: false,
+                    validate: {
+                        isDate: {
+                            msg: 'La date de début doit être une date valide'
+                        }
+                    }
+                },
+                endDate: {
+                    type: DataTypes.DATE,
+                    allowNull: false,
+                    validate: {
+                        isDate: {
+                            msg: 'La date de fin doit être une date valide'
+                        },
+                        isAfterStartDate(value) {
+                            if (this.startDate && new Date(value) <= new Date(this.startDate)) {
+                                throw new Error('La date de fin doit être après la date de début');
+                            }
+                        }
+                    }
+                },
             },
-        },
-        {
-            sequelize,
-            tableName: 'promotions',
-            timestamps: true,
-        }
+            {
+                sequelize,
+                tableName: 'promotions',
+                timestamps: true,
+            }
     );
 
     return Promotion;

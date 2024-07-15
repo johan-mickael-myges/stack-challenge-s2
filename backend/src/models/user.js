@@ -32,119 +32,119 @@ class User extends Model {
 
 module.exports = (sequelize) => {
     User.init(
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true,
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
+                },
+                username: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    unique: {
+                        msg: 'Le nom d\'utilisateur est déjà utilisé',
+                    },
+                    validate: {
+                        isAlphanumeric: {
+                            msg: 'Le nom d\'utilisateur doit être alphanumérique',
+                        },
+                        len: {
+                            args: [3, 30],
+                            msg: 'Le nom d\'utilisateur doit comporter entre 3 et 30 caractères',
+                        },
+                    },
+                },
+                firstname: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        isAlpha: {
+                            msg: 'Le prénom ne doit contenir que des lettres',
+                        },
+                        len: {
+                            args: [2, 30],
+                            msg: 'Le prénom doit comporter entre 2 et 30 caractères',
+                        },
+                    },
+                },
+                lastname: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        isAlpha: {
+                            msg: 'Le nom de famille ne doit contenir que des lettres',
+                        },
+                        len: {
+                            args: [2, 30],
+                            msg: 'Le nom de famille doit comporter entre 2 et 30 caractères',
+                        },
+                    },
+                },
+                email: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    unique: {
+                        msg: 'L\'email est déjà utilisé',
+                    },
+                    validate: {
+                        isEmail: {
+                            msg: 'Doit être une adresse email valide',
+                        },
+                    },
+                },
+                number: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        isNumeric: {
+                            msg: 'Le numéro doit contenir uniquement des chiffres',
+                        },
+                        len: {
+                            args: [10, 15],
+                            msg: 'Le numéro doit comporter entre 10 et 15 caractères',
+                        },
+                    },
+                },
+                password: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        len: {
+                            args: [8, 100],
+                            msg: 'Le mot de passe doit comporter au moins 8 caractères',
+                        },
+                        isStrongPassword(value) {
+                            if (!value.match(/[A-Z]/)) {
+                                throw new Error('Le mot de passe doit contenir au moins une lettre majuscule');
+                            }
+                            if (!value.match(/[a-z]/)) {
+                                throw new Error('Le mot de passe doit contenir au moins une lettre minuscule');
+                            }
+                            if (!value.match(/[0-9]/)) {
+                                throw new Error('Le mot de passe doit contenir au moins un chiffre');
+                            }
+                            if (!value.match(/[^A-Za-z0-9]/)) {
+                                throw new Error('Le mot de passe doit contenir au moins un caractère spécial');
+                            }
+                        },
+                    },
+                },
             },
-            username: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: {
-                    msg: 'Username already in use',
-                },
-                validate: {
-                    isAlphanumeric: {
-                        msg: 'Username must be alphanumeric',
-                    },
-                    len: {
-                        args: [3, 30],
-                        msg: 'Username must be between 3 and 30 characters',
-                    },
-                },
-            },
-            firstname: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    isAlpha: {
-                        msg: 'Firstname must contain only letters',
-                    },
-                    len: {
-                        args: [2, 30],
-                        msg: 'Firstname must be between 2 and 30 characters',
-                    },
-                },
-            },
-            lastname: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    isAlpha: {
-                        msg: 'Lastname must contain only letters',
-                    },
-                    len: {
-                        args: [2, 30],
-                        msg: 'Lastname must be between 2 and 30 characters',
-                    },
-                },
-            },
-            email: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: {
-                    msg: 'Email already in use',
-                },
-                validate: {
-                    isEmail: {
-                        msg: 'Must be a valid email address',
-                    },
-                },
-            },
-            number: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    isNumeric: {
-                        msg: 'Number must contain only numbers',
-                    },
-                    len: {
-                        args: [10, 15],
-                        msg: 'Number must be between 10 and 15 characters',
-                    },
-                },
-            },
-            password: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    len: {
-                        args: [8, 100],
-                        msg: 'Password must be at least 8 characters long',
-                    },
-                    isStrongPassword(value) {
-                        if (!value.match(/[A-Z]/)) {
-                            throw new Error('Password must contain at least one uppercase letter');
-                        }
-                        if (!value.match(/[a-z]/)) {
-                            throw new Error('Password must contain at least one lowercase letter');
-                        }
-                        if (!value.match(/[0-9]/)) {
-                            throw new Error('Password must contain at least one digit');
-                        }
-                        if (!value.match(/[^A-Za-z0-9]/)) {
-                            throw new Error('Password must contain at least one special character');
-                        }
-                    },
-                },
-            },
-        },
-        {
-            sequelize,
-            tableName: 'users',
-            timestamps: true,
-            hooks: {
-                beforeCreate: async (user) => {
-                    user.password = await User.hashPassword(user.password);
-                },
-                beforeUpdate: async (user) => {
-                    if (user.changed('password')) {
+            {
+                sequelize,
+                tableName: 'users',
+                timestamps: true,
+                hooks: {
+                    beforeCreate: async (user) => {
                         user.password = await User.hashPassword(user.password);
+                    },
+                    beforeUpdate: async (user) => {
+                        if (user.changed('password')) {
+                            user.password = await User.hashPassword(user.password);
+                        }
                     }
                 }
             }
-        }
     );
 
     return User;

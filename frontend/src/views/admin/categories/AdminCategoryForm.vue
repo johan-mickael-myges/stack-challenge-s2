@@ -30,7 +30,7 @@ export default defineComponent({
     });
 
     const headingText = computed(() => {
-      return isEdit.value ? 'Edit category' : 'Create category';
+      return isEdit.value ? 'Modifier la catégorie' : 'Créer une catégorie';
     });
 
     return {

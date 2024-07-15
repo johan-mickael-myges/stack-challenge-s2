@@ -40,9 +40,9 @@ export default defineComponent({
     const loading = computed(() => authStore.loading);
     const hasError = computed(() => authStore.hasError);
 
-    let subtitle = 'Enter your credentials';
+    let subtitle = 'Entrez vos identifiants';
     if (props.type === 'admin') {
-      subtitle = 'Enter your admin credentials to access the dashboard.';
+      subtitle = 'Entrez vos identifiants administrateur pour accéder au tableau de bord.';
     }
 
     const valid = ref(true);
@@ -64,7 +64,7 @@ export default defineComponent({
   },
   data() {
     return {
-      errorMessage: 'Invalid credentials.'
+      errorMessage: 'Identifiants invalides.'
     }
   }
 });
@@ -82,7 +82,7 @@ export default defineComponent({
           elevation="0"
       >
         <template v-slot:title>
-          <span class="font-weight-black">Login</span>
+          <span class="font-weight-black">Connexion</span>
         </template>
 
         <v-card-text>
@@ -103,7 +103,7 @@ export default defineComponent({
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Password"
+                    label="Mot de passe"
                     type="password"
                     v-model="data.password"
                     required
@@ -117,7 +117,7 @@ export default defineComponent({
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn :loading="loading" color="primary" block variant="flat" @click="login">Login</v-btn>
+          <v-btn :loading="loading" color="primary" block variant="flat" @click="login">Connexion</v-btn>
         </v-card-actions>
         <slot name="content.additional"></slot>
       </v-card>

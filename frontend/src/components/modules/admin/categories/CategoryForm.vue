@@ -1,8 +1,8 @@
 <template>
   <v-form @submit.prevent="handleSubmit">
-    <v-text-field v-model="formState.data.name" label="Name" required></v-text-field>
-    <v-btn type="submit" color="primary" :disabled="formState.isSubmitting">Save</v-btn>
-    <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Cancel</v-btn>
+    <v-text-field v-model="formState.data.name" label="Nom" required></v-text-field>
+    <v-btn type="submit" color="primary" :disabled="formState.isSubmitting">Enregistrer</v-btn>
+    <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Annuler</v-btn>
     <v-progress-linear v-if="formState.isSubmitting" indeterminate color="primary"></v-progress-linear>
     <v-alert v-if="formState.httpError" type="error">{{ formState.httpError }}</v-alert>
     <v-alert v-for="(errors, field) in formState.validationErrors" :key="field" type="error">{{ field }}: {{ errors.join(', ') }}</v-alert>

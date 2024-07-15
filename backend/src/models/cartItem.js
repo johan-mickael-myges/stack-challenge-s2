@@ -15,49 +15,49 @@ class CartItem extends Model {
 
 module.exports = (sequelize) => {
     CartItem.init(
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true,
-            },
-            cartId: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'carts',
-                    key: 'id'
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
                 },
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE',
-            },
-            productId: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'products',
-                    key: 'id'
+                cartId: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    references: {
+                        model: 'carts',
+                        key: 'id'
+                    },
+                    onDelete: 'CASCADE',
+                    onUpdate: 'CASCADE',
                 },
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE',
-            },
-            quantity: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                validate: {
-                    min: {
-                        args: [1],
-                        msg: 'Quantity must be at least 1',
+                productId: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    references: {
+                        model: 'products',
+                        key: 'id'
+                    },
+                    onDelete: 'CASCADE',
+                    onUpdate: 'CASCADE',
+                },
+                quantity: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    validate: {
+                        min: {
+                            args: [1],
+                            msg: 'La quantité doit être au moins de 1',
+                        },
                     },
                 },
             },
-        },
-        {
-            sequelize,
-            modelName: 'CartItem',
-            tableName: 'cart_items',
-            timestamps: true
-        }
+            {
+                sequelize,
+                modelName: 'CartItem',
+                tableName: 'cart_items',
+                timestamps: true
+            }
     );
 
     return CartItem;

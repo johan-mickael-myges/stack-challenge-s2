@@ -30,7 +30,7 @@ export default defineComponent({
     });
 
     const headingText = computed(() => {
-      return isEdit.value ? 'Edit product' : 'Create product';
+      return isEdit.value ? 'Modifier le produit' : 'Créer un produit';
     });
 
     return {

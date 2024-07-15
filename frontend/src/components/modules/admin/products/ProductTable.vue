@@ -4,16 +4,16 @@
       :items="items"
       :items-length="totalItems"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      loading-text="Chargement... Veuillez patienter"
       multi-sort
       @update:options="loadItems"
   >
     <template v-slot:top.title>
-      <Heading tag="h3">List of products</Heading>
+      <Heading tag="h3">Liste des produits</Heading>
     </template>
     <template v-slot:top.actions>
-      <v-btn color="secondary" @click="exportCSVHandler">Export CSV</v-btn>
-      <v-btn color="primary" variant="flat" @click="$router.push('/admin/products/new')">Add New Product</v-btn>
+      <v-btn color="secondary" @click="exportCSVHandler">Exporter CSV</v-btn>
+      <v-btn color="primary" variant="flat" @click="$router.push('/admin/products/new')">Ajouter un nouveau produit</v-btn>
     </template>
     <template v-slot:item.actions="{ item }">
       <div class="flex justify-end">
@@ -61,7 +61,7 @@ export default defineComponent({
       try {
         await productStore.deleteProduct(id);
       } catch (error) {
-        throw new Error('An error occurred while trying to delete the item.');
+        throw new Error('Une erreur s\'est produite lors de la tentative de suppression de l\'élément.');
       }
     };
 
@@ -84,16 +84,16 @@ export default defineComponent({
   data() {
     return {
       headers: [
-        {title: 'Name', value: 'name', sortable: true},
-        {title: 'Reference', value: 'reference', sortable: true},
-        {title: 'Price', value: 'price', sortable: true},
+        {title: 'Nom', value: 'name', sortable: true},
+        {title: 'Référence', value: 'reference', sortable: true},
+        {title: 'Prix', value: 'price', sortable: true},
         {title: '', value: 'actions', sortable: false},
       ] as Header[],
     };
   },
   methods: {
     async exportCSVHandler() {
-      await this.exportCSV(this.items, this.headers, ['actions'], 'products');
+      await this.exportCSV(this.items, this.headers, ['actions'], 'produits');
     }
   },
 });

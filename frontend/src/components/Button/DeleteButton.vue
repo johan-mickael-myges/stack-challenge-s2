@@ -1,13 +1,14 @@
 <template>
   <div class="flex">
-    <v-btn v-bind="$attrs" @click="openModal"></v-btn>
+    <v-btn v-bind="$attrs" @click="openModal">
+    </v-btn>
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title class="headline">{{ title }}</v-card-title>
         <v-card-text>{{ message }}</v-card-text>
         <v-card-actions>
-          <v-btn color="grey" @click="confirmDeletion" :disabled="loading">Yes</v-btn>
-          <v-btn color="" @click="closeModal">No</v-btn>
+          <v-btn color="grey" @click="confirmDeletion" :disabled="loading">Oui</v-btn>
+          <v-btn color="" @click="closeModal">Non</v-btn>
         </v-card-actions>
         <v-progress-linear v-if="loading" indeterminate color="primary"></v-progress-linear>
         <v-alert v-if="errorMessage" type="error" variant="tonal">{{ errorMessage }}</v-alert>
@@ -24,15 +25,15 @@ export default defineComponent({
   props: {
     buttonText: {
       type: String,
-      default: 'Delete',
+      default: '',
     },
     title: {
       type: String,
-      default: 'Confirm Deletion',
+      default: 'Confirmer la suppression',
     },
     message: {
       type: String,
-      default: 'Are you sure you want to delete this item?',
+      default: 'Êtes-vous sûr de vouloir supprimer cet élément?',
     },
     deleteFunction: {
       type: Function,
@@ -59,7 +60,7 @@ export default defineComponent({
         await props.deleteFunction();
         closeModal();
       } catch (error) {
-        errorMessage.value = 'An error occurred while trying to delete the item.';
+        errorMessage.value = 'Une erreur s\'est produite lors de la tentative de suppression de l\'élément.';
       } finally {
         loading.value = false;
       }

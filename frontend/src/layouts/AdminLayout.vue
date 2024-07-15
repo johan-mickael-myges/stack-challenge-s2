@@ -5,7 +5,7 @@
         <v-divider></v-divider>
         <LogoutButton>
           <v-list-item prepend-icon="mdi-logout" >
-            <v-list-item-title>Logout</v-list-item-title>
+            <v-list-item-title>Se déconnecter</v-list-item-title>
           </v-list-item>
         </LogoutButton>
       </template>

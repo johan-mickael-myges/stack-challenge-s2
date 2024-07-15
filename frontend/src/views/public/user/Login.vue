@@ -39,8 +39,8 @@ export default defineComponent({
         </template>
         <template v-slot:content.additional>
           <div class="text-center">
-            <p class="text-gray-600">Doesn't have an account yet ?</p>
-            <router-link to="/register">Register</router-link>
+            <p class="text-gray-600">Pas encore de compte ?</p>
+            <router-link to="/register">S'inscrire</router-link>
           </div>
         </template>
       </Login>

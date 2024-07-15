@@ -24,100 +24,100 @@ class Product extends Model {
 
 module.exports = (sequelize) => {
     Product.init(
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true,
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    notEmpty: {
-                        msg: 'Name is required'
-                    },
-                    len: {
-                        args: [3, 255],
-                        msg: 'Name must be between 3 and 255 characters'
-                    }
-                }
-            },
-            reference: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true,
-                validate: {
-                    notEmpty: {
-                        msg: 'Reference is required'
-                    },
-                    len: {
-                        args: [3, 20],
-                        msg: 'Reference must be between 3 and 20 characters'
-                    }
-                }
-            },
-            price: {
-                type: DataTypes.DECIMAL(10, 2),
-                allowNull: false,
-                validate: {
-                    isDecimal: {
-                        msg: 'Price must be a decimal value'
-                    },
-                    min: {
-                        args: [0],
-                        msg: 'Price must be a positive value'
-                    }
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
                 },
-                get() {
-                    const value = this.getDataValue('price');
-                    return value === null ? null : parseFloat(value);
-                },
-            },
-            description: {
-                type: DataTypes.TEXT,
-                allowNull: true
-            },
-            images: {
-                type: DataTypes.ARRAY(DataTypes.STRING),
-                allowNull: false,
-                validate: {
-                    isUrlArray(value) {
-                        if (!Array.isArray(value) || !value.every(url => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url))) {
-                            throw new Error('Each image must be a valid URL');
+                name: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        notEmpty: {
+                            msg: 'Le nom est requis'
+                        },
+                        len: {
+                            args: [3, 255],
+                            msg: 'Le nom doit comporter entre 3 et 255 caractères'
                         }
                     }
-                }
-            },
-            quantity: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                defaultValue: 0,
-                validate: {
-                    isInt: {
-                        msg: 'Quantity must be an integer'
-                    },
-                    min: {
-                        args: [0],
-                        msg: 'Quantity cannot be negative'
-                    }
-                }
-            },
-            brandId: {
-                type: DataTypes.INTEGER,
-                references: {
-                    model: 'brands',
-                    key: 'id'
                 },
-                onDelete: 'SET NULL',
-                onUpdate: 'CASCADE'
+                reference: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    unique: true,
+                    validate: {
+                        notEmpty: {
+                            msg: 'La référence est requise'
+                        },
+                        len: {
+                            args: [3, 20],
+                            msg: 'La référence doit comporter entre 3 et 20 caractères'
+                        }
+                    }
+                },
+                price: {
+                    type: DataTypes.DECIMAL(10, 2),
+                    allowNull: false,
+                    validate: {
+                        isDecimal: {
+                            msg: 'Le prix doit être une valeur décimale'
+                        },
+                        min: {
+                            args: [0],
+                            msg: 'Le prix doit être une valeur positive'
+                        }
+                    },
+                    get() {
+                        const value = this.getDataValue('price');
+                        return value === null ? null : parseFloat(value);
+                    },
+                },
+                description: {
+                    type: DataTypes.TEXT,
+                    allowNull: true
+                },
+                images: {
+                    type: DataTypes.ARRAY(DataTypes.STRING),
+                    allowNull: false,
+                    validate: {
+                        isUrlArray(value) {
+                            if (!Array.isArray(value) || !value.every(url => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url))) {
+                                throw new Error('Chaque image doit être une URL valide');
+                            }
+                        }
+                    }
+                },
+                quantity: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    defaultValue: 0,
+                    validate: {
+                        isInt: {
+                            msg: 'La quantité doit être un entier'
+                        },
+                        min: {
+                            args: [0],
+                            msg: 'La quantité ne peut pas être négative'
+                        }
+                    }
+                },
+                brandId: {
+                    type: DataTypes.INTEGER,
+                    references: {
+                        model: 'brands',
+                        key: 'id'
+                    },
+                    onDelete: 'SET NULL',
+                    onUpdate: 'CASCADE'
+                },
             },
-        },
-        {
-            sequelize,
-            tableName: 'products',
-            timestamps: true
-        }
+            {
+                sequelize,
+                tableName: 'products',
+                timestamps: true
+            }
     );
 
     return Product;

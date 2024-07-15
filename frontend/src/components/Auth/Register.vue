@@ -43,9 +43,9 @@ export default defineComponent({
     const loading = computed(() => authStore.loading);
     const errors = computed(() => authStore.errors);
 
-    let subtitle = 'Enter your information to register.';
+    let subtitle = 'Entrez vos informations pour vous inscrire.';
     if (props.type === 'admin') {
-      subtitle = 'Enter your information to register as an admin.';
+      subtitle = 'Entrez vos informations pour vous inscrire en tant qu\'administrateur.';
     }
 
     const valid = ref(true);
@@ -95,7 +95,7 @@ export default defineComponent({
           elevation="0"
       >
         <template v-slot:title>
-          <span class="font-weight-black">Register</span>
+          <span class="font-weight-black">Inscription</span>
         </template>
 
         <v-card-text>
@@ -107,7 +107,7 @@ export default defineComponent({
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field
-                    label="Username"
+                    label="Nom d'utilisateur"
                     v-model="data.username"
                     :rules="usernameValidationRules"
                     :error-messages="errors.username && errors.username.map(e => e.msg)"
@@ -126,7 +126,7 @@ export default defineComponent({
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                    label="First name"
+                    label="Prénom"
                     v-model="data.firstname"
                     :rules="firstNameValidationRules"
                     :error-messages="errors.firstname && errors.firstname.map(e => e.msg)"
@@ -135,7 +135,7 @@ export default defineComponent({
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                    label="Last name"
+                    label="Nom"
                     v-model="data.lastname"
                     :rules="lastNameValidationRules"
                     :error-messages="errors.lastname && errors.lastname.map(e => e.msg)"
@@ -144,7 +144,7 @@ export default defineComponent({
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                    label="Password"
+                    label="Mot de passe"
                     type="password"
                     v-model="data.password"
                     :rules="passwordValidationRules"
@@ -154,7 +154,7 @@ export default defineComponent({
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
-                    label="Confirm password"
+                    label="Confirmer le mot de passe"
                     type="password"
                     v-model="data.confirmPassword"
                     :rules="passwordMatchValidationRules"
@@ -163,7 +163,7 @@ export default defineComponent({
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Phone number"
+                    label="Numéro de téléphone"
                     type="number"
                     v-model="data.number"
                     :rules="numberValidationRules"
@@ -175,7 +175,7 @@ export default defineComponent({
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn :loading="loading" color="primary" block variant="flat" @click="register">Validate</v-btn>
+          <v-btn :loading="loading" color="primary" block variant="flat" @click="register">Valider</v-btn>
         </v-card-actions>
         <slot name="content.additional"></slot>
       </v-card>

@@ -26,8 +26,8 @@ export default defineComponent({
       <Login :data="data" type="admin">
         <template v-slot:content.additional>
           <div class="text-center">
-            <p class="text-gray-600">Doesn't have an account yet ?</p>
-            <router-link to="/register/admin">Register</router-link>
+            <p class="text-gray-600">Pas encore de compte ?</p>
+            <router-link to="/register/admin">S'inscrire</router-link>
           </div>
         </template>
       </Login>

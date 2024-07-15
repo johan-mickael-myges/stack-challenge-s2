@@ -2,33 +2,33 @@ const { body, validationResult } = require('express-validator');
 const { User } = require('~models');
 
 const validateRegistration = [
-    body('username').isAlphanumeric().withMessage('Username must be alphanumeric')
-            .isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters')
+    body('username').isAlphanumeric().withMessage('Le nom d\'utilisateur doit être alphanumérique')
+            .isLength({ min: 3, max: 30 }).withMessage('Le nom d\'utilisateur doit comporter entre 3 et 30 caractères')
             .custom(async (value) => {
                 const user = await User.findOne({ where: { username: value } });
                 if (user) {
-                    return Promise.reject('Username already in use');
+                    return Promise.reject('Le nom d\'utilisateur est déjà utilisé');
                 }
             }),
-    body('firstname').isAlpha().withMessage('Firstname must contain only letters')
-            .isLength({ min: 2, max: 30 }).withMessage('Firstname must be between 2 and 30 characters'),
-    body('lastname').isAlpha().withMessage('Lastname must contain only letters')
-            .isLength({ min: 2, max: 30 }).withMessage('Lastname must be between 2 and 30 characters'),
+    body('firstname').isAlpha().withMessage('Le prénom ne doit contenir que des lettres')
+            .isLength({ min: 2, max: 30 }).withMessage('Le prénom doit comporter entre 2 et 30 caractères'),
+    body('lastname').isAlpha().withMessage('Le nom de famille ne doit contenir que des lettres')
+            .isLength({ min: 2, max: 30 }).withMessage('Le nom de famille doit comporter entre 2 et 30 caractères'),
     body('email')
-            .isEmail().withMessage('Must be a valid email address')
+            .isEmail().withMessage('Doit être une adresse e-mail valide')
             .custom(async (value) => {
                 const user = await User.findOne({ where: { email: value } });
                 if (user) {
-                    return Promise.reject('E-mail already in use');
+                    return Promise.reject('L\'adresse e-mail est déjà utilisée');
                 }
             }),
-    body('number').isNumeric().withMessage('Number must contain only numbers')
-            .isLength({ min: 10, max: 15 }).withMessage('Number must be between 10 and 15 characters'),
-    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-            .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
-            .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
-            .matches(/[0-9]/).withMessage('Password must contain at least one digit')
-            .matches(/[^A-Za-z0-9]/).withMessage('Password must contain at least one special character'),
+    body('number').isNumeric().withMessage('Le numéro de téléphone ne doit contenir que des chiffres')
+            .isLength({ min: 10, max: 15 }).withMessage('Le numéro de téléphone doit comporter entre 10 et 15 caractères'),
+    body('password').isLength({ min: 8 }).withMessage('Le mot de passe doit comporter au moins 8 caractères')
+            .matches(/[A-Z]/).withMessage('Le mot de passe doit contenir au moins une lettre majuscule')
+            .matches(/[a-z]/).withMessage('Le mot de passe doit contenir au moins une lettre minuscule')
+            .matches(/[0-9]/).withMessage('Le mot de passe doit contenir au moins un chiffre')
+            .matches(/[^A-Za-z0-9]/).withMessage('Le mot de passe doit contenir au moins un caractère spécial'),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

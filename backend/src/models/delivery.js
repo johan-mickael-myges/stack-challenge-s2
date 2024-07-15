@@ -14,71 +14,71 @@ class Delivery extends Model {
 
 module.exports = (sequelize) => {
     Delivery.init(
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true,
-            },
-            recipientName: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    notEmpty: {
-                        msg: 'Recipient name is required',
-                    },
-                    len: {
-                        args: [1, 255],
-                        msg: 'Recipient name must be between 1 and 255 characters',
-                    },
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
                 },
-            },
-            address: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    notEmpty: {
-                        msg: 'Address is required',
+                recipientName: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        notEmpty: {
+                            msg: 'Le nom du destinataire est requis',
+                        },
+                        len: {
+                            args: [1, 255],
+                            msg: 'Le nom du destinataire doit comporter entre 1 et 255 caractères',
+                        },
                     },
                 },
-            },
-            status: {
-                type: DataTypes.ENUM('PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED'),
-                allowNull: false,
-                defaultValue: 'PENDING',
-                validate: {
-                    isIn: {
-                        args: [['PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED']],
-                        msg: 'Status must be one of PENDING, SHIPPED, DELIVERED, CANCELLED',
+                address: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        notEmpty: {
+                            msg: 'L\'adresse est requise',
+                        },
                     },
                 },
-            },
-            shippingMethodId: {
-                type: DataTypes.INTEGER,
-                references: {
-                    model: 'shipping_methods',
-                    key: 'id'
+                status: {
+                    type: DataTypes.ENUM('PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED'),
+                    allowNull: false,
+                    defaultValue: 'PENDING',
+                    validate: {
+                        isIn: {
+                            args: [['PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED']],
+                            msg: 'Le statut doit être PENDING, SHIPPED, DELIVERED ou CANCELLED',
+                        },
+                    },
                 },
-                onDelete: 'SET NULL',
-                onUpdate: 'CASCADE'
-            },
-            orderId: {
-                type: DataTypes.INTEGER,
-                references: {
-                    model: 'orders',
-                    key: 'id'
+                shippingMethodId: {
+                    type: DataTypes.INTEGER,
+                    references: {
+                        model: 'shipping_methods',
+                        key: 'id'
+                    },
+                    onDelete: 'SET NULL',
+                    onUpdate: 'CASCADE'
                 },
-                allowNull: false,
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE'
+                orderId: {
+                    type: DataTypes.INTEGER,
+                    references: {
+                        model: 'orders',
+                        key: 'id'
+                    },
+                    allowNull: false,
+                    onDelete: 'CASCADE',
+                    onUpdate: 'CASCADE'
+                },
             },
-        },
-        {
-            sequelize,
-            modelName: 'Delivery',
-            tableName: 'deliveries',
-            timestamps: true,
-        }
+            {
+                sequelize,
+                modelName: 'Delivery',
+                tableName: 'deliveries',
+                timestamps: true,
+            }
     );
 
     return Delivery;

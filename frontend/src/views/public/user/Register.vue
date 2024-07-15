@@ -46,8 +46,8 @@ export default defineComponent({
         </template>
         <template v-slot:content.additional>
           <div class="text-center">
-            <p class="text-gray-600">You already have an account ?</p>
-            <router-link to="/login">Login</router-link>
+            <p class="text-gray-600">Vous avez déjà un compte ?</p>
+            <router-link to="/login">Se connecter</router-link>
           </div>
         </template>
       </Register>

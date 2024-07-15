@@ -10,7 +10,7 @@ const BadRequestError = require('~errors/BadRequestError');
 exports.registerUser = async (userData) => {
     const existingUser = await User.findOne({ where: { email: userData.email } });
     if (existingUser) {
-        throw new BadRequestError('User with this email already exists');
+        throw new BadRequestError('L\'utilisateur existe déjà');
     }
 
     const user = await User.create(userData);
@@ -32,13 +32,13 @@ exports.loginUser = async (email, password) => {
     });
 
     if (!user) {
-        throw new UnauthorizedError('Invalid email or password');
+        throw new UnauthorizedError('Mot de passe ou email invalide');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-        throw new UnauthorizedError('Invalid email or password');
+        throw new UnauthorizedError('Mot de passe ou email invalide');
     }
 
     const roles = user.Roles.map(role => role.name);

@@ -4,15 +4,15 @@
       :items="items"
       :items-length="totalItems"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      loading-text="Chargement... Veuillez patienter"
       @update:options="loadItems"
   >
     <template v-slot:top.title>
-      <Heading tag="h3">List of categories</Heading>
+      <Heading tag="h3">Liste des catégories</Heading>
     </template>
     <template v-slot:top.actions>
-      <v-btn color="secondary" @click="exportCSVHandler">Export CSV</v-btn>
-      <v-btn color="primary" variant="flat" @click="$router.push('/admin/categories/new')">Add New Category</v-btn>
+      <v-btn color="secondary" @click="exportCSVHandler">Exporter CSV</v-btn>
+      <v-btn color="primary" variant="flat" @click="$router.push('/admin/categories/new')">Ajouter une nouvelle catégorie</v-btn>
     </template>
     <template v-slot:item.actions="{ item }">
       <div class="flex justify-end">
@@ -55,7 +55,7 @@ export default defineComponent({
       try {
         await store.deleteCategory(id);
       } catch (error) {
-        throw new Error('An error occurred while trying to delete the item.');
+        throw new Error('Une erreur s\'est produite lors de la tentative de suppression de l\'élément.');
       }
     };
 
@@ -78,8 +78,8 @@ export default defineComponent({
   data() {
     return {
       headers: [
-        { title: 'Name', value: 'name', sortable: true },
-        { title: 'Created At', value: 'createdAt', sortable: true },
+        { title: 'Nom', value: 'name', sortable: true },
+        { title: 'Créé le', value: 'createdAt', sortable: true },
         { title: '', value: 'actions', sortable: false },
       ],
     };

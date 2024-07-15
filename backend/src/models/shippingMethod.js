@@ -11,76 +11,76 @@ class ShippingMethod extends Model {
 
 module.exports = (sequelize) => {
     ShippingMethod.init(
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true,
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    notEmpty: {
-                        msg: 'Name is required'
-                    },
-                    len: {
-                        args: [3, 255],
-                        msg: 'Name must be between 3 and 255 characters'
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
+                },
+                name: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        notEmpty: {
+                            msg: 'Le nom est requis'
+                        },
+                        len: {
+                            args: [3, 255],
+                            msg: 'Le nom doit comporter entre 3 et 255 caractères'
+                        },
                     },
                 },
-            },
-            cost: {
-                type: DataTypes.DECIMAL(10, 2),
-                allowNull: false,
-                validate: {
-                    isDecimal: {
-                        msg: 'Cost must be a decimal value'
-                    },
-                    min: {
-                        args: [0],
-                        msg: 'Cost must be a positive value'
+                cost: {
+                    type: DataTypes.DECIMAL(10, 2),
+                    allowNull: false,
+                    validate: {
+                        isDecimal: {
+                            msg: 'Le coût doit être une valeur décimale'
+                        },
+                        min: {
+                            args: [0],
+                            msg: 'Le coût doit être une valeur positive'
+                        },
                     },
                 },
-            },
-            minEstimatedDeliveryTime: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                validate: {
-                    isInt: {
-                        msg: 'Minimum estimated delivery time must be an integer'
-                    },
-                    min: {
-                        args: [1],
-                        msg: 'Minimum estimated delivery time must be at least 1'
-                    }
-                },
-            },
-            maxEstimatedDeliveryTime: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                validate: {
-                    isInt: {
-                        msg: 'Maximum estimated delivery time must be an integer'
-                    },
-                    min: {
-                        args: [1],
-                        msg: 'Maximum estimated delivery time must be at least 1'
-                    },
-                    isAfterMinDeliveryTime(value) {
-                        if (this.minEstimatedDeliveryTime && value < this.minEstimatedDeliveryTime) {
-                            throw new Error('Maximum estimated delivery time must be greater than or equal to minimum estimated delivery time');
+                minEstimatedDeliveryTime: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    validate: {
+                        isInt: {
+                            msg: 'Le temps de livraison estimé minimum doit être un entier'
+                        },
+                        min: {
+                            args: [1],
+                            msg: 'Le temps de livraison estimé minimum doit être au moins de 1'
                         }
-                    }
+                    },
                 },
+                maxEstimatedDeliveryTime: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    validate: {
+                        isInt: {
+                            msg: 'Le temps de livraison estimé maximum doit être un entier'
+                        },
+                        min: {
+                            args: [1],
+                            msg: 'Le temps de livraison estimé maximum doit être au moins de 1'
+                        },
+                        isAfterMinDeliveryTime(value) {
+                            if (this.minEstimatedDeliveryTime && value < this.minEstimatedDeliveryTime) {
+                                throw new Error('Le temps de livraison estimé maximum doit être supérieur ou égal au temps de livraison estimé minimum');
+                            }
+                        }
+                    },
+                }
+            },
+            {
+                sequelize,
+                modelName: 'ShippingMethod',
+                tableName: 'shipping_methods',
+                timestamps: true,
             }
-        },
-        {
-            sequelize,
-            modelName: 'ShippingMethod',
-            tableName: 'shipping_methods',
-            timestamps: true,
-        }
     );
 
     return ShippingMethod;

@@ -16,29 +16,29 @@ class Cart extends Model {
 
 module.exports = (sequelize) => {
     Cart.init(
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true,
-            },
-            userId: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'users',
-                    key: 'id'
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
                 },
-                onDelete: 'CASCADE',
-                onUpdate: 'CASCADE'
+                userId: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    references: {
+                        model: 'users',
+                        key: 'id'
+                    },
+                    onDelete: 'CASCADE',
+                    onUpdate: 'CASCADE'
+                },
             },
-        },
-        {
-            sequelize,
-            modelName: 'Cart',
-            tableName: 'carts',
-            timestamps: true,
-        }
+            {
+                sequelize,
+                modelName: 'Cart',
+                tableName: 'carts',
+                timestamps: true,
+            }
     );
 
     return Cart;
