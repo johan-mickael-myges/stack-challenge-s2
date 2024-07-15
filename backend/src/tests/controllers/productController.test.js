@@ -4,7 +4,8 @@ const { Product } = require('~models');
 
 jest.mock('~models', () => ({
     Product: {
-        findAndCountAll: jest.fn(),
+        count: jest.fn(),
+        findAll: jest.fn(),
         findByPk: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
@@ -12,7 +13,7 @@ jest.mock('~models', () => ({
     },
 }));
 
-describe('Product Routes', () => {
+describe('Product Controller', () => {
     beforeAll(() => {
 
     });
@@ -22,6 +23,15 @@ describe('Product Routes', () => {
     });
 
     describe('GET /products', () => {
+        it('should return the products count', async () => {
+            Product.count.mockResolvedValue(10);
+
+            const response = await request(app).get('/products/count');
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toEqual(10);
+        });
+
         it('should return a list of products', async () => {
             const mockProducts = [
                 {
@@ -35,21 +45,16 @@ describe('Product Routes', () => {
                     brandId: 1,
                 },
             ];
-            Product.findAndCountAll.mockResolvedValue({
-                count: 1,
-                rows: mockProducts,
-            });
+            Product.findAll.mockResolvedValue(mockProducts);
 
             const response = await request(app).get('/products');
 
             expect(response.statusCode).toBe(200);
-            expect(response.body).toHaveProperty('total', 1);
-            expect(response.body).toHaveProperty('items');
-            expect(response.body.items).toEqual(expect.arrayContaining(mockProducts));
+            expect(response.body).toEqual(expect.arrayContaining(mockProducts));
         });
 
         it('should return a 500 status code when an error occurs', async () => {
-            Product.findAndCountAll.mockRejectedValue(new Error('Database error'));
+            Product.findAll.mockRejectedValue(new Error('Database error'));
 
             const response = await request(app).get('/products');
 
