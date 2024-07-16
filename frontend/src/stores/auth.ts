@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {ref} from 'vue';
+import {reactive, ref} from 'vue';
 import {ExpressError, LoginData, RegisterData} from '@/types';
 import apiClient from "@/config/axios.ts";
 import { useRouter } from 'vue-router';
@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
     const hasError = ref(false);
     const errors = ref<Record<string, ExpressError[]>>({});
     const router = useRouter();
+    const user = reactive<{ [key: string]: any }>({});
 
     const resetState = () => {
         loading.value = false;
@@ -41,6 +42,7 @@ export const useAuthStore = defineStore('auth', () => {
         resetState();
         try {
             const response = await apiClient.post('/auth/login', data);
+            Object.assign(user, response.data.user);
         } catch (err: any) {
             hasError.value = true;
             throw err;
@@ -48,6 +50,15 @@ export const useAuthStore = defineStore('auth', () => {
             loading.value = false;
         }
     }
+
+    const verifyAuth = async () => {
+        try {
+            const response = await apiClient.get('/auth/verify-token');
+            Object.assign(user, response.data.user);
+        } catch (err: any) {
+            Object.keys(user).forEach(key => delete user[key]);
+        }
+    };
 
     const logout = async () => {
         resetState();
@@ -72,5 +83,6 @@ export const useAuthStore = defineStore('auth', () => {
         register,
         login,
         logout,
+        verifyAuth,
     };
 });

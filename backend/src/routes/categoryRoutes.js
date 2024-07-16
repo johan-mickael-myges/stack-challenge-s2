@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const checkRoles = require("~middlewares/authMiddleware");
+const { checkToken, authorizeRoles } = require('~middlewares/authMiddleware');
 
 const {
     countCategories,
@@ -12,10 +12,10 @@ const {
 } = require('~controllers/categoryController');
 
 router.get('/count', countCategories);
-router.get('/', checkRoles([], false), getAllCategories);
+router.get('/', checkToken, getAllCategories);
 router.get('/:id', getCategoryById);
-router.post('/', checkRoles(['ROLE_ADMIN']), createCategory);
-router.put('/:id', checkRoles(['ROLE_ADMIN']), updateCategory);
-router.delete('/:id', checkRoles(['ROLE_ADMIN']), deleteCategory);
+router.post('/', authorizeRoles(['ROLE_ADMIN']), createCategory);
+router.put('/:id', authorizeRoles(['ROLE_ADMIN']), updateCategory);
+router.delete('/:id', authorizeRoles(['ROLE_ADMIN']), deleteCategory);
 
 module.exports = router;

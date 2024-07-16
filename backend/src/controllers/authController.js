@@ -2,6 +2,10 @@ const { validationResult } = require('express-validator');
 const userService = require('~services/userService');
 const { env } = require("~config/config");
 
+exports.check = (req, res, next) => {
+    res.sendStatus(200);
+}
+
 exports.registerUser = async (req, res, next) => {
     try {
         const newUser = await userService.registerUser(req.body);

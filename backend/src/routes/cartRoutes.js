@@ -1,11 +1,11 @@
 const express = require('express');
 const cartController = require('~controllers/cartController');
 const router = express.Router();
-const checkRoles = require('~middlewares/authMiddleware');
+const { checkToken, authorizeRoles } = require('~middlewares/authMiddleware');
 
 
-router.post('/', checkRoles([], false), cartController.addToCart);
-router.get('/', checkRoles([], false), cartController.getCartItems);
-router.delete('/:productId', checkRoles([], false), cartController.removeFromCart);
+router.post('/', authorizeRoles(['ROLE_ADMIN', 'ROLE_USER'], false), cartController.addToCart);
+router.get('/', authorizeRoles(['ROLE_ADMIN', 'ROLE_USER'], false), cartController.getCartItems);
+router.delete('/:productId', authorizeRoles(['ROLE_ADMIN', 'ROLE_USER'], false), cartController.removeFromCart);
 
 module.exports = router;

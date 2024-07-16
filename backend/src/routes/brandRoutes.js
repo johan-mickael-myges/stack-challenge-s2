@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const checkRoles = require("~middlewares/authMiddleware");
-
+const { checkToken, authorizeRoles } = require('~middlewares/authMiddleware');
 const {
     getAllBrands,
     getBrandById,
@@ -12,8 +11,8 @@ const {
 
 router.get('/', getAllBrands);
 router.get('/:id', getBrandById);
-router.post('/', checkRoles(['ROLE_ADMIN']), createBrand);
-router.put('/:id', checkRoles(['ROLE_ADMIN']), updateBrand);
-router.delete('/:id', checkRoles(['ROLE_ADMIN']), deleteBrand);
+router.post('/', authorizeRoles(['ROLE_ADMIN']), createBrand);
+router.put('/:id', authorizeRoles(['ROLE_ADMIN']), updateBrand);
+router.delete('/:id', authorizeRoles(['ROLE_ADMIN']), deleteBrand);
 
 module.exports = router;
