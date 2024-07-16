@@ -9,7 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
     const hasError = ref(false);
     const errors = ref<Record<string, ExpressError[]>>({});
     const router = useRouter();
-    const user = reactive<{ [key: string]: any }>({});
+    let user = reactive<{ [key: string]: any }>({});
 
     const resetState = () => {
         loading.value = false;
@@ -66,6 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
         resetState();
         try {
             await apiClient.post('/auth/logout');
+            Object.keys(user).forEach(key => delete user[key]);
             window.location.href = '/login';
         } catch (err: any) {
             hasError.value = true;

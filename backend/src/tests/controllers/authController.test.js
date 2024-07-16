@@ -1,10 +1,20 @@
 const request = require('supertest');
 const app = require('../../app');
+const userService = require('../../services/userService');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 const checkToken = require('../../middlewares/authMiddleware');
 const UnauthorizedError = require('../../errors/UnauthorizedError');
 
 jest.mock('jsonwebtoken');
+jest.mock('~services/userService');
+jest.mock('express-validator', () => {
+    const originalModule = jest.requireActual('express-validator');
+    return {
+        ...originalModule,
+        validationResult: jest.fn(),
+    };
+});
 
 describe('Auth Controller', () => {
     beforeAll(() => {
@@ -40,6 +50,56 @@ describe('Auth Controller', () => {
 
             expect(response.statusCode).toBe(401);
             expect(jwt.verify).toHaveBeenCalledWith('invalid-token', expect.any(String), expect.any(Function));
+        });
+    });
+
+    describe('POST /auth/login', () => {
+        it('should respond with 400 if validation fails', async () => {
+            validationResult.mockReturnValue({ isEmpty: () => false });
+
+            const response = await request(app).post('/auth/login').send({ email: '', password: '' });
+
+            expect(response.statusCode).toBe(400);
+        });
+
+        it('should login a user and set a token cookie', async () => {
+            validationResult.mockReturnValue({ isEmpty: () => true });
+
+            const mockUser = { id: 1, email: 'test@example.com' };
+            const mockToken = 'mockToken';
+            userService.loginUser.mockResolvedValue({ user: mockUser, token: mockToken });
+
+            const response = await request(app)
+                    .post('/auth/login')
+                    .send({ email: 'test@example.com', password: 'password' });
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body.user).toEqual(mockUser);
+            expect(response.body.token).toEqual(mockToken);
+            expect(response.headers['set-cookie'][0]).toMatch(/token=mockToken/);
+        });
+
+        it('should respond with 500 if there is an error during login', async () => {
+            validationResult.mockReturnValue({ isEmpty: () => true });
+
+            userService.loginUser.mockRejectedValue(new Error('Login error'));
+
+            const response = await request(app)
+                    .post('/auth/login')
+                    .send({ email: 'test@example.com', password: 'password' });
+
+            expect(response.statusCode).toBe(500);
+        });
+    });
+
+    describe('POST /auth/logout', () => {
+        it('should clear the token cookie and respond with 200', async () => {
+            const response = await request(app)
+                    .post('/auth/logout')
+                    .set('Cookie', 'token=valid-token');
+
+            expect(response.statusCode).toBe(200);
+            expect(response.headers['set-cookie'][0]).toMatch(/token=;/);
         });
     });
 });
