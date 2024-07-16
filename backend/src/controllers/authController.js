@@ -3,7 +3,7 @@ const userService = require('~services/userService');
 const { env } = require("~config/config");
 
 exports.check = (req, res, next) => {
-    res.sendStatus(200);
+    res.status(200).json(req.user);
 }
 
 exports.registerUser = async (req, res, next) => {

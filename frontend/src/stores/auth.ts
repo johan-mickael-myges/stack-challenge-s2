@@ -53,10 +53,12 @@ export const useAuthStore = defineStore('auth', () => {
 
     const verifyAuth = async () => {
         try {
-            const response = await apiClient.get('/auth/verify-token');
-            Object.assign(user, response.data.user);
+            const response = await apiClient.get('/auth/check');
+            console.log(response.data);
+            Object.assign(user, response.data);
         } catch (err: any) {
             Object.keys(user).forEach(key => delete user[key]);
+            throw err;
         }
     };
 
@@ -83,6 +85,7 @@ export const useAuthStore = defineStore('auth', () => {
         register,
         login,
         logout,
+        user,
         verifyAuth,
     };
 });
