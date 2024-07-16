@@ -14,8 +14,8 @@ const {
 router.get('/count', countCategories);
 router.get('/', getAllCategories);
 router.get('/:id', getCategoryById);
-router.post('/', authorizeRoles(['ROLE_ADMIN']), createCategory);
-router.put('/:id', authorizeRoles(['ROLE_ADMIN']), updateCategory);
-router.delete('/:id', authorizeRoles(['ROLE_ADMIN']), deleteCategory);
+router.post('/', checkToken, authorizeRoles(['ROLE_ADMIN']), createCategory);
+router.put('/:id', checkToken, authorizeRoles(['ROLE_ADMIN']), updateCategory);
+router.delete('/:id', checkToken, authorizeRoles(['ROLE_ADMIN']), deleteCategory);
 
 module.exports = router;

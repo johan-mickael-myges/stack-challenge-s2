@@ -49,7 +49,9 @@ exports.updateProduct = async (req, res, next) => {
         if (!product) {
             return res.sendStatus(404);
         }
+
         await product.update(req.body);
+
         res.status(200).json(product);
     } catch (error) {
         next(error);
