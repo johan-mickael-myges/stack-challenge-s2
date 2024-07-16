@@ -84,3 +84,7 @@ db-recreate:
 	$(DOCKER_COMPOSE) $(SEQUELIZE) db:create
 	$(DOCKER_COMPOSE) $(SEQUELIZE) db:migrate
 	$(DOCKER_COMPOSE) $(SEQUELIZE) db:seed:all
+
+# Run tests
+test:
+	$(DOCKER_COMPOSE) npm test

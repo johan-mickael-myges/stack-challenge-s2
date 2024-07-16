@@ -12,7 +12,7 @@ const {
 } = require('~controllers/categoryController');
 
 router.get('/count', countCategories);
-router.get('/', checkToken, getAllCategories);
+router.get('/', getAllCategories);
 router.get('/:id', getCategoryById);
 router.post('/', authorizeRoles(['ROLE_ADMIN']), createCategory);
 router.put('/:id', authorizeRoles(['ROLE_ADMIN']), updateCategory);
