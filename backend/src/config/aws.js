@@ -1,0 +1,15 @@
+const AWS = require('aws-sdk');
+const config = require('./config');
+
+const s3 = new AWS.S3({
+    accessKeyId: config.awsAccessKeyId,
+    secretAccessKey: config.awsSecretAccessKey,
+    region: config.awsRegion,
+});
+
+const bucket = config.s3Bucket;
+
+module.exports = {
+    s3,
+    bucket,
+};

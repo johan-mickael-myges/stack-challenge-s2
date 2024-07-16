@@ -33,6 +33,10 @@ const config = {
     jwtSecret: process.env.JWT_SECRET,
     jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h',
     passwordSaltRounds: parseInt(process.env.PASSWORD_SALT_ROUNDS, 10),
+    awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    awsRegion: process.env.AWS_REGION,
+    s3Bucket: process.env.S3_BUCKET,
 };
 
 if (!config.jwtSecret) {
