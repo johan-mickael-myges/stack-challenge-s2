@@ -3,17 +3,19 @@ import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormal
 import errorRoutes from "@/routes/error/errorRoutes.ts";
 import adminProductRoutes from './admin/productRoutes';
 import adminCategoryRoutes from './admin/categoryRoutes';
-import userSecurityRoutes from "@/routes/public/userSecurityRoutes.ts";
-import userProductRoutes from './user/productRoutes';
-import adminSecurityRoutes from "@/routes/public/adminSecurityRoutes.ts";
+import homeRoutes from "@/routes/public/homeRoutes.ts";
+import userSecurityRoutes from "@/routes/public/security/userSecurityRoutes.ts";
+import productRoutes from './public/products/productRoutes';
+import adminSecurityRoutes from "@/routes/public/security/adminSecurityRoutes.ts";
 import {useAuthStore} from "@/stores/auth.ts";
 
 const routes: Array<RouteRecordRaw> = [
     ...adminSecurityRoutes,
     ...adminProductRoutes,
     ...adminCategoryRoutes,
+    ...homeRoutes,
     ...userSecurityRoutes,
-    ...userProductRoutes,
+    ...productRoutes,
     ...errorRoutes,
 ]
 

@@ -65,7 +65,7 @@ import notFoundImage from '@/assets/not-found-image.png';
 import axios from 'axios';
 
 export default defineComponent({
-  name: 'UserProduct',
+  name: 'Product',
   components: {
     Heading,
   },

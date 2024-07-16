@@ -15,7 +15,7 @@
           <v-card variant="elevated"
                   @mouseover="handleMouseOver(product.id)"
                   @mouseleave="handleMouseLeave()"
-                  @click="$router.push(`/product/${product.id}`)">
+                  @click="$router.push(`/products/${product.id}`)">
 
             <v-progress-linear
                 v-if="loading"
@@ -29,8 +29,7 @@
                    @load="loading = false"
                    @error="loading = false"
                    @progress="loading = true"
-                   :src="product.images.length != 0 ?
-                  product.images[0] : notFoundImage "
+                   :src="product.thumbnail ? product.thumbnail : notFoundImage"
             >
 
               <template v-if="hoveredCard === product.id">

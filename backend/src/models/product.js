@@ -78,9 +78,18 @@ module.exports = (sequelize) => {
                     type: DataTypes.TEXT,
                     allowNull: true
                 },
+                thumbnail: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        isUrl: {
+                            msg: 'La miniature doit être une URL valide'
+                        }
+                    }
+                },
                 images: {
                     type: DataTypes.ARRAY(DataTypes.STRING),
-                    allowNull: false,
+                    allowNull: true,
                     validate: {
                         isUrlArray(value) {
                             if (!Array.isArray(value) || !value.every(url => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url))) {
