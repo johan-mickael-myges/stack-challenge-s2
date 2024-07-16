@@ -8,6 +8,7 @@ const productSchema = z.object({
     name: z.string(),
     reference: z.string(),
     description: z.string(),
+    thumbnail: z.string(),
     images: z.array(z.string()),
     quantity: z.number(),
     brandId: z.number().nullable(),
@@ -51,10 +52,10 @@ export const useCartStore = defineStore('carts', {
         cart: null as Cart | null,
     }),
     actions: {
-        async addToCart(productId: number, userId: number, quantity: number = 1, signal?: AbortSignal) {
+        async addToCart(productId: number, quantity: number = 1, signal?: AbortSignal) {
             this.loading = true;
             try {
-                const response = await apiClient.post('/carts', { productId, userId, quantity }, { signal });
+                const response = await apiClient.post('/carts', { productId, quantity }, { signal });
                 const newCartItem = baseCartItemSchema.parse(response.data);
                 await this.fetchCart();
             } catch (error) {

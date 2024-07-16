@@ -16,7 +16,7 @@
           <div v-else>
             <div v-for="item in cart.CartItems" :key="item.id" class="cart-item mb-4">
               <v-card class="d-flex">
-                <v-img :src="cartItemHasImage(item) ? item.Product.images[0] : notFoundImage" class="cart-item-image w-24 h-24 mr-4"></v-img>
+                <v-img :src="item.Product.thumbnail" class="cart-item-image w-24 h-24 mr-4"></v-img>
                 <v-card-text>
                   <v-card-title>{{ item.Product.name }}</v-card-title>
                   <v-card-subtitle>{{ item.Product.price }} €</v-card-subtitle>
@@ -58,6 +58,7 @@ interface Product {
   name: string;
   price: number;
   images: string[];
+  thumbnail: string;
 }
 
 interface CartItem {
@@ -212,11 +213,6 @@ export default defineComponent({
       removeProductFromCart,
     };
   },
-  methods: {
-    cartItemHasImage(item: any) {
-      return item.Product && item.Product.images && item.Product.images.length > 0;
-    },
-  }
 });
 </script>
 

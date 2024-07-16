@@ -4,6 +4,7 @@ import errorRoutes from "@/routes/error/errorRoutes.ts";
 import adminProductRoutes from './admin/productRoutes';
 import adminCategoryRoutes from './admin/categoryRoutes';
 import homeRoutes from "@/routes/public/homeRoutes.ts";
+import cartRoutes from "@/routes/user/cartRoutes.ts";
 import userSecurityRoutes from "@/routes/public/security/userSecurityRoutes.ts";
 import productRoutes from './public/products/productRoutes';
 import adminSecurityRoutes from "@/routes/public/security/adminSecurityRoutes.ts";
@@ -14,6 +15,7 @@ const routes: Array<RouteRecordRaw> = [
     ...adminProductRoutes,
     ...adminCategoryRoutes,
     ...homeRoutes,
+    ...cartRoutes,
     ...userSecurityRoutes,
     ...productRoutes,
     ...errorRoutes,

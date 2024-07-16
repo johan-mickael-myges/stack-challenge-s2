@@ -49,7 +49,7 @@
         <span v-if="brand" class="text-xs text-gray-600">{{ brand }}</span>
         <span class="text-[0.855rem] mt-[0.2rem]">{{ product.price }} €</span>
         <p class="text-sm my-2">{{ product.description }}</p>
-        <button class="bg-black text-white py-4 px-6 rounded-full text-sm font-medium cursor-pointer my-4" @click="addToCart">Place in Cart</button>        <p class="text-xs text-gray-600 text-center mt-4">Complimentary Carbon Efficient Delivery or Collect-in-Store.</p>
+        <button class="bg-black text-white py-4 px-6 rounded-full text-sm font-medium cursor-pointer my-4" @click="addProductToCart">Place in Cart</button>        <p class="text-xs text-gray-600 text-center mt-4">Complimentary Carbon Efficient Delivery or Collect-in-Store.</p>
       </div>
     </div>
   </div>
@@ -63,6 +63,7 @@ import Heading from "@/components/Typography/Heading.vue";
 import { useRoute } from "vue-router";
 import notFoundImage from '@/assets/not-found-image.png';
 import axios from 'axios';
+import {useCartStore} from "@/stores/cart.ts";
 
 export default defineComponent({
   name: 'Product',
@@ -72,6 +73,7 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const store = useProductStore();
+    const cartStore = useCartStore();
     const brandStore = useBrandStore()
     const isMdOrLarger = ref(window.innerWidth >= 768)
     const currentImageIndex = ref(0);
@@ -110,17 +112,11 @@ export default defineComponent({
           (currentImageIndex.value - 1 + product.value.images.length) % product.value.images.length;
       }
     };
-    const addToCart = async () => {
-      try {
-        const userId = 1; // Dummy user ID for now provisoire
-        const quantity = 1; 
-        await axios.post(`http://localhost:8000/cart/add`, { productId: product.value.id, userId, quantity });
-        alert('Le produit a été ajouté au panier.');
-      } catch (error) {
-        console.error('Failed to add product to cart:', error);
-        alert('Échec de l\'ajout du produit au panier');
-      }
+
+    const addProductToCart = async () => {
+      await cartStore.addToCart(product.value.id);
     };
+
     return {
       product,
       brand,
@@ -128,7 +124,7 @@ export default defineComponent({
       nextImage,
       prevImage,
       isMdOrLarger,
-      addToCart
+      addProductToCart
     };
   },
   data() {
