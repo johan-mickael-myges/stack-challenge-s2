@@ -16,6 +16,8 @@ router.use('/products', productRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/brands', brandRoutes);
 router.use('/carts', cartRoutes);
+router.use('/config', configRoutes);
+router.use('/payment', paymentRoutes);
 
 router.use(errorHandler);
 
