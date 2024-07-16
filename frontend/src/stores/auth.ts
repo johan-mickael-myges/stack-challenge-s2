@@ -65,8 +65,8 @@ export const useAuthStore = defineStore('auth', () => {
     const logout = async () => {
         resetState();
         try {
-            await apiClient.post('/auth/logout');
             Object.keys(user).forEach(key => delete user[key]);
+            await apiClient.post('/auth/logout');
             window.location.href = '/login';
         } catch (err: any) {
             hasError.value = true;
