@@ -92,6 +92,10 @@ module.exports = (sequelize) => {
                     allowNull: true,
                     validate: {
                         isUrlArray(value) {
+                            if (!value) {
+                                return;
+                            }
+
                             if (!Array.isArray(value) || !value.every(url => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url))) {
                                 throw new Error('Chaque image doit être une URL valide');
                             }

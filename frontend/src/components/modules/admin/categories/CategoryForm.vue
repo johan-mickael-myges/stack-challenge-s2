@@ -1,6 +1,6 @@
 <template>
   <v-form @submit.prevent="handleSubmit">
-    <v-text-field v-model="formState.data.name" label="Nom" required></v-text-field>
+    <v-text-field v-model="formState.data.name.value" label="Nom" required :rules="rules.name"></v-text-field>
     <v-btn type="submit" color="primary" :disabled="formState.isSubmitting">Enregistrer</v-btn>
     <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Annuler</v-btn>
     <v-progress-linear v-if="formState.isSubmitting" indeterminate color="primary"></v-progress-linear>
@@ -29,11 +29,20 @@ export default defineComponent({
     const store = useCategoryStore();
 
     const initialData = {
-      id: undefined,
-      name: '',
+      id: {
+        value: undefined,
+      },
+      name: {
+        value: '',
+        rules: [
+          (v: string) => !!v || 'Le nom est requis',
+          (v: string) => v.length >= 3 || 'Le nom doit comporter au moins 3 caractères',
+          (v: string) => v.length <= 255 || 'Le nom doit comporter au plus 255 caractères',
+        ]
+      },
     };
 
-    const { formState, submitForm, cancelRequest } = useForm(initialData, categorySchema);
+    const { formState, submitForm, cancelRequest, rules, initData } = useForm(initialData, categorySchema);
 
     const handleSubmit = () => {
       submitForm(async (data, signal) => {
@@ -49,12 +58,12 @@ export default defineComponent({
     onMounted(() => {
       if (route.params.id) {
         store.fetchCategory(Number(route.params.id)).then(() => {
-          formState.data = store.category;
+          initData(store.category, rules());
         });
       }
     });
 
-    return { formState, handleSubmit, cancelRequest };
+    return { formState, handleSubmit, cancelRequest, rules: rules() };
   },
 });
 </script>

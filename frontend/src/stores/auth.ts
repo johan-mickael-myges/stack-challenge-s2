@@ -54,7 +54,6 @@ export const useAuthStore = defineStore('auth', () => {
     const verifyAuth = async () => {
         try {
             const response = await apiClient.get('/auth/check');
-            console.log(response.data);
             Object.assign(user, response.data);
         } catch (err: any) {
             Object.keys(user).forEach(key => delete user[key]);

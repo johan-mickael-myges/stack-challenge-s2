@@ -78,12 +78,16 @@ export const useCategoryStore = defineStore('categories', {
         async deleteCategory(id: number, signal?: AbortSignal) {
             try {
                 await apiClient.delete(`/categories/${id}`, { signal });
-                this.categories = this.categories.filter((category) => category.id !== id);
+                await this.refreshList();
             } catch (error) {
                 throw error;
             } finally {
                 this.loading = false;
             }
+        },
+        async refreshList() {
+            await this.fetchCategories();
+            await this.countCategories();
         },
         async setPage(page: number) {
             this.currentPage = page;

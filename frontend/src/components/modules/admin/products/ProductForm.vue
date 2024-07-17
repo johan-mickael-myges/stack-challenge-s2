@@ -1,10 +1,12 @@
 <template>
-  <v-form @submit.prevent="handleSubmit">
-    <v-text-field v-model="formState.data.name" label="Nom" required></v-text-field>
-    <v-text-field v-model="formState.data.reference" label="Référence" required></v-text-field>
-    <v-textarea v-model="formState.data.description" label="Description"></v-textarea>
-    <v-text-field v-model.number="formState.data.price" label="Prix" required></v-text-field>
-    <v-btn type="submit" color="primary" :disabled="formState.isSubmitting">Enregistrer</v-btn>
+  <v-form ref="productForm" @submit.prevent="handleSubmit" :model-value="true" lazy-validation enctype="multipart/form-data">
+    <v-text-field v-model="formState.data.name.value" label="Nom" required :rules="rules.name"></v-text-field>
+    <v-text-field v-model="formState.data.reference.value" label="Référence" required :rules="rules.reference"></v-text-field>
+    <v-textarea v-model="formState.data.description.value" label="Description"></v-textarea>
+    <v-text-field v-model.number="formState.data.price.value" label="Prix" required :rules="rules.price"></v-text-field>
+    <v-file-input v-model="formState.data.thumbnail.value" label="Miniature" accept="image/*" :rules="rules.thumbnail"></v-file-input>
+    <v-img v-if="isEditing" :src="formState.data.thumbnail.value" width="100" height="100"></v-img>
+    <v-btn type="submit" color="primary" :disabled="!valid || formState.isSubmitting">Enregistrer</v-btn>
     <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Annuler</v-btn>
     <v-progress-linear v-if="formState.isSubmitting" indeterminate color="primary"></v-progress-linear>
     <v-alert v-if="formState.httpError" type="error">{{ formState.httpError }}</v-alert>
@@ -13,10 +15,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useForm } from '@/composables/useForm.ts';
-import { z } from 'zod';
+import {string, z} from 'zod';
 import { useProductStore } from '@/stores/products.ts';
 
 const productSchema = z.object({
@@ -25,48 +27,109 @@ const productSchema = z.object({
   reference: z.string(),
   description: z.string().optional(),
   price: z.number(),
+  thumbnail: z.instanceof(File).nullable(),
   images: z.array(z.string()).optional(),
 });
 
 export default defineComponent({
   name: 'ProductForm',
+  methods: {string},
   setup() {
     const route = useRoute();
     const router = useRouter();
     const store = useProductStore();
 
     const initialData = {
-      id: undefined,
-      brandId: null,
-      name: '',
-      reference: '',
-      description: '',
-      price: 0,
-      images: [],
+      id: {
+        value: undefined,
+      },
+      brandId: {
+        value: undefined,
+      },
+      name: {
+        value: '',
+        rules: [
+          (v: string) => !!v || 'Le nom est requis',
+          (v: string) => v.length >= 3 || 'Le nom doit comporter au moins 3 caractères',
+          (v: string) => v.length <= 255 || 'Le nom doit comporter au plus 255 caractères',
+        ]
+      },
+      reference: {
+        value: '',
+        rules: [
+          (v: string) => !!v || 'La référence est requise',
+          (v: string) => v.length >= 3 || 'La référence doit comporter au moins 3 caractères',
+          (v: string) => v.length <= 20 || 'La référence doit comporter au plus 20 caractères',
+        ]
+      },
+      description: {
+        value: '',
+      },
+      price: {
+        value: 0,
+        rules: [
+          (v: number) => !!v || 'Le prix est requis',
+          (v: number) => v >= 0 || 'Le prix doit être supérieur ou égal à 0'
+        ]
+      },
+      thumbnail: {
+        value: null,
+        rules: [
+          (v: File | null) => !!v || 'La miniature est requise',
+        ]
+      },
+      images: {
+        value: [],
+        rules: [
+          (v: File[]) => v.length > 0 || 'Au moins une image est requise',
+        ]
+      },
     };
 
-    const { formState, submitForm, cancelRequest } = useForm(initialData, productSchema);
+    const valid = ref(true);
+    const { formState, submitForm, cancelRequest, rules, initData } = useForm(initialData, productSchema);
 
     const handleSubmit = () => {
       submitForm(async (data, signal) => {
-        if (data.id) {
-          await store.updateProduct(data, signal);
+        const productId = Number(data.id);
+        const formData = new FormData();
+
+        for (const key in data) {
+          if (data[key] === null || data[key] === undefined) {
+            continue;
+          }
+          if (key === 'images') {
+            data.images.forEach((image) => {
+              formData.append('images', image);
+            });
+          } else {
+            formData.append(key, data[key]);
+          }
+        }
+
+        if (productId) {
+          await store.updateProduct(productId, formData, signal);
         } else {
-          await store.createProduct(data, signal);
+          await store.createProduct(formData, signal);
         }
         router.push('/admin/products');
       });
     };
 
+    const isEditing = () => {
+      return !!route.params.id;
+    };
+
     onMounted(() => {
-      if (route.params.id) {
+      if (isEditing()) {
         store.fetchProduct(Number(route.params.id)).then(() => {
-          formState.data = store.product;
+          console.log(store.product);
+          initData(store.product, rules())
         });
       }
     });
 
-    return { formState, handleSubmit, cancelRequest };
+    return { formState, handleSubmit, cancelRequest, rules: rules(), valid, isEditing: isEditing() };
   },
 });
 </script>

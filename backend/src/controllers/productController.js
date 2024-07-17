@@ -1,6 +1,7 @@
 const { Product } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 const repository = require("~repositories/productRepository");
+const { uploadToS3 } = require('~services/s3Service');
 
 exports.countProducts = async (req, res, next) => {
     try {
@@ -36,8 +37,14 @@ exports.getProductById = async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
     try {
+        if (req.file) {
+            req.body.thumbnail = await uploadToS3(req.file);
+        }
+
         const product = await Product.create(req.body);
+
         res.status(201).json(product);
+        res.sendStatus(201);
     } catch (error) {
         next(error);
     }
@@ -45,6 +52,10 @@ exports.createProduct = async (req, res, next) => {
 
 exports.updateProduct = async (req, res, next) => {
     try {
+        if (req.file) {
+            req.body.thumbnail = await uploadToS3(req.file);
+        }
+
         const product = await Product.findByPk(req.params.id);
         if (!product) {
             return res.sendStatus(404);

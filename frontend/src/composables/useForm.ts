@@ -1,15 +1,29 @@
 import { reactive, watch } from 'vue';
 import { ZodSchema, ZodError } from 'zod';
 
+interface Rule<T> {
+    (value: T): boolean | string;
+}
+
+interface FormField<T> {
+    value: T;
+    rules?: Rule<T>[];
+}
+
+// an interface that have multiple object of FormField
+interface InitialData {
+    [key: string]: FormField<any>;
+}
+
 interface FormState {
-    data: any;
+    data: InitialData;
     isSubmitting: boolean;
     validationErrors: { [key: string]: string[] };
     httpError: string | null;
     abortController?: AbortController;
 }
 
-export function useForm(initialData: any, schema: ZodSchema<any>) {
+export function useForm(initialData: InitialData, schema: ZodSchema<any>) {
     const formState = reactive<FormState>({
         data: initialData,
         isSubmitting: false,
@@ -25,7 +39,7 @@ export function useForm(initialData: any, schema: ZodSchema<any>) {
 
     const validate = () => {
         try {
-            schema.parse(formState.data);
+            schema.parse(values());
             formState.validationErrors = {};
             return true;
         } catch (e) {
@@ -47,19 +61,20 @@ export function useForm(initialData: any, schema: ZodSchema<any>) {
         if (!validate()) {
             return;
         }
+
         formState.isSubmitting = true;
         formState.httpError = null;
         formState.abortController = new AbortController();
 
         try {
-            await submitFn(formState.data, formState.abortController.signal);
+            await submitFn(values(), formState.abortController.signal);
             formState.isSubmitting = false;
         } catch (error: any) {
             formState.isSubmitting = false;
             if (error.name === 'CanceledError') {
                 return;
             } else if (error.response) {
-                formState.httpError = error.response.data.message || 'An error occurred';
+                formState.httpError = error.response.data || 'An error occurred';
             } else {
                 formState.httpError = 'An error occurred';
             }
@@ -72,10 +87,36 @@ export function useForm(initialData: any, schema: ZodSchema<any>) {
         }
     };
 
+    const values = () => {
+        return Object.keys(formState.data).reduce((acc, key) => {
+            acc[key] = formState.data[key].value;
+            return acc;
+        }, {} as { [key: string]: any });
+    };
+
+    const rules = () => {
+        return Object.keys(formState.data).reduce((acc, key) => {
+            acc[key] = formState.data[key].rules;
+            return acc;
+        }, {} as { [key: string]: Rule<any>[] });
+    };
+
+    const initData = (data, rules) => {
+        Object.keys(data).forEach((key) => {
+            formState.data[key] = {
+                value: data[key],
+                rules: rules[key],
+            };
+        });
+    }
+
     return {
         formState,
         transformField,
         submitForm,
         cancelRequest,
+        values,
+        rules,
+        initData,
     };
 }

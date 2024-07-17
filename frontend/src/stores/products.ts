@@ -9,17 +9,35 @@ const productSchema = z.object({
     reference: z.string(),
     description: z.string().optional(),
     price: z.number(),
+    thumbnail: z.instanceof(File).nullable(),
+    images: z.array(z.instanceof(File)).optional(),
+    quantity: z.number(),
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
+});
+
+const productSchemaEntity = z.object({
+    id: z.number().optional(),
+    name: z.string(),
+    brandId: z.number().nullable(),
+    reference: z.string(),
+    description: z.string().optional(),
+    price: z.number(),
     thumbnail: z.string(),
     images: z.array(z.string()).optional(),
+    quantity: z.number(),
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
 });
 
 export type Product = z.infer<typeof productSchema>;
+export type ProductEntity = z.infer<typeof productSchemaEntity>;
 
 export const useProductStore = defineStore('products', {
     state: () => ({
         loading: false,
-        products: [] as Product[],
-        product: null as Product | null,
+        products: [] as Product[] | [] as ProductEntity[],
+        product: null as Product | null as ProductEntity | null,
         total: 0,
         currentPage: 1,
         itemsPerPage: 10,
@@ -55,26 +73,28 @@ export const useProductStore = defineStore('products', {
             this.loading = true;
             try {
                 const response = await apiClient.get(`/products/${id}`);
-                this.product = productSchema.parse(response.data);
+                this.product = productSchemaEntity.parse(response.data);
             } catch (error) {
                 throw error;
             } finally {
                 this.loading = false;
             }
         },
-        async createProduct(product: Product, signal?: AbortSignal) {
+        async createProduct(formData: FormData, signal?: AbortSignal) {
+            this.loading = true;
             try {
-                const response = await apiClient.post('/products', productSchema.parse(product), { signal });
+                const response = await apiClient.post('/products', formData, { signal });
                 this.products.push(response.data);
             } catch (error) {
+                console.log(error);
                 throw error;
             } finally {
                 this.loading = false;
             }
         },
-        async updateProduct(product: Product, signal?: AbortSignal) {
+        async updateProduct(id: Number, formData: FormData, signal?: AbortSignal) {
             try {
-                await apiClient.put(`/products/${product.id}`, productSchema.parse(product), { signal });
+                await apiClient.put(`/products/${id}`, formData, { signal });
                 await this.fetchProducts();
             } catch (error) {
                 throw error;
@@ -85,12 +105,16 @@ export const useProductStore = defineStore('products', {
         async deleteProduct(id: number, signal?: AbortSignal) {
             try {
                 await apiClient.delete(`/products/${id}`, { signal });
-                await this.fetchProducts();
+                await this.refreshList();
             } catch (error) {
                 throw error;
             } finally {
                 this.loading = false;
             }
+        },
+        async refreshList() {
+            await this.fetchProducts();
+            await this.countProducts();
         },
         async setPage(page: number) {
             this.currentPage = page;
