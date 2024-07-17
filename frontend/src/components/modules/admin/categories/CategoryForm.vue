@@ -1,11 +1,16 @@
 <template>
-  <v-form @submit.prevent="handleSubmit">
-    <v-text-field v-model="formState.data.name.value" label="Nom" required :rules="rules.name"></v-text-field>
+  <v-form @submit.prevent="handleSubmit" lazy-validation>
+    <v-text-field
+        v-model="formState.data.name.value"
+        label="Nom"
+        required
+        :rules="rules.name"
+        :error-messages="formState.validationErrors?.name?.join(' | ')"
+    >
+    </v-text-field>
     <v-btn type="submit" color="primary" :disabled="formState.isSubmitting">Enregistrer</v-btn>
     <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Annuler</v-btn>
     <v-progress-linear v-if="formState.isSubmitting" indeterminate color="primary"></v-progress-linear>
-    <v-alert v-if="formState.httpError" type="error">{{ formState.httpError }}</v-alert>
-    <v-alert v-for="(errors, field) in formState.validationErrors" :key="field" type="error">{{ field }}: {{ errors.join(', ') }}</v-alert>
   </v-form>
 </template>
 
@@ -14,7 +19,7 @@ import { defineComponent, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useForm } from '@/composables/useForm.ts';
 import { z } from 'zod';
-import {useCategoryStore} from "@/stores/categories.ts";
+import { useCategoryStore } from '@/stores/categories.ts';
 
 const categorySchema = z.object({
   id: z.number().optional(),
@@ -38,7 +43,7 @@ export default defineComponent({
           (v: string) => !!v || 'Le nom est requis',
           (v: string) => v.length >= 3 || 'Le nom doit comporter au moins 3 caractères',
           (v: string) => v.length <= 255 || 'Le nom doit comporter au plus 255 caractères',
-        ]
+        ],
       },
     };
 

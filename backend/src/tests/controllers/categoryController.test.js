@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('../../app');
 const { Category } = require('~models');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 
 jest.mock('jsonwebtoken');
 
@@ -13,13 +14,20 @@ jest.mock('~models', () => ({
         create: jest.fn(),
         update: jest.fn(),
         destroy: jest.fn(),
+        findOne: jest.fn(),
     },
 }));
 
-describe('Category Controller', () => {
-    beforeAll(() => {
+jest.mock('express-validator', () => {
+    const originalModule = jest.requireActual('express-validator');
+    return {
+        ...originalModule,
+        validationResult: jest.fn(),
+    };
+});
 
-    });
+describe('Category Controller', () => {
+    beforeAll(() => { });
 
     afterAll(() => {
         jest.resetAllMocks();
@@ -91,22 +99,44 @@ describe('Category Controller', () => {
     });
 
     describe('POST /categories', () => {
-        it('should not be able to create a new category as non admin', async () => {
+        it('should return 400 if validation fails', async () => {
             const newCategory = {
-                name: 'Test Category',
+                name: '',
             };
+
+            validationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [
+                    { msg: 'Le nom est requis', param: 'name' },
+                    { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
+                ],
+            });
+
+            jwt.verify.mockImplementation((token, secret, callback) => {
+                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+            });
 
             const response = await request(app)
                     .post('/categories')
+                    .set('Cookie', ['token=valid-token'])
                     .send(newCategory);
 
-            expect(response.statusCode).toBe(401);
+            expect(response.statusCode).toBe(400);
+            expect(response.body).toEqual([
+                { msg: 'Le nom est requis', param: 'name' },
+                { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
+            ]);
         });
 
         it('should be able to create a new category as admin', async () => {
             const newCategory = {
                 name: 'Test Category',
             };
+
+            validationResult.mockReturnValue({
+                isEmpty: () => true,
+                array: () => [],
+            });
 
             jwt.verify.mockImplementation((token, secret, callback) => {
                 callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
@@ -146,15 +176,42 @@ describe('Category Controller', () => {
             };
         });
 
-        it('should not be able to update a category as non admin', async () => {
+        it('should return 400 if validation fails', async () => {
+            const invalidUpdatedCategory = {
+                id: 1,
+                name: '',
+            };
+
+            validationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [
+                    { msg: 'Le nom est requis', param: 'name' },
+                    { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
+                ],
+            });
+
+            jwt.verify.mockImplementation((token, secret, callback) => {
+                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+            });
+
             const response = await request(app)
                     .put('/categories/1')
-                    .send(updatedCategory);
+                    .set('Cookie', ['token=valid-token'])
+                    .send(invalidUpdatedCategory);
 
-            expect(response.statusCode).toBe(401);
+            expect(response.statusCode).toBe(400);
+            expect(response.body).toEqual([
+                { msg: 'Le nom est requis', param: 'name' },
+                { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
+            ]);
         });
 
         it('should be able to update a category as admin', async () => {
+            validationResult.mockReturnValue({
+                isEmpty: () => true,
+                array: () => [],
+            });
+
             jwt.verify.mockImplementation((token, secret, callback) => {
                 callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
             });

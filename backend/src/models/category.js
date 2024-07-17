@@ -28,8 +28,8 @@ module.exports = (sequelize) => {
                             msg: 'Le nom est requis',
                         },
                         len: {
-                            args: [1, 255],
-                            msg: 'Le nom doit comporter entre 1 et 255 caractères',
+                            args: [3, 255],
+                            msg: 'Le nom doit comporter entre 3 et 255 caractères',
                         },
                     },
                 }

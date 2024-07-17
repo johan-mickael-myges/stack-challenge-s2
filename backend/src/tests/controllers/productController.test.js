@@ -2,8 +2,6 @@ const request = require('supertest');
 const app = require('../../app');
 const { Product } = require('~models');
 const jwt = require('jsonwebtoken');
-const checkToken = require('../../middlewares/authMiddleware');
-const {updateProduct} = require("../../controllers/productController");
 const { uploadToS3, generateFileDestination } = require('~services/s3Service');
 
 jest.mock('jsonwebtoken');
