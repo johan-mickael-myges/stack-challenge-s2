@@ -4,6 +4,7 @@ const { Product } = require('~models');
 const jwt = require('jsonwebtoken');
 const checkToken = require('../../middlewares/authMiddleware');
 const {updateProduct} = require("../../controllers/productController");
+const { uploadToS3, generateFileDestination } = require('~services/s3Service');
 
 jest.mock('jsonwebtoken');
 
@@ -16,6 +17,11 @@ jest.mock('~models', () => ({
         update: jest.fn(),
         destroy: jest.fn(),
     },
+}));
+
+jest.mock('~services/s3Service', () => ({
+    uploadToS3: jest.fn(),
+    generateFileDestination: jest.fn(),
 }));
 
 describe('Product Controller', () => {
@@ -134,8 +140,15 @@ describe('Product Controller', () => {
             };
 
             jwt.verify.mockImplementation((token, secret, callback) => {
-            callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
             });
+
+            generateFileDestination.mockResolvedValue({
+                destination: 'products/image1.jpg',
+                url: 'http://example.com/image1.jpg',
+            });
+
+            uploadToS3.mockResolvedValue('http://example.com/image1.jpg');
 
             Product.create.mockResolvedValue(newProduct);
 

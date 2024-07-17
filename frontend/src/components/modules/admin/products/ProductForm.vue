@@ -5,8 +5,9 @@
     <v-textarea v-model="formState.data.description.value" label="Description"></v-textarea>
     <v-text-field v-model.number="formState.data.price.value" label="Prix" required :rules="rules.price"></v-text-field>
     <v-file-input v-model="formState.data.thumbnail.value" label="Miniature" accept="image/*" :rules="rules.thumbnail"></v-file-input>
+    <v-img v-if="isEditing" :src="product?.thumbnail" width="200" height="200"></v-img>
     <v-file-input v-model="formState.data.images.value" label="Images" multiple accept="image/*" :rules="rules.images"></v-file-input>
-    <v-img v-if="isEditing" :src="formState.data.thumbnail.value" width="100" height="100"></v-img>
+    <v-img v-if="isEditing" v-for="(image, key) in product?.images" :key="'product-' + product?.id + '-images-' + key" :src="image" width="100" height="100"></v-img>
     <v-btn type="submit" color="primary" :disabled="!valid || formState.isSubmitting">Enregistrer</v-btn>
     <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Annuler</v-btn>
     <v-progress-linear v-if="formState.isSubmitting" indeterminate color="primary"></v-progress-linear>
@@ -16,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue';
+import {computed, defineComponent, onMounted, ref} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useForm } from '@/composables/useForm.ts';
 import {string, z} from 'zod';
@@ -28,8 +29,8 @@ const productSchema = z.object({
   reference: z.string(),
   description: z.string().optional(),
   price: z.number(),
-  thumbnail: z.instanceof(File).nullable(),
-  images: z.array(z.instanceof(File)).optional(),
+  thumbnail: z.union([z.instanceof(File), z.string().url()]),
+  images: z.array(z.union([z.instanceof(File), z.string().url()])).optional()
 });
 
 export default defineComponent({
@@ -74,9 +75,6 @@ export default defineComponent({
       },
       thumbnail: {
         value: null,
-        rules: [
-          (v: File | null) => !!v || 'La miniature est requise',
-        ]
       },
       images: {
         value: [],
@@ -120,13 +118,12 @@ export default defineComponent({
     onMounted(() => {
       if (isEditing()) {
         store.fetchProduct(Number(route.params.id)).then(() => {
-          console.log(store.product);
           initData(store.product, rules())
         });
       }
     });
 
-    return { formState, handleSubmit, cancelRequest, rules: rules(), valid, isEditing: isEditing() };
+    return { formState, handleSubmit, cancelRequest, rules: rules(), valid, isEditing: isEditing(), product: computed(() => store.product) };
   },
 });
 </script>

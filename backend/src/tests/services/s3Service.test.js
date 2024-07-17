@@ -1,9 +1,9 @@
-const { uploadToS3 } = require('~services/s3Service');
 const { s3Client, bucket } = require('~config/aws');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const { v4: uuidv4 } = require('uuid');
 const slug = require('slug');
 const path = require('path');
+const { uploadToS3, generateFileDestination } = require('~services/s3Service');
 
 jest.mock('~config/aws', () => ({
     s3Client: {
@@ -12,49 +12,54 @@ jest.mock('~config/aws', () => ({
     bucket: 'test-bucket'
 }));
 
-jest.mock('uuid', () => ({
-    v4: jest.fn()
-}));
+jest.mock('uuid');
+jest.mock('slug');
+jest.mock('path');
 
-jest.mock('slug', () => jest.fn());
-
-describe('uploadToS3', () => {
+describe('S3 Service', () => {
     beforeEach(() => {
         jest.resetAllMocks();
     });
 
-    it('should upload a file to S3 and return the URL', async () => {
-        const file = {
-            originalname: 'test file.png',
-            buffer: Buffer.from('test buffer'),
-            mimetype: 'image/png'
-        };
+    describe('uploadToS3', () => {
+        it('should upload a file to S3 and return the URL', async () => {
+            const file = {
+                originalname: 'test file.png',
+                buffer: Buffer.from('test buffer'),
+                mimetype: 'image/png'
+            };
+            const destination = {
+                destination: 'products/1234-test-file-png.png',
+                url: 'https://test-bucket.s3.amazonaws.com/products/1234-test-file-png.png'
+            };
 
-        const mockUuid = '1234';
-        const mockSlug = 'test-file-png';
-        const expectedUrl = `https://test-bucket.s3.amazonaws.com/folder/${mockUuid}-${mockSlug}.png`;
+            s3Client.send.mockResolvedValue({});
 
-        uuidv4.mockReturnValue(mockUuid);
-        slug.mockReturnValue(mockSlug);
+            const result = await uploadToS3(file, destination);
 
-        s3Client.send.mockResolvedValue({});
+            expect(result).toBe(destination.url);
+            expect(s3Client.send).toHaveBeenCalledWith(expect.any(PutObjectCommand));
 
-        await uploadToS3(file, 'folder');
-
-        expect(uuidv4).toHaveBeenCalled();
-        expect(slug).toHaveBeenCalledWith(`${mockUuid}-test file`, { lower: true });
-        expect(s3Client.send).toHaveBeenCalledWith(expect.any(PutObjectCommand));
-
-        const command = s3Client.send.mock.calls[0][0];
-        expect(command.input).toEqual({
-            Bucket: bucket,
-            Key: `folder/${mockSlug}.png`,
-            Body: file.buffer,
-            ContentType: file.mimetype
+            const command = s3Client.send.mock.calls[0][0];
+            expect(command.input).toEqual({
+                Bucket: bucket,
+                Key: destination.destination,
+                Body: file.buffer,
+                ContentType: file.mimetype
+            });
         });
-    });
 
-    it('should throw an error if no file is provided', async () => {
-        await expect(uploadToS3(null)).rejects.toThrow('No file provided');
+        it('should throw an error if no file is provided', async () => {
+            await expect(uploadToS3(null, { destination: 'some/destination' })).rejects.toThrow('No file provided');
+        });
+
+        it('should throw an error if no destination is provided', async () => {
+            const file = {
+                originalname: 'test file.png',
+                buffer: Buffer.from('test buffer'),
+                mimetype: 'image/png'
+            };
+            await expect(uploadToS3(file, null)).rejects.toThrow('No destination provided');
+        });
     });
 });

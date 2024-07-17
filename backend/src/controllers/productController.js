@@ -37,15 +37,17 @@ exports.getProductById = async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
     try {
-        const thumbnailFile = req.files['thumbnail'][0];
-        const imagesFiles = req.files['images'];
-
-        const thumbnailDestination = await generateFileDestination(thumbnailFile, 'products');
-        const imagesDestinations = await Promise.all(imagesFiles.map(async (image) => {
-            return await generateFileDestination(image, 'products');
-        }));
+        let thumbnailFile, imagesFiles,thumbnailDestination, imagesDestinations;
 
         if (req.files) {
+            thumbnailFile = req.files['thumbnail'][0];
+            imagesFiles = req.files['images'];
+
+            thumbnailDestination = await generateFileDestination(thumbnailFile, 'products');
+            imagesDestinations = await Promise.all(imagesFiles.map(async (image) => {
+                return await generateFileDestination(image, 'products');
+            }));
+
             req.body.thumbnail = thumbnailDestination.url;
             req.body.images = imagesDestinations.map(image => image.url);
         }
@@ -61,14 +63,26 @@ exports.createProduct = async (req, res, next) => {
 
         res.status(201).json(product);
     } catch (error) {
+        console.log(error);
         next(error);
     }
 };
 
 exports.updateProduct = async (req, res, next) => {
     try {
-        if (req.file) {
-            req.body.thumbnail = await uploadToS3(req.file);
+        let thumbnailFile, imagesFiles, thumbnailDestination, imagesDestinations;
+
+        if (req.files) {
+            thumbnailFile = req.files['thumbnail'][0];
+            imagesFiles = req.files['images'];
+
+            thumbnailDestination = await generateFileDestination(thumbnailFile, 'products');
+            imagesDestinations = await Promise.all(imagesFiles.map(async (image) => {
+                return await generateFileDestination(image, 'products');
+            }));
+
+            req.body.thumbnail = thumbnailDestination.url;
+            req.body.images = imagesDestinations.map(image => image.url);
         }
 
         const product = await Product.findByPk(req.params.id);
@@ -77,6 +91,13 @@ exports.updateProduct = async (req, res, next) => {
         }
 
         await product.update(req.body);
+
+        if (req.files) {
+            await uploadToS3(thumbnailFile, thumbnailDestination);
+            await Promise.all(imagesFiles.map(async (image, index) => {
+                await uploadToS3(image, imagesDestinations[index]);
+            }));
+        }
 
         res.status(200).json(product);
     } catch (error) {
