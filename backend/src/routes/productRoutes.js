@@ -15,8 +15,29 @@ const {
 router.get('/count', countProducts);
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);
-router.post('/', checkToken, authorizeRoles(['ROLE_ADMIN']), upload.single('thumbnail'), createProduct);
-router.put('/:id', checkToken, authorizeRoles(['ROLE_ADMIN']), upload.single('thumbnail'), updateProduct);
-router.delete('/:id', checkToken, authorizeRoles(['ROLE_ADMIN']), deleteProduct);
+
+router.post
+(
+    '/',
+    checkToken,
+    authorizeRoles(['ROLE_ADMIN']),
+    upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'images', maxCount: 3 }]),
+    createProduct
+);
+
+router.put(
+    '/:id',
+    checkToken,
+    authorizeRoles(['ROLE_ADMIN']),
+    upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'images', maxCount: 3 }]),
+    updateProduct
+);
+
+router.delete(
+    '/:id',
+    checkToken,
+    authorizeRoles(['ROLE_ADMIN']),
+    deleteProduct
+);
 
 module.exports = router;

@@ -37,14 +37,23 @@ exports.getProductById = async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
     try {
-        if (req.file) {
-            req.body.thumbnail = await uploadToS3(req.file, 'products', 'product');
+        if (req.files) {
+            req.body.thumbnail = await uploadToS3(req.files['thumbnail'][0], 'products', false);
+            req.body.images = await Promise.all(req.files['images'].map(async (image) => {
+                return await uploadToS3(image, 'products', false);
+            }));
         }
 
         const product = await Product.create(req.body);
 
+        if (req.files) {
+            await uploadToS3(req.files['thumbnail'][0], 'products');
+            await Promise.all(req.files['images'].map(async (image) => {
+                return await uploadToS3(image, 'products');
+            }));
+        }
+
         res.status(201).json(product);
-        res.sendStatus(201);
     } catch (error) {
         next(error);
     }

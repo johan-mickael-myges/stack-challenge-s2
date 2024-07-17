@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const slug = require('slug');
 const path = require('path');
 
-const uploadToS3 = async (file, folder = 'products') => {
+const uploadToS3 = async (file, folder = 'products', upload = true) => {
     if (!file) {
         throw new Error('No file provided');
     }
@@ -19,8 +19,10 @@ const uploadToS3 = async (file, folder = 'products') => {
         ContentType: file.mimetype,
     };
 
-    const command = new PutObjectCommand(uploadParams);
-    await s3Client.send(command);
+    if (upload) {
+        const command = new PutObjectCommand(uploadParams);
+        await s3Client.send(command);
+    }
 
     return `https://${bucket}.s3.amazonaws.com/${uploadParams.Key}`;
 };
