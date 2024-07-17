@@ -54,7 +54,8 @@ export default defineComponent({
           (v: string) => !!v || 'Le nom est requis',
           (v: string) => v.length >= 3 || 'Le nom doit comporter au moins 3 caractères',
           (v: string) => v.length <= 255 || 'Le nom doit comporter au plus 255 caractères',
-        ]
+        ],
+        transformer: (v: string) => v.toUpperCase(),
       },
       reference: {
         value: '',
