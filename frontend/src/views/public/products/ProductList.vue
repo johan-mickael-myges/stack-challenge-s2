@@ -93,12 +93,13 @@ export default defineComponent({
 
     onMounted(() => {
       store.fetchProducts();
+      store.countProducts();
     });
 
     const isLoading = computed(() => store.loading);
     const products = computed(() => store.products);
-    const totalProducts = computed(() => store.total);
-    const totalPages = computed(() => Math.ceil(totalProducts.value / itemsPerPage.value));
+    const totalPages = computed(() => store.totalPage);
+
     const hoveredCard = ref<number | null>(null);
 
     watch(currentPage, (newPage) => {

@@ -129,4 +129,9 @@ export const useProductStore = defineStore('products', {
             await this.fetchProducts();
         }
     },
+    getters: {
+        totalPage(): number {
+            return Math.ceil(this.total / this.itemsPerPage);
+        },
+    }
 });
