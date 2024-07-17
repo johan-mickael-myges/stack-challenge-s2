@@ -6,6 +6,12 @@ if (process.env.NODE_ENV === 'development') {
     });
 }
 
+if (process.env.NODE_ENV === 'test') {
+    require('dotenv').config({
+        path: '.env.test',
+    });
+}
+
 const config = {
     env: process.env.NODE_ENV || 'development',
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',

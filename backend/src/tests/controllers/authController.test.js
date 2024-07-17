@@ -92,6 +92,73 @@ describe('Auth Controller', () => {
         });
     });
 
+    describe('POST /auth/register', () => {
+        it('should respond with 400 if validation fails', async () => {
+            validationResult.mockReturnValue({
+                isEmpty: () => false,
+                array: () => [{msg: 'Validation error'}]
+            });
+
+            const response = await request(app).post('/auth/register').send({
+                email: '',
+                password: '',
+                username: '',
+                firstname: '',
+                lastname: '',
+                number: '',
+            });
+
+            expect(response.statusCode).toBe(400);
+        });
+
+        it('should register a new user and respond with 201', async () => {
+            validationResult.mockReturnValue({ isEmpty: () => true });
+
+            const mockUser = {
+                id: 1,
+                email: 'test@example.com',
+                username: 'testuser',
+                firstname: 'Test',
+                lastname: 'User',
+                number: '1234567890',
+            };
+            userService.registerUser.mockResolvedValue(mockUser);
+
+            const response = await request(app)
+                    .post('/auth/register')
+                    .send({
+                        email: 'test@example.com',
+                        password: 'password123',
+                        username: 'testuser',
+                        firstname: 'Test',
+                        lastname: 'User',
+                        number: '1234567890',
+                    });
+
+            expect(response.statusCode).toBe(201);
+            expect(response.body).toEqual(mockUser);
+        });
+
+        it('should respond with 500 if there is an error during registration', async () => {
+            validationResult.mockReturnValue({ isEmpty: () => true });
+
+            userService.registerUser.mockRejectedValue(new Error('Registration error'));
+
+            const response = await request(app)
+                    .post('/auth/register')
+                    .send({
+                        email: 'test@example.com',
+                        password: 'password123',
+                        username: 'testuser',
+                        firstname: 'Test',
+                        lastname: 'User',
+                        number: '1234567890',
+                    });
+
+            expect(response.statusCode).toBe(500);
+        });
+    });
+
     describe('POST /auth/logout', () => {
         it('should clear the token cookie and respond with 200', async () => {
             const response = await request(app)

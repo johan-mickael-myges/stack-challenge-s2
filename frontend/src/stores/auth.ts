@@ -23,8 +23,8 @@ export const useAuthStore = defineStore('auth', () => {
             await apiClient.post('/auth/register', data);
         } catch (err: any) {
             hasError.value = true;
-            if (err.response && err.response.data && Array.isArray(err.response.data.errors)) {
-                const validationErrors: ExpressError[] = err.response.data.errors;
+            if (err.response && err.response.data) {
+                const validationErrors: ExpressError[] = err.response.data;
                 validationErrors.forEach((error: ExpressError) => {
                     if (!errors.value[error.path]) {
                         errors.value[error.path] = [];
