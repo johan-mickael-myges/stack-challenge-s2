@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw} from 'vue-router';
+import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw } from 'vue-router';
 
 import errorRoutes from "@/routes/error/errorRoutes.ts";
 import adminProductRoutes from './admin/productRoutes';
@@ -8,7 +8,8 @@ import cartRoutes from "@/routes/user/cartRoutes.ts";
 import userSecurityRoutes from "@/routes/public/security/userSecurityRoutes.ts";
 import productRoutes from './public/products/productRoutes';
 import adminSecurityRoutes from "@/routes/public/security/adminSecurityRoutes.ts";
-import {useAuthStore} from "@/stores/auth.ts";
+import privacyPolicyRoutes from '@/routes/public/policy/privacyPolicyRoutes';
+import { useAuthStore } from "@/stores/auth.ts";
 
 const routes: Array<RouteRecordRaw> = [
     ...adminSecurityRoutes,
@@ -19,6 +20,7 @@ const routes: Array<RouteRecordRaw> = [
     ...userSecurityRoutes,
     ...productRoutes,
     ...errorRoutes,
+    ...privacyPolicyRoutes, 
 ]
 
 const router = createRouter({

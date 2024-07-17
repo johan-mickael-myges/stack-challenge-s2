@@ -8,7 +8,7 @@ const categoryRoutes = require('./categoryRoutes');
 const brandRoutes = require('./brandRoutes');
 const cartRoutes = require('./cartRoutes');
 const configRoutes = require('./configRoutes');
-const paymentRoutes = require('./paymentRoutes'); // Ensure this file exists
+const paymentRoutes = require('./paymentRoutes');
 
 
 router.use('/auth', authRoutes);

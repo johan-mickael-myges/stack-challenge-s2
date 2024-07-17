@@ -1,7 +1,10 @@
 <template>
     <div>
       <div v-if="show" class="fixed bottom-0 left-0 right-0 p-4 bg-gray-800 text-white flex justify-between items-center">
-        <span>Nous utilisons des cookies pour améliorer votre expérience sur notre site. En utilisant notre site, vous acceptez notre utilisation des cookies. <a href="/privacy-policy" class="underline">En savoir plus</a>.</span>
+        <span>
+          Nous utilisons des cookies pour améliorer votre expérience sur notre site. En utilisant notre site, vous acceptez notre utilisation des cookies.
+          <router-link to="/privacy-policy" class="underline text-white">En savoir plus</router-link>.
+        </span>
         <div>
           <v-btn color="primary" @click="acceptCookies">Accepter</v-btn>
           <v-btn color="secondary" @click="rejectCookies">Rejeter</v-btn>
