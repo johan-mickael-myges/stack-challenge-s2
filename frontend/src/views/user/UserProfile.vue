@@ -4,6 +4,7 @@
       <v-col cols="12" md="6">
         <v-card class="user-card">
           <v-card-title class="user-card-title">
+            <v-icon class="user-icon">mdi-account-circle</v-icon>
             <Heading>User Profile</Heading>
           </v-card-title>
           <v-card-text v-if="user">
@@ -24,6 +25,9 @@
                 <p><strong>Number:</strong> {{ user.number }}</p>
               </v-col>
             </v-row>
+            <v-row justify="center">
+              <v-btn color="primary" @click="logout">Logout</v-btn>
+            </v-row>
           </v-card-text>
           <v-alert v-else type="info">
             No user connected
@@ -41,6 +45,14 @@ import Heading from '@/components/Typography/Heading.vue';
 
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
+
+const logout = async () => {
+  try {
+    await authStore.logout();
+  } catch (error) {
+    console.error("Failed to logout", error);
+  }
+};
 </script>
 
 <style scoped>
@@ -60,6 +72,7 @@ const user = computed(() => authStore.user);
   background-color: #bbdefb; /* Slightly darker blue */
   padding: 16px;
   display: flex;
+  align-items: center;
   justify-content: center;
 }
 
@@ -67,6 +80,11 @@ const user = computed(() => authStore.user);
   margin: 0;
   font-size: 24px;
   font-weight: bold;
+}
+
+.user-icon {
+  margin-right: 8px;
+  font-size: 32px;
 }
 
 .user-card p {
