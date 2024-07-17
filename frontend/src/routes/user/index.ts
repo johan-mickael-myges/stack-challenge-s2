@@ -1,13 +1,30 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw} from 'vue-router';
+
+import adminProductRoutes from '../admin/productRoutes';
+import adminCategoryRoutes from '../admin/categoryRoutes';
+import userSecurityRoutes from "@/routes/public/userSecurityRoutes.ts";
+import userProductRoutes from '../user/productRoutes';
+import PageNotFound from "@/components/Error/PageNotFound.vue";
+import adminSecurityRoutes from "@/routes/public/adminSecurityRoutes.ts";
 import UserProfile from '@/views/user/UserProfile.vue'; // Import UserProfile
 
-const routes = [
-  { path: '/user-profile', name: 'UserProfile', component: UserProfile }, // Add this route
-];
+const routes: Array<RouteRecordRaw> = [
+    ...adminSecurityRoutes,
+    ...adminProductRoutes,
+    ...adminCategoryRoutes,
+    ...userSecurityRoutes,
+    ...userProductRoutes,
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'PageNotFound',
+        component: PageNotFound,
+    },
+    { path: '/user-profile', name: 'UserProfile', component: UserProfile }, // Add this route
+]
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+    history: createWebHistory(),
+    routes,
 });
 
 export default router;

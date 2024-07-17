@@ -51,6 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             const response = await apiClient.post('/auth/login', data);
             user.value = response.data.user;  // Sauvegarde des données utilisateur
+            localStorage.setItem('user', JSON.stringify(response.data.user)); // Sauvegarder dans le localStorage
             isAuthenticated.value = true;    // Définition de isAuthenticated à true
         } catch (err: any) {
             hasError.value = true;
@@ -67,6 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
             await apiClient.post('/auth/logout');
             isAuthenticated.value = false; // Définition de isAuthenticated à false
             user.value = null; // Effacer les données utilisateur
+            localStorage.removeItem('user'); // Supprimer du localStorage
             // Redirection vers la page de connexion
             await router.push({
                 name: 'Login',
@@ -79,6 +81,15 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    // Fonction pour récupérer les données utilisateur depuis le localStorage
+    const loadUserFromStorage = () => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            user.value = JSON.parse(storedUser);
+            isAuthenticated.value = true;
+        }
+    }
+
     return {
         loading,
         errors,
@@ -88,5 +99,6 @@ export const useAuthStore = defineStore('auth', () => {
         register,
         login,
         logout,
+        loadUserFromStorage, // Expose la nouvelle fonction
     };
 });
