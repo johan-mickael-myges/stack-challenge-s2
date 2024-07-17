@@ -38,7 +38,7 @@ exports.getProductById = async (req, res, next) => {
 exports.createProduct = async (req, res, next) => {
     try {
         if (req.file) {
-            req.body.thumbnail = await uploadToS3(req.file);
+            req.body.thumbnail = await uploadToS3(req.file, 'products', 'product');
         }
 
         const product = await Product.create(req.body);

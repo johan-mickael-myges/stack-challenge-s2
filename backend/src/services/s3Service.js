@@ -1,11 +1,10 @@
 const { s3Client , bucket } = require('~config/aws');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const { v4: uuidv4 } = require('uuid');
-const config = require('~config/config');
 const slug = require('slug');
 const path = require('path');
 
-const uploadToS3 = async (file) => {
+const uploadToS3 = async (file, folder = 'products') => {
     if (!file) {
         throw new Error('No file provided');
     }
@@ -15,7 +14,7 @@ const uploadToS3 = async (file) => {
 
     const uploadParams = {
         Bucket: bucket,
-        Key: `products/${sanitizedFileName}`,
+        Key: `${folder}/${sanitizedFileName}`,
         Body: file.buffer,
         ContentType: file.mimetype,
     };
