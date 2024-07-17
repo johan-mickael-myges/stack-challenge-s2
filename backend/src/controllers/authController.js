@@ -23,11 +23,11 @@ exports.loginUser = async (req, res, next) => {
     try {
         const { user, token } = await userService.loginUser(email, password);
         res.cookie('token', token, {
-            httpOnly: true ,
+            httpOnly: true,
             secure: env === 'production',
             maxAge: 60 * 60 * 1000,
         });
-        res.status(200).json({ user, token });
+        res.status(200).json({ user, token }); // Ensure user data is included in the response
     } catch (error) {
         next(error);
     }
@@ -36,4 +36,4 @@ exports.loginUser = async (req, res, next) => {
 exports.logoutUser = async (req, res, next) => {
     res.clearCookie('token');
     res.sendStatus(200);
-}
+};

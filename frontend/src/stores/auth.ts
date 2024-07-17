@@ -1,21 +1,29 @@
+// /src/stores/auth.ts
+
 import { defineStore } from 'pinia';
-import {ref} from 'vue';
-import {ExpressError, LoginData, RegisterData} from '@/types';
+import { ref, Ref } from 'vue';
+import { ExpressError, LoginData, RegisterData } from '@/types';
 import apiClient from "@/config/axios.ts";
 import { useRouter } from 'vue-router';
+import { User } from '@/types'; // Assurez-vous d'importer l'interface User depuis le fichier types/index.ts
 
 export const useAuthStore = defineStore('auth', () => {
     const loading = ref(false);
     const hasError = ref(false);
     const errors = ref<Record<string, ExpressError[]>>({});
+    const isAuthenticated = ref(false);
+    const user: Ref<User | null> = ref(null); // Utilisation de Ref pour user
+
     const router = useRouter();
 
+    // Fonction de réinitialisation de l'état
     const resetState = () => {
         loading.value = false;
         hasError.value = false;
         errors.value = {};
     }
 
+    // Fonction d'inscription
     const register = async (data: RegisterData) => {
         resetState();
         try {
@@ -37,10 +45,13 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
+    // Fonction de connexion
     const login = async (data: LoginData) => {
         resetState();
         try {
             const response = await apiClient.post('/auth/login', data);
+            user.value = response.data.user;  // Sauvegarde des données utilisateur
+            isAuthenticated.value = true;    // Définition de isAuthenticated à true
         } catch (err: any) {
             hasError.value = true;
             throw err;
@@ -49,19 +60,22 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    // Fonction de déconnexion
     const logout = async () => {
         resetState();
         try {
             await apiClient.post('/auth/logout');
-            window.location.href = '/login';
+            isAuthenticated.value = false; // Définition de isAuthenticated à false
+            user.value = null; // Effacer les données utilisateur
+            // Redirection vers la page de connexion
+            await router.push({
+                name: 'Login',
+            });
         } catch (err: any) {
             hasError.value = true;
             throw err;
         } finally {
             loading.value = false;
-            await router.push({
-                name: 'Login',
-            })
         }
     }
 
@@ -69,6 +83,8 @@ export const useAuthStore = defineStore('auth', () => {
         loading,
         errors,
         hasError,
+        isAuthenticated,
+        user, // Retourne la référence de user
         register,
         login,
         logout,

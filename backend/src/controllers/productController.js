@@ -4,6 +4,7 @@ const repository = require("~repositories/productRepository");
 
 exports.getAllProducts = async (req, res, next) => {
     try {
+        console.log('USER' , req.user);
         let options = buildQueryOptions(req.query);
 
         const products = await repository.all(options, req.user);

@@ -6,6 +6,7 @@ import userSecurityRoutes from "@/routes/public/userSecurityRoutes.ts";
 import userProductRoutes from './user/productRoutes';
 import PageNotFound from "@/components/Error/PageNotFound.vue";
 import adminSecurityRoutes from "@/routes/public/adminSecurityRoutes.ts";
+import UserProfile from '@/views/user/UserProfile.vue'; // Import UserProfile
 
 const routes: Array<RouteRecordRaw> = [
     ...adminSecurityRoutes,
@@ -18,6 +19,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'PageNotFound',
         component: PageNotFound,
     },
+    { path: '/user-profile', name: 'UserProfile', component: UserProfile }, // Add this route
 ]
 
 const router = createRouter({
