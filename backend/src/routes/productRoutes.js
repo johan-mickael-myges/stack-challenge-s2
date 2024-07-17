@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { checkToken, authorizeRoles } = require('~middlewares/authMiddleware');
+const { validateProductCreation, validateProductUpdate } = require('~middlewares/validations/validateProduct');
 const upload = require('~middlewares/uploadMiddleware');
 
 const {
@@ -22,6 +23,7 @@ router.post
     checkToken,
     authorizeRoles(['ROLE_ADMIN']),
     upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'images', maxCount: 3 }]),
+    validateProductCreation,
     createProduct
 );
 
@@ -30,6 +32,7 @@ router.put(
     checkToken,
     authorizeRoles(['ROLE_ADMIN']),
     upload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'images', maxCount: 3 }]),
+    validateProductUpdate,
     updateProduct
 );
 

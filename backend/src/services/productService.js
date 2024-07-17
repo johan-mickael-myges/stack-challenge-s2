@@ -5,25 +5,35 @@ const createProduct = async (productData, files) => {
     let thumbnailFile, imagesFiles, thumbnailDestination, imagesDestinations;
 
     if (files) {
-        thumbnailFile = files['thumbnail'][0];
-        imagesFiles = files['images'];
+        thumbnailFile = files['thumbnail'] ? files['thumbnail'][0] : null;
+        imagesFiles = files['images'] ? files['images'] : [];
 
-        thumbnailDestination = await generateFileDestination(thumbnailFile, 'products');
-        imagesDestinations = await Promise.all(imagesFiles.map(async (image) => {
+        thumbnailDestination = thumbnailFile ? await generateFileDestination(thumbnailFile, 'products') : null;
+        imagesDestinations = imagesFiles.length ? await Promise.all(imagesFiles.map(async (image) => {
             return await generateFileDestination(image, 'products');
-        }));
+        })) : [];
 
-        productData.thumbnail = thumbnailDestination.url;
-        productData.images = imagesDestinations.map(image => image.url);
+        if (thumbnailDestination) {
+            productData.thumbnail = thumbnailDestination.url;
+        }
+
+        if (imagesDestinations) {
+            productData.images = imagesDestinations.map(image => image.url);
+        }
     }
 
     const product = await Product.create(productData);
 
     if (files) {
-        await uploadToS3(thumbnailFile, thumbnailDestination);
-        await Promise.all(imagesFiles.map(async (image, index) => {
-            await uploadToS3(image, imagesDestinations[index]);
-        }));
+        if (thumbnailDestination) {
+            await uploadToS3(thumbnailFile, thumbnailDestination);
+        }
+
+        if (imagesDestinations) {
+            await Promise.all(imagesFiles.map(async (image, index) => {
+                await uploadToS3(image, imagesDestinations[index]);
+            }));
+        }
     }
 
     return product;
@@ -39,17 +49,12 @@ const updateProduct = async (productId, productData, files) => {
 
     if (files) {
         thumbnailFile = files['thumbnail'] ? files['thumbnail'][0] : null;
-        imagesFiles = files['images'] ? files['images'] : null;
+        imagesFiles = files['images'] ? files['images'] : [];
 
-        if (thumbnailFile) {
-            thumbnailDestination = await generateFileDestination(thumbnailFile, 'products');
-        }
-
-        if (imagesFiles) {
-            imagesDestinations = await Promise.all(imagesFiles.map(async (image) => {
-                return await generateFileDestination(image, 'products');
-            }));
-        }
+        thumbnailDestination = thumbnailFile ? await generateFileDestination(thumbnailFile, 'products') : null;
+        imagesDestinations = imagesFiles.length ? await Promise.all(imagesFiles.map(async (image) => {
+            return await generateFileDestination(image, 'products');
+        })) : [];
     }
 
     productData.thumbnail = thumbnailDestination ? thumbnailDestination.url : product.thumbnail;

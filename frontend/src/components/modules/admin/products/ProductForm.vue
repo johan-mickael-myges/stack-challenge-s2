@@ -1,26 +1,72 @@
 <template>
   <v-form ref="productForm" @submit.prevent="handleSubmit" :model-value="true" lazy-validation enctype="multipart/form-data">
-    <v-text-field v-model="formState.data.name.value" label="Nom" required :rules="rules.name"></v-text-field>
-    <v-text-field v-model="formState.data.reference.value" label="Référence" required :rules="rules.reference"></v-text-field>
-    <v-textarea v-model="formState.data.description.value" label="Description"></v-textarea>
-    <v-text-field v-model.number="formState.data.price.value" label="Prix" required :rules="rules.price"></v-text-field>
-    <v-file-input v-model="formState.data.thumbnail.value" label="Miniature" accept="image/*" :rules="rules.thumbnail"></v-file-input>
+    <v-text-field
+        v-model="formState.data.name.value"
+        label="Nom"
+        required
+        :rules="rules.name"
+        :error-messages="formState.validationErrors?.name?.join(' | ')"
+    >
+    </v-text-field>
+
+    <v-text-field
+        v-model="formState.data.reference.value"
+        label="Référence"
+        required
+        :rules="rules.reference"
+        :error-messages="formState.validationErrors?.reference?.join(' | ')"
+    >
+    </v-text-field>
+
+    <v-textarea
+        v-model="formState.data.description.value"
+        label="Description"
+        :error-messages="formState.validationErrors?.description?.join(' | ')"
+    >
+    </v-textarea>
+
+    <v-text-field
+        v-model.number="formState.data.price.value"
+        label="Prix"
+        required
+        :rules="rules.price"
+        :error-messages="formState.validationErrors?.price?.join(' | ')"
+    >
+    </v-text-field>
+
+    <v-file-input
+        v-model="formState.data.thumbnail.value"
+        label="Miniature"
+        accept="image/*"
+        :rules="rules.thumbnail"
+        :error-messages="formState.validationErrors?.thumbnail?.join(' | ')"
+    >
+    </v-file-input>
     <v-img v-if="isEditing" :src="product?.thumbnail" width="200" height="200"></v-img>
-    <v-file-input v-model="formState.data.images.value" label="Images" multiple accept="image/*" :rules="rules.images"></v-file-input>
+
+    <v-file-input
+        v-model="formState.data.images.value"
+        label="Images"
+        multiple
+        accept="image/*"
+        :rules="rules.images"
+        :error-messages="formState.validationErrors?.images?.join(' | ')"
+    >
+    </v-file-input>
     <v-img v-if="isEditing" v-for="(image, key) in product?.images" :key="'product-' + product?.id + '-images-' + key" :src="image" width="100" height="100"></v-img>
+
     <v-btn type="submit" color="primary" :disabled="!valid || formState.isSubmitting">Enregistrer</v-btn>
     <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Annuler</v-btn>
     <v-progress-linear v-if="formState.isSubmitting" indeterminate color="primary"></v-progress-linear>
     <v-alert v-if="formState.httpError" type="error">{{ formState.httpError }}</v-alert>
-    <v-alert v-for="(errors, field) in formState.validationErrors" :key="field" type="error">{{ field }}: {{ errors.join(', ') }}</v-alert>
   </v-form>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted, ref} from 'vue';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useForm } from '@/composables/useForm.ts';
-import {string, z} from 'zod';
+import { z } from 'zod';
 import { useProductStore } from '@/stores/products.ts';
 
 const productSchema = z.object({
@@ -35,7 +81,6 @@ const productSchema = z.object({
 
 export default defineComponent({
   name: 'ProductForm',
-  methods: {string},
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -55,7 +100,7 @@ export default defineComponent({
           (v: string) => v.length >= 3 || 'Le nom doit comporter au moins 3 caractères',
           (v: string) => v.length <= 255 || 'Le nom doit comporter au plus 255 caractères',
         ],
-        transformer: (v: string) => v.toUpperCase(),
+        transform: (v: string) => v.toUpperCase(),
       },
       reference: {
         value: '',

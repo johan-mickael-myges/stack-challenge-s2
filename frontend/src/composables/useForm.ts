@@ -1,5 +1,6 @@
 import { reactive, watch } from 'vue';
 import { ZodSchema, ZodError } from 'zod';
+import { ExpressError } from '@/types'; // Import the ExpressError type
 
 interface Rule<T> {
     (value: T): boolean | string;
@@ -8,9 +9,10 @@ interface Rule<T> {
 interface FormField<T> {
     value: T;
     rules?: Rule<T>[];
+    transform?: (value: T) => T; // Add transform function here
 }
 
-// an interface that have multiple object of FormField
+// an interface that has multiple objects of FormField
 interface InitialData {
     [key: string]: FormField<any>;
 }
@@ -32,8 +34,8 @@ export function useForm(initialData: InitialData, schema: ZodSchema<any>) {
     });
 
     const transformField = (fieldName: string, transformFn: (value: any) => any) => {
-        watch(() => formState.data[fieldName], (newValue) => {
-            formState.data[fieldName] = transformFn(newValue);
+        watch(() => formState.data[fieldName].value, (newValue) => {
+            formState.data[fieldName].value = transformFn(newValue);
         });
     };
 
@@ -74,7 +76,11 @@ export function useForm(initialData: InitialData, schema: ZodSchema<any>) {
             if (error.name === 'CanceledError') {
                 return;
             } else if (error.response) {
-                formState.httpError = error.response.data || 'An error occurred';
+                if (Array.isArray(error.response.data)) {
+                    mapExpressErrorsToValidationErrors(error.response.data);
+                } else {
+                    formState.httpError = error.response.data || 'An error occurred';
+                }
             } else {
                 formState.httpError = 'An error occurred';
             }
@@ -108,7 +114,17 @@ export function useForm(initialData: InitialData, schema: ZodSchema<any>) {
                 rules: rules[key],
             };
         });
-    }
+    };
+
+    const mapExpressErrorsToValidationErrors = (errors: ExpressError[]) => {
+        console.log(errors);
+        errors.forEach((error: ExpressError) => {
+            if (!formState.validationErrors[error.path]) {
+                formState.validationErrors[error.path] = [];
+            }
+            formState.validationErrors[error.path].push(error.msg);
+        });
+    };
 
     return {
         formState,
