@@ -19,7 +19,6 @@ module.exports = {
     const salt = await bcrypt.genSalt(Number(hashRounds));
     await queryInterface.bulkInsert('users', [
       {
-        id: 2,
         username: 'user',
         firstname: 'User',
         lastname: 'User',
@@ -31,12 +30,16 @@ module.exports = {
       }
     ]);
 
+    const maxId = await queryInterface.sequelize.query('SELECT MAX(id) as lastId FROM users');
+
     await queryInterface.bulkInsert('user_roles', [
       {
-        userId: 1,
+        userId: maxId[0][0].lastid,
         roleId: ROLE_USER,
       }
     ]);
+
+    await queryInterface.sequelize.query(`SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));`);
   },
 
   async down(queryInterface, Sequelize) {
