@@ -26,7 +26,6 @@ const validateProduct = [
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            console.log('errors', errors.array());
             return res.status(400).json(errors.array());
         }
         next();
@@ -56,7 +55,6 @@ const validateProductUpdate = [
         .custom(async (value, { req }) => {
             const product = await Product.findOne({ where: { reference: value } });
             if (product && product.id !== Number(req.body.id)) {
-                console.log('product', product, req.body);
                 return Promise.reject('La référence est déjà utilisée');
             }
         }),

@@ -12,6 +12,7 @@ jest.mock('~models', () => ({
     Product: {
         count: jest.fn(),
         findAll: jest.fn(),
+        findOne: jest.fn(),
         findByPk: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
@@ -131,10 +132,10 @@ describe('Product Controller', () => {
         it('should be able to create a new product as admin', async () => {
             const newProduct = {
                name: 'Test Product',
-               reference: '123ABC',
+               reference: '123ABCD',
                price: 100.0,
                description: 'A product for testing',
-               images: ['http://example.com/image1.jpg'],
+               images: ['https://example.com/image1.jpg'],
                quantity: 10,
                brandId: 1,
             };
@@ -145,11 +146,12 @@ describe('Product Controller', () => {
 
             generateFileDestination.mockResolvedValue({
                 destination: 'products/image1.jpg',
-                url: 'http://example.com/image1.jpg',
+                url: 'https://example.com/image1.jpg',
             });
 
-            uploadToS3.mockResolvedValue('http://example.com/image1.jpg');
+            uploadToS3.mockResolvedValue('https://example.com/image1.jpg');
 
+            Product.findOne.mockResolvedValue(null);
             Product.create.mockResolvedValue(newProduct);
 
             const response = await request(app)
