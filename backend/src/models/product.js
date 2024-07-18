@@ -102,20 +102,6 @@ module.exports = (sequelize) => {
                         }
                     }
                 },
-                quantity: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false,
-                    defaultValue: 0,
-                    validate: {
-                        isInt: {
-                            msg: 'La quantité doit être un entier'
-                        },
-                        min: {
-                            args: [0],
-                            msg: 'La quantité ne peut pas être négative'
-                        }
-                    }
-                },
                 brandId: {
                     type: DataTypes.INTEGER,
                     references: {

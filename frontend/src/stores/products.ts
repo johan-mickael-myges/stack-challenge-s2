@@ -11,7 +11,6 @@ const productSchema = z.object({
     price: z.number(),
     thumbnail: z.instanceof(File).nullable(),
     images: z.array(z.instanceof(File)).optional(),
-    quantity: z.number(),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
 });
@@ -25,7 +24,6 @@ const productSchemaEntity = z.object({
     price: z.number(),
     thumbnail: z.string(),
     images: z.array(z.string()).optional(),
-    quantity: z.number(),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
 });

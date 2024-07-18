@@ -34,7 +34,6 @@ import {useCSVExport} from "@/composables/useCSVExport.ts";
 import Heading from "@/components/Typography/Heading.vue";
 import DataTable from "@/components/Table/DataTable.vue";
 import {Header} from "@/components/Table/types/Header.ts";
-import {useAuthStore} from "@/stores/auth.ts";
 
 export default defineComponent({
   name: 'ProductTable',
@@ -44,7 +43,6 @@ export default defineComponent({
     DeleteButton,
   },
   setup() {
-    const authStore = useAuthStore();
     const productStore = useProductStore();
     const {exportCSV} = useCSVExport();
 
