@@ -36,7 +36,7 @@ const goToCart = () => router.push({ name: 'UserCart' });
 const goToHome = () => router.push('/');
 
 const goToProfile = () => {
-  if (authStore.isAuthenticated) {
+  if (authStore.user.userId) { // Check if user is authenticated
     router.push({ name: 'UserProfile' });
   } else {
     goToByName('login');
