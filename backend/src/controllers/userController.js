@@ -4,24 +4,34 @@
 const { validationResult } = require('express-validator');
 const userService = require('~services/userService'); // Assurez-vous d'importer votre service utilisateur correctement
 const { env } = require('~config/config'); // Assurez-vous d'importer votre configuration correctement
+const { User, Order } = require('../models');
 
-// Fonction pour récupérer le profil utilisateur
-const getUserProfile = async (req, res, next) => {
-    // Récupération de l'ID utilisateur à partir de req.user (déjà attaché par le middleware d'authentification)
-    const userId = req.user.id;
-
+const getUserProfile = async (req, res) => {
     try {
-        // Utilisation du service utilisateur pour récupérer le profil de l'utilisateur
-        const userProfile = await userService.getUserProfile(userId);
-
-        // Renvoi des informations de profil de l'utilisateur
-        res.json(userProfile);
+      const userId = req.user.id; // Récupérer l'ID de l'utilisateur depuis la session ou le token
+      const user = await User.findById(userId); // Récupérer les informations de l'utilisateur depuis la base de données
+      if (user) {
+        res.json({
+          firstname: user.firstname,
+          lastname: user.lastname,
+          email: user.email,
+          number: user.number
+        });
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
     } catch (error) {
-        next(error); // Gestion des erreurs
+      res.status(500).json({ message: 'Server error', error });
+    }
+  };
+
+const getUserOrders = async (req, res) => {
+    try {
+        const orders = await Order.findAll({ where: { userId: req.user.id } });
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
-// Exportation de la fonction getUserProfile
-module.exports = {
-    getUserProfile,
-};
+module.exports = { getUserProfile, getUserOrders };

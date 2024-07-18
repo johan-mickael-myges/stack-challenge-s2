@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import { ExpressError, LoginData, RegisterData } from '@/types';
 import apiClient from "@/config/axios.ts";
 import { useRouter } from 'vue-router';
@@ -9,7 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
     const hasError = ref(false);
     const errors = ref<Record<string, ExpressError[]>>({});
     const router = useRouter();
-    let user = reactive<{ [key: string]: any }>({});
+    const user = reactive<{ [key: string]: any }>({});
 
     const resetState = () => {
         loading.value = false;
@@ -93,6 +93,9 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    // Propriété calculée pour vérifier si l'utilisateur est authentifié
+    const isAuthenticated = computed(() => !!Object.keys(user).length);
+
     // Load user from localStorage on store initialization
     loadUserFromLocalStorage();
 
@@ -105,5 +108,7 @@ export const useAuthStore = defineStore('auth', () => {
         logout,
         user,
         verifyAuth,
+        isAuthenticated,
     };
+
 });

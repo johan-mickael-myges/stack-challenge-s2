@@ -41,3 +41,9 @@ export interface AdminSidebarItem {
         onClick?: () => void;
     };
 }
+
+export interface Order {
+    id: number;
+    paymentMethod: string;
+  }
+  

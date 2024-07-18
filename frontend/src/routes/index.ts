@@ -10,7 +10,7 @@ import productRoutes from './public/products/productRoutes';
 import adminSecurityRoutes from "@/routes/public/security/adminSecurityRoutes.ts";
 import privacyPolicyRoutes from '@/routes/public/policy/privacyPolicyRoutes';
 import { useAuthStore } from "@/stores/auth.ts";
-import UserProfileRoutes from '@/routes/user/userProfileRoutes.ts';
+import UserProfileRoutes from '@/routes/user/userRoutes';
 
 const routes: Array<RouteRecordRaw> = [
   ...adminSecurityRoutes,

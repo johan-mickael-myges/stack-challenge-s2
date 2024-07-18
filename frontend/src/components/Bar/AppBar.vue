@@ -1,50 +1,3 @@
-<script setup lang="ts">
-import { useGoToUrl } from "@/composables/useGoToUrl.ts";
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import CustomAutocomplete from "./CustomAutocomplete.vue";
-import CategoryButtons from "./CategoryButtons.vue";
-import { useRouter } from 'vue-router';
-import { useAuthStore } from "@/stores/auth";
-
-const { goToByName } = useGoToUrl();
-const authStore = useAuthStore();
-
-const isSmallScreen = ref(false);
-const isMediumScreen = ref(false);
-const isLargerScreen = ref(false);
-
-const items = ref(['item1', 'item2', 'item3']);
-const categories = ref(['Bagues', 'Boucles d\'oreilles', 'Colliers', 'Bracelets', 'Montres']);
-
-const handleResize = () => {
-  isLargerScreen.value = window.innerWidth < 882;
-  isMediumScreen.value = window.innerWidth < 802;
-  isSmallScreen.value = window.innerWidth < 628;
-};
-
-onMounted(() => {
-  window.addEventListener('resize', handleResize);
-  handleResize();
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize);
-});
-
-const router = useRouter();
-const goToCart = () => router.push({ name: 'UserCart' });
-const goToHome = () => router.push('/');
-
-const goToProfile = () => {
-  if (authStore.user.userId) { // Check if user is authenticated
-    router.push({ name: 'UserProfile' });
-  } else {
-    goToByName('login');
-  }
-};
-
-</script>
-
 <template>
   <v-app-bar :elevation="isMediumScreen ? 1 : 0" height="80">
     <v-row class="align-center">
@@ -84,6 +37,7 @@ const goToProfile = () => {
       </v-col>
     </v-row>
   </v-app-bar>
+
   <v-app-bar v-if="!isMediumScreen" elevation="1" height="40" class="pb-3">
     <CategoryButtons :categories="categories" />
   </v-app-bar>
@@ -94,6 +48,54 @@ const goToProfile = () => {
     </div>
   </v-app-bar>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from "@/stores/auth.ts";
+import CustomAutocomplete from "./CustomAutocomplete.vue";
+import CategoryButtons from "./CategoryButtons.vue";
+import { useGoToUrl } from "@/composables/useGoToUrl.ts";
+
+const { goToByName } = useGoToUrl();
+const authStore = useAuthStore();
+
+const isSmallScreen = ref(false);
+const isMediumScreen = ref(false);
+const isLargerScreen = ref(false);
+
+const items = ref(['item1', 'item2', 'item3']);
+const categories = ref(['Bagues', 'Boucles d\'oreilles', 'Colliers', 'Bracelets', 'Montres']);
+
+const handleResize = () => {
+  isLargerScreen.value = window.innerWidth < 882;
+  isMediumScreen.value = window.innerWidth < 802;
+  isSmallScreen.value = window.innerWidth < 628;
+};
+
+const router = useRouter();
+
+const goToCart = () => router.push({ name: 'UserCart' });
+
+const goToHome = () => router.push('/');
+
+const goToProfile = () => {
+  if (authStore.isAuthenticated) {
+    router.push({ path: '/profile/info' }); // Par défaut, affichez les commandes
+  } else {
+    goToByName('login');
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+  handleResize();
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
+</script>
 
 <style scoped>
 .v-app-bar-title {
