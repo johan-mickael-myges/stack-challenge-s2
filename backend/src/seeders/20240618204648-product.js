@@ -15,7 +15,6 @@ module.exports = {
         price: parseFloat(faker.commerce.price()),
         thumbnail: faker.image.url(),
         images: [faker.image.url(), faker.image.url(), faker.image.url()],
-        quantity: faker.number.int(1, 100),
         createdAt: new Date(),
         updatedAt: new Date(),
       });
