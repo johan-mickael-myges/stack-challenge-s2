@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const bcrypt = require('bcrypt');
-const config = require('~config/config');
+const config = require('../config/config');
 
 class User extends Model {
     static associate(models) {
