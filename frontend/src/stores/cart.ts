@@ -10,7 +10,6 @@ const productSchema = z.object({
     description: z.string(),
     thumbnail: z.string(),
     images: z.array(z.string()),
-    quantity: z.number(),
     brandId: z.number().nullable(),
     createdAt: z.string(),
     updatedAt: z.string(),
