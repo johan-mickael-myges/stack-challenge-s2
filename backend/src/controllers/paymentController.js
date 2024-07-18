@@ -1,4 +1,3 @@
-// src/controllers/paymentController.js
 const paypal = require('@paypal/checkout-server-sdk');
 
 const environment = new paypal.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_SECRET);
@@ -12,8 +11,8 @@ exports.createOrder = async (req, res) => {
     intent: 'CAPTURE',
     purchase_units: [{
       amount: {
-        currency_code: 'USD',
-        value: totalPrice.toFixed(2) // Ensure it's formatted as a string with two decimal places
+        currency_code: 'EUR',
+        value: totalPrice.toFixed(2)
       }
     }]
   });
