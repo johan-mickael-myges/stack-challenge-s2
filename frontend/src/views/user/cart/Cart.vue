@@ -47,7 +47,6 @@
             </div>
             <div>
               <v-btn class="mb-4" color="primary" block @click="proceedToCheckout">Passer la commande</v-btn>
-              <div id="paypal-button-container"></div>
             </div>
           </v-card>
         </v-col>
@@ -56,19 +55,17 @@
   </v-container>
 </template>
 
-
-
-
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import axios from 'axios';
-import notFoundImage from '@/assets/not-found-image.png';
+import { useRouter } from 'vue-router';
 import { useCartStore } from "@/stores/cart.ts";
 
 export default defineComponent({
   name: 'Cart',
   setup() {
     const store = useCartStore();
+    const router = useRouter();
 
     const loading = computed(() => store.loading);
     const cart = computed(() => store.cart);
@@ -77,9 +74,6 @@ export default defineComponent({
     const fetchCart = store.fetchCart;
     const removeProductFromCart = store.removeProductFromCart;
     const updateCartItemQuantity = store.updateCartItemQuantity;
-
-    const paypalLoaded = ref(false);
-    const paypalRendered = ref(false);
 
     const cartIsEmpty = computed(() => {
       return !cart.value || !cart.value.CartItems || cart.value.CartItems.length === 0;
@@ -90,118 +84,40 @@ export default defineComponent({
         await fetchCart();
       } catch (error) {
         console.error('Failed to fetch cart items:', error);
-      } finally {
-        nextTick(() => {
-          if (paypalLoaded.value && !paypalRendered.value) {
-            setupPayPalButton();
-          }
-        });
       }
-    };
-
-    const loadPayPalScript = async () => {
-      if (document.getElementById('paypal-sdk')) {
-        paypalLoaded.value = true;
-        nextTick(() => {
-          if (!paypalRendered.value) {
-            setupPayPalButton();
-          }
-        });
-        return;
-      }
-
-      try {
-        const response = await axios.get('http://localhost:8000/config/paypal-client-id');
-        if (response.status !== 200 || !response.data.clientId) {
-          throw new Error('Failed to fetch PayPal client ID');
-        }
-        const PAYPAL_CLIENT_ID = response.data.clientId;
-        console.log("PayPal Client ID:", PAYPAL_CLIENT_ID);
-
-        const script = document.createElement('script');
-        script.id = 'paypal-sdk';
-        script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}`;
-        script.onload = () => {
-          console.log("PayPal script loaded");
-          paypalLoaded.value = true;
-          nextTick(() => {
-            if (!paypalRendered.value) {
-              setupPayPalButton();
-            }
-          });
-        };
-        script.onerror = () => {
-          console.error('Failed to load PayPal script');
-        };
-        document.body.appendChild(script);
-      } catch (error) {
-        console.error('Failed to load PayPal script:', error);
-      }
-    };
-
-    const setupPayPalButton = () => {
-      if (!paypalLoaded.value || paypalRendered.value) return;
-
-      const paypalButtonContainer = document.getElementById('paypal-button-container');
-      if (paypalButtonContainer) {
-        paypalButtonContainer.innerHTML = '';
-      }
-
-      // @ts-ignore
-      paypal.Buttons({
-        createOrder: async (): Promise<string> => {
-          try {
-            const response = await axios.post('http://localhost:8000/payment/create-order', { totalPrice: totalPrice.value });
-            console.log('Order created:', response.data);
-            return response.data.orderID;
-          } catch (error) {
-            console.error('Failed to create order:', error);
-            throw error;
-          }
-        },
-        onApprove: async (data: { orderID: string }): Promise<void> => {
-          try {
-            const response = await axios.post('http://localhost:8000/payment/capture-order', { orderID: data.orderID });
-            console.log('Order captured:', response.data);
-            alert('Transaction completed!');
-            fetchCartItems();
-          } catch (error) {
-            console.error('Failed to capture order:', error);
-            alert('Failed to complete transaction.');
-          }
-        },
-        onError: (err: any): void => {
-          console.error('PayPal Button error:', err);
-          alert('An error occurred during the transaction.');
-        }
-      }).render('#paypal-button-container');
-      console.log("PayPal button setup");
-
-      paypalRendered.value = true;
     };
 
     const updateQuantity = async (productId: number, quantity: number) => {
-      if (quantity < 1) return; // Prevent quantity from being less than 1
+      if (quantity < 1) return;
       await updateCartItemQuantity(productId, quantity);
     };
 
-    const proceedToCheckout = () => {
-      // Logic to proceed to checkout
-      alert('Proceeding to checkout...');
-      // You can add any additional logic here, such as redirecting to a checkout page
+    const proceedToCheckout = async () => {
+      try {
+        // Create the order in the backend
+        const response = await axios.post('http://localhost:8000/orders', {
+          items: cart.value.CartItems.map(item => ({
+            productId: item.Product.id,
+            quantity: item.quantity,
+            price: item.Product.price,
+          })),
+          totalPrice: totalPrice.value,
+          paymentMethod: 'PAYPAL',
+        }, {
+          withCredentials: true
+        });
+
+        const orderId = response.data.id;
+        // Redirect to the order details page
+        router.push({ name: 'OrderDetails', params: { orderId } });
+      } catch (error) {
+        console.error('Failed to create order:', error);
+        alert('Failed to proceed to checkout.');
+      }
     };
 
     onMounted(() => {
       fetchCartItems();
-      loadPayPalScript();
-    });
-
-    onBeforeUnmount(() => {
-      const paypalButtonContainer = document.getElementById('paypal-button-container');
-      if (paypalButtonContainer) {
-        paypalButtonContainer.innerHTML = '';
-      }
-      paypalRendered.value = false;
     });
 
     return {
@@ -251,5 +167,3 @@ export default defineComponent({
   align-items: center;
 }
 </style>
-
-
