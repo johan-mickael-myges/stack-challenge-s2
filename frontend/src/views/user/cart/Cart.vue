@@ -15,44 +15,49 @@
           </div>
           <div v-else>
             <div v-for="item in cart.CartItems" :key="item.id" class="cart-item mb-4">
-              <v-card class="d-flex">
-                <v-img :src="item.Product.thumbnail" class="cart-item-image w-24 h-24 mr-4"></v-img>
-                <v-card-text>
+              <v-card class="d-flex align-center p-4 relative">
+                <v-img :src="item.Product.thumbnail" class="cart-item-image mr-4"></v-img>
+                <v-card-text class="d-flex flex-column justify-center">
                   <v-card-title>{{ item.Product.name }}</v-card-title>
-                  <v-card-subtitle>L'unité:  {{ item.Product.price }} €</v-card-subtitle>
+                  <v-card-subtitle>L'unité: {{ item.Product.price }} €</v-card-subtitle>
                   <v-card-subtitle>Le total: {{ item.Product.price * item.quantity }} €</v-card-subtitle>
-                  <div>
-                    <v-btn icon @click.prevent="updateQuantity(item.Product.id, item.quantity - 1)" :disabled="item.quantity <= 1">
-                      <v-icon size="20px">mdi-minus</v-icon>
-                    </v-btn>
-                    Quantité: {{ item.quantity }}
-                    <v-btn icon @click.prevent="updateQuantity(item.Product.id, item.quantity + 1)">
-                      <v-icon size="20px">mdi-plus</v-icon>
-                    </v-btn>
-                    <v-btn icon @click.prevent="removeProductFromCart(item.Product.id)">
-                      <v-icon size="20px">mdi-delete</v-icon>
-                    </v-btn>
-                  </div>
                 </v-card-text>
+                <v-btn icon class="delete-button" @click.prevent="removeProductFromCart(item.Product.id)">
+                  <v-icon size="20px">mdi-delete</v-icon>
+                </v-btn>
+                <v-select
+                  :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                  v-model="item.quantity"
+                  label="Quantité"
+                  class="small-select rounded-select quantity-select"
+                  @change="updateQuantity(item.Product.id, item.quantity)"
+                ></v-select>
               </v-card>
             </div>
           </div>
         </v-col>
         <!-- Summary Box -->
         <v-col cols="4">
-          <v-card class="p-4 bg-white rounded shadow">
-            <div class="mb-4">
-              <p class="text-lg font-semibold">Total</p>
+          <v-card class="p-4 bg-white rounded shadow d-flex flex-column justify-space-between">
+            <div>
+              <p class="text-lg font-semibold">Résumé de la commande</p>
               <p>Sous-total: {{ totalPrice }} €</p>
               <p>Livraison: (à ajouter)</p>
+              <p class="font-bold">Total: {{ totalPrice }} €</p>
             </div>
-            <div id="paypal-button-container"></div>
+            <div>
+              <v-btn class="mb-4" color="primary" block @click="proceedToCheckout">Passer la commande</v-btn>
+              <div id="paypal-button-container"></div>
+            </div>
           </v-card>
         </v-col>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
+
+
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
@@ -62,15 +67,6 @@ import { useCartStore } from "@/stores/cart.ts";
 
 export default defineComponent({
   name: 'Cart',
-  data() {
-    return {
-      isLoading: true,
-      notFoundImage,
-      cartItems: [] as CartItem[],
-      paypalLoaded: false,
-      paypalRendered: false
-    };
-  },
   setup() {
     const store = useCartStore();
 
@@ -189,6 +185,12 @@ export default defineComponent({
       await updateCartItemQuantity(productId, quantity);
     };
 
+    const proceedToCheckout = () => {
+      // Logic to proceed to checkout
+      alert('Proceeding to checkout...');
+      // You can add any additional logic here, such as redirecting to a checkout page
+    };
+
     onMounted(() => {
       fetchCartItems();
       loadPayPalScript();
@@ -209,6 +211,7 @@ export default defineComponent({
       totalPrice,
       removeProductFromCart,
       updateQuantity,
+      proceedToCheckout,
     };
   },
 });
@@ -220,9 +223,33 @@ export default defineComponent({
 }
 .cart-item {
   margin-bottom: 20px;
+  position: relative;
 }
 .cart-item-image {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+.small-select {
+  max-width: 100px;
+}
+.rounded-select .v-input__control {
+  border-radius: 12px !important;
+}
+.delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+.quantity-select {
+  position: absolute;
+  bottom: 2px;
+  right: 8px;
+}
+.v-card {
+  display: flex;
+  align-items: center;
 }
 </style>
+
+
