@@ -5,18 +5,12 @@ exports.createOrder = async (req, res, next) => {
     const { shippingMethod, address, items, paymentMethod } = req.body;
     const userId = req.user.userId;
 
-    console.log('Creating order with details:', { userId, paymentMethod, shippingMethod, address, items });
-
-    // Create a new order
     const order = await Order.create({
       userId,
       paymentMethod,
-      // Add any additional fields required for shippingMethod and address if they exist in your model
+      // Add any additional fields required for shippingMethod and address etcetc
     });
 
-    console.log('Order created with ID:', order.id);
-
-    // Create order items
     const orderItems = items.map(item => ({
       orderId: order.id,
       productId: item.productId,
@@ -24,8 +18,6 @@ exports.createOrder = async (req, res, next) => {
       unitPrice: item.price,
       subtotal: item.price * item.quantity
     }));
-
-    console.log('Creating order items:', orderItems);
 
     await OrderItem.bulkCreate(orderItems);
 
