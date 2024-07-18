@@ -139,7 +139,7 @@ describe('Product Controller', () => {
             };
 
             jwt.verify.mockImplementation((token, secret, callback) => {
-                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+                callback(null, { roles: ['ROLE_ADMIN'] });
             });
 
             generateFileDestination.mockResolvedValue({
@@ -207,7 +207,7 @@ describe('Product Controller', () => {
         it('should be able to update a product as admin', async () => {
 
             jwt.verify.mockImplementation((token, secret, callback) => {
-                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+                callback(null, { roles: ['ROLE_ADMIN'] });
             });
 
             Product.findByPk.mockResolvedValue(updatedProductEntity);
@@ -253,7 +253,7 @@ describe('Product Controller', () => {
 
         it('should be able to delete a product as admin', async () => {
             jwt.verify.mockImplementation((token, secret, callback) => {
-                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+                callback(null, { roles: ['ROLE_ADMIN'] });
             });
 
             Product.findByPk.mockResolvedValue(fountProductEntity);

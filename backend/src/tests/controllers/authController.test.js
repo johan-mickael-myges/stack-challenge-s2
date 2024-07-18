@@ -28,7 +28,7 @@ describe('Auth Controller', () => {
     describe('GET /check', () => {
         it('should respond with 200 if token is valid', async () => {
             jwt.verify.mockImplementation((token, secret, callback) => {
-                callback(null, { id: 1, username: 'testUser', roles: ['user'] });
+                callback(null, { });
             });
 
             const response = await request(app)
@@ -82,7 +82,7 @@ describe('Auth Controller', () => {
         it('should respond with 500 if there is an error during login', async () => {
             validationResult.mockReturnValue({ isEmpty: () => true });
 
-            userService.loginUser.mockRejectedValue(new Error('Login error'));
+            userService.loginUser.mockRejectedValue(new Error());
 
             const response = await request(app)
                     .post('/auth/login')

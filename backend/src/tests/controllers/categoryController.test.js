@@ -139,7 +139,7 @@ describe('Category Controller', () => {
             });
 
             jwt.verify.mockImplementation((token, secret, callback) => {
-                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+                callback(null, { roles: ['ROLE_ADMIN'] });
             });
 
             Category.create.mockResolvedValue(newCategory);
@@ -191,7 +191,7 @@ describe('Category Controller', () => {
             });
 
             jwt.verify.mockImplementation((token, secret, callback) => {
-                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+                callback(null, { roles: ['ROLE_ADMIN'] });
             });
 
             const response = await request(app)
@@ -213,7 +213,7 @@ describe('Category Controller', () => {
             });
 
             jwt.verify.mockImplementation((token, secret, callback) => {
-                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+                callback(null, { roles: ['ROLE_ADMIN'] });
             });
 
             Category.findByPk.mockResolvedValue(updatedCategoryEntity);
@@ -252,7 +252,7 @@ describe('Category Controller', () => {
 
         it('should be able to delete a category as admin', async () => {
             jwt.verify.mockImplementation((token, secret, callback) => {
-                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+                callback(null, { roles: ['ROLE_ADMIN'] });
             });
 
             Category.findByPk.mockResolvedValue(foundCategoryEntity);
