@@ -10,3 +10,14 @@ exports.allForProduct = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.countRemainingForProduct = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        const count = await service.countRemainingForProduct(id);
+        res.status(200).json(count);
+    } catch (error) {
+        next(error);
+    }
+}

@@ -3,6 +3,7 @@ const router = express.Router();
 const { checkToken, authorizeRoles } = require('~middlewares/authMiddleware');
 const { validateProductCreation, validateProductUpdate } = require('~middlewares/validations/validateProduct');
 const upload = require('~middlewares/uploadMiddleware');
+const stockRoutes = require('~routes/stockRoutes');
 
 const {
     countProducts,
@@ -12,8 +13,6 @@ const {
     updateProduct,
     deleteProduct
 } = require('~controllers/productController');
-
-const stockController = require('~controllers/stockController');
 
 router.get('/count', countProducts);
 router.get('/', getAllProducts);
@@ -45,14 +44,6 @@ router.delete(
     deleteProduct
 );
 
-// ######################### ROUTES FOR STOCKS #########################
-
-router.get(
-    '/:id/stocks',
-    checkToken,
-    authorizeRoles(['ROLE_ADMIN']),
-    stockController.allForProduct
-);
-
+router.use('/:id/stocks', stockRoutes);
 
 module.exports = router;

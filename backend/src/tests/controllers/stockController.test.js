@@ -88,4 +88,61 @@ describe('Stock Controller', () => {
             expect(response.statusCode).toBe(500);
         });
     });
+
+    describe('GET /products/:id/stocks/count', () => {
+        it('should return 401 if the user is not authenticated', async () => {
+            jwt.verify.mockImplementation((token, secret, callback) => {
+                callback(new UnauthorizedError(), null);
+            });
+
+            const response = await request(app).get('/products/1/stocks/count');
+
+            expect(response.statusCode).toBe(401);
+        });
+
+        it('should return 404 if product is not found', async () => {
+            jwt.verify.mockImplementation((token, secret, callback) => {
+                callback(null, {});
+            });
+
+            service.countRemainingForProduct.mockRejectedValue(new NotFoundError());
+
+            const response = await request(app)
+                    .get('/products/1/stocks/count')
+                    .set('Cookie', ['token=valid-token']);
+
+            expect(response.statusCode).toBe(404);
+        });
+
+        it('should return 200 with the correct remaining stock count', async () => {
+            jwt.verify.mockImplementation((token, secret, callback) => {
+                callback(null, {});
+            });
+
+            const mockCount = 10;
+
+            service.countRemainingForProduct.mockResolvedValue(mockCount);
+
+            const response = await request(app)
+                    .get('/products/1/stocks/count')
+                    .set('Cookie', ['token=valid-token']);
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toEqual(mockCount);
+        });
+
+        it('should return 500 if an unexpected error occurs', async () => {
+            jwt.verify.mockImplementation((token, secret, callback) => {
+                callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
+            });
+
+            service.countRemainingForProduct.mockRejectedValue(new Error());
+
+            const response = await request(app)
+                    .get('/products/1/stocks/count')
+                    .set('Cookie', ['token=valid-token']);
+
+            expect(response.statusCode).toBe(500);
+        });
+    });
 });
