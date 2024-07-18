@@ -6,9 +6,9 @@
       <h2 class="text-xl font-semibold mt-6 mb-2">Informations que Nous Collectons</h2>
       <p>Nous pouvons collecter et traiter les informations suivantes :</p>
       <ul class="list-disc pl-6">
-        <li><strong>Informations personnelles</strong> : nom, adresse e-mail, numéro de téléphone, adresse postale.</li>
-        <li><strong>Informations techniques</strong> : adresse IP, type de navigateur, fuseau horaire, types et versions de plugins de navigateur, système d'exploitation.</li>
-        <li><strong>Informations sur l'utilisation</strong> : informations sur votre visite, y compris le chemin de navigation complet de l'URL vers, à travers et depuis notre site (y compris la date et l'heure); produits que vous avez consultés ou recherchés; temps de réponse des pages, erreurs de téléchargement, durée des visites sur certaines pages, informations d'interaction des pages (comme le défilement, les clics et les survols).</li>
+        <li><strong>Informations personnelles</strong>: nom, adresse e-mail, numéro de téléphone, adresse postale.</li>
+        <li><strong>Informations techniques</strong>: adresse IP, type de navigateur, fuseau horaire, types et versions de plugins de navigateur, système d'exploitation.</li>
+        <li><strong>Informations sur l'utilisation</strong>: informations sur votre visite, y compris le chemin de navigation complet de l'URL vers, à travers et depuis notre site (y compris la date et l'heure); produits que vous avez consultés ou recherchés; temps de réponse des pages, erreurs de téléchargement, durée des visites sur certaines pages, informations d'interaction des pages (comme le défilement, les clics et les survols).</li>
       </ul>
   
       <h2 class="text-xl font-semibold mt-6 mb-2">Utilisation de Vos Informations</h2>
