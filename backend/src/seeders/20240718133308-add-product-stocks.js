@@ -1,10 +1,11 @@
 'use strict';
 
-const { Product } = require('../models'); // Adjust the path as needed
+const { Product } = require('../models');
+const { STOCK_TYPE_IN, STOCK_TYPE_OUT } = require('../constants/stock');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const products = await Product.findAll(); // Assuming you have some products already seeded
+    const products = await Product.findAll();
 
     if (products.length === 0) {
       console.log('No products found. Seed products first.');
@@ -15,15 +16,15 @@ module.exports = {
 
     for (const product of products) {
       stocks.push({
-        type: 'in',
-        quantity: Math.floor(Math.random() * 100) + 1, // Random quantity between 1 and 100
+        type: STOCK_TYPE_IN,
+        quantity: Math.floor(Math.random() * 20) + 1, // Random quantity between 1 and 20
         productId: product.id,
         createdAt: new Date(),
         updatedAt: new Date()
       });
       stocks.push({
-        type: 'out',
-        quantity: Math.floor(Math.random() * 50) + 1, // Random quantity between 1 and 50
+        type: STOCK_TYPE_OUT,
+        quantity: Math.floor(Math.random() * 10) + 1, // Random quantity between 1 and 10
         productId: product.id,
         createdAt: new Date(),
         updatedAt: new Date()

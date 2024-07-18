@@ -1,4 +1,5 @@
 const {DataTypes, Model} = require('sequelize');
+const { STOCK_TYPE_IN, STOCK_TYPE_OUT } = require('../constants/stock');
 
 class Stock extends Model {
     static associate(models) {
@@ -16,15 +17,15 @@ module.exports = (sequelize) => {
             primaryKey: true,
         },
         type: {
-            type: DataTypes.ENUM('in', 'out'),
+            type: DataTypes.ENUM(STOCK_TYPE_IN, STOCK_TYPE_OUT),
             allowNull: false,
             validate: {
                 notEmpty: {
                     msg: 'Le type est requis'
                 },
                 isIn: {
-                    args: [['in', 'out']],
-                    msg: 'Le type doit être "in" ou "out"'
+                    args: [[STOCK_TYPE_IN, STOCK_TYPE_OUT]],
+                    msg: 'Le type est invalide'
                 }
             }
         },
