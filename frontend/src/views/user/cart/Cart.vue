@@ -19,10 +19,17 @@
                 <v-img :src="item.Product.thumbnail" class="cart-item-image w-24 h-24 mr-4"></v-img>
                 <v-card-text>
                   <v-card-title>{{ item.Product.name }}</v-card-title>
-                  <v-card-subtitle>{{ item.Product.price }} €</v-card-subtitle>
+                  <v-card-subtitle>L'unité:  {{ item.Product.price }} €</v-card-subtitle>
+                  <v-card-subtitle>Le total: {{ item.Product.price * item.quantity }} €</v-card-subtitle>
                   <div>
+                    <v-btn icon @click.prevent="updateQuantity(item.Product.id, item.quantity - 1)" :disabled="item.quantity <= 1">
+                      <v-icon size="20px">mdi-minus</v-icon>
+                    </v-btn>
                     Quantité: {{ item.quantity }}
-                    <v-btn icon @click="removeProductFromCart(item.Product.id)">
+                    <v-btn icon @click.prevent="updateQuantity(item.Product.id, item.quantity + 1)">
+                      <v-icon size="20px">mdi-plus</v-icon>
+                    </v-btn>
+                    <v-btn icon @click.prevent="removeProductFromCart(item.Product.id)">
                       <v-icon size="20px">mdi-delete</v-icon>
                     </v-btn>
                   </div>
@@ -51,21 +58,7 @@
 import { defineComponent, ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import axios from 'axios';
 import notFoundImage from '@/assets/not-found-image.png';
-import {useCartStore} from "@/stores/cart.ts";
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  images: string[];
-  thumbnail: string;
-}
-
-interface CartItem {
-  id: number;
-  quantity: number;
-  Product: Product;
-}
+import { useCartStore } from "@/stores/cart.ts";
 
 export default defineComponent({
   name: 'Cart',
@@ -83,10 +76,11 @@ export default defineComponent({
 
     const loading = computed(() => store.loading);
     const cart = computed(() => store.cart);
-    const totalPrice = computed(() => store.cartTotal)
+    const totalPrice = computed(() => store.cartTotal);
 
     const fetchCart = store.fetchCart;
     const removeProductFromCart = store.removeProductFromCart;
+    const updateCartItemQuantity = store.updateCartItemQuantity;
 
     const paypalLoaded = ref(false);
     const paypalRendered = ref(false);
@@ -152,7 +146,6 @@ export default defineComponent({
     const setupPayPalButton = () => {
       if (!paypalLoaded.value || paypalRendered.value) return;
 
-      // Clear any existing PayPal buttons
       const paypalButtonContainer = document.getElementById('paypal-button-container');
       if (paypalButtonContainer) {
         paypalButtonContainer.innerHTML = '';
@@ -162,7 +155,7 @@ export default defineComponent({
       paypal.Buttons({
         createOrder: async (): Promise<string> => {
           try {
-            const response = await axios.post('http://localhost:8000/payment/create-order', { userId, totalPrice: totalPrice.value });
+            const response = await axios.post('http://localhost:8000/payment/create-order', { totalPrice: totalPrice.value });
             console.log('Order created:', response.data);
             return response.data.orderID;
           } catch (error) {
@@ -175,7 +168,7 @@ export default defineComponent({
             const response = await axios.post('http://localhost:8000/payment/capture-order', { orderID: data.orderID });
             console.log('Order captured:', response.data);
             alert('Transaction completed!');
-            fetchCartItems(); // Reload cart after successful transaction
+            fetchCartItems();
           } catch (error) {
             console.error('Failed to capture order:', error);
             alert('Failed to complete transaction.');
@@ -191,12 +184,16 @@ export default defineComponent({
       paypalRendered.value = true;
     };
 
+    const updateQuantity = async (productId: number, quantity: number) => {
+      if (quantity < 1) return; // Prevent quantity from being less than 1
+      await updateCartItemQuantity(productId, quantity);
+    };
+
     onMounted(() => {
       fetchCartItems();
       loadPayPalScript();
     });
 
-    // Ensure PayPal button is reset when component is re-mounted
     onBeforeUnmount(() => {
       const paypalButtonContainer = document.getElementById('paypal-button-container');
       if (paypalButtonContainer) {
@@ -211,6 +208,7 @@ export default defineComponent({
       loading,
       totalPrice,
       removeProductFromCart,
+      updateQuantity,
     };
   },
 });

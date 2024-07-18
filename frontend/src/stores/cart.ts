@@ -78,11 +78,33 @@ export const useCartStore = defineStore('carts', {
             this.loading = true;
             try {
                 await apiClient.delete(`/carts/${productId}`, { signal });
-                // Remove the item from the cart
                 if (this.cart) {
                     this.cart.CartItems = this.cart.CartItems.filter((item) => item.productId !== productId);
                 }
             } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+        async updateCartItemQuantity(productId: number, quantity: number, signal?: AbortSignal) {
+            this.loading = true;
+            try {
+                console.log(`Updating product ${productId} to quantity ${quantity}`);
+                const response = await apiClient.patch(`/carts/${productId}`, { quantity }, { signal });
+                const updatedCartItem = baseCartItemSchema.parse(response.data);
+                
+                // Update the cart item locally
+                if (this.cart) {
+                    const item = this.cart.CartItems.find(item => item.productId === productId);
+                    if (item) {
+                        item.quantity = quantity;
+                    }
+                }
+
+                console.log('Update response:', response.data);
+            } catch (error) {
+                console.error('Error updating cart item quantity:', error);
                 throw error;
             } finally {
                 this.loading = false;
