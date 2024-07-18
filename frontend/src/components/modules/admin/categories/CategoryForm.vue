@@ -11,6 +11,7 @@
     <v-btn type="submit" color="primary" :disabled="formState.isSubmitting">Enregistrer</v-btn>
     <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Annuler</v-btn>
     <v-progress-linear v-if="formState.isSubmitting" indeterminate color="primary"></v-progress-linear>
+    <v-alert v-if="formState.httpError" type="error" dismissible>{{ formState.httpError }}</v-alert>
   </v-form>
 </template>
 

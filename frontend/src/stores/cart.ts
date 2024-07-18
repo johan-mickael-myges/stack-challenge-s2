@@ -82,7 +82,6 @@ export const useCartStore = defineStore('carts', {
                 // Remove the item from the cart
                 if (this.cart) {
                     this.cart.CartItems = this.cart.CartItems.filter((item) => item.productId !== productId);
-                    console.log(this.cart.CartItems);
                 }
             } catch (error) {
                 throw error;

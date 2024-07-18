@@ -17,10 +17,24 @@
     </template>
     <template v-slot:item.actions="{ item }">
       <div class="flex justify-end">
-        <v-btn variant="text" density="compact" icon="mdi-pencil"
-               @click="$router.push(`/admin/products/edit/${item.id}`)"></v-btn>
-        <DeleteButton variant="text" density="compact" icon="mdi-delete"
-                      :deleteFunction="() => deleteProduct(item.id)"/>
+        <v-tooltip text="Gérer le stock">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" variant="text" density="compact" icon="mdi-package"
+                   @click="$router.push(`/admin/products/${item.id}/stocks`)"></v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip text="Modifier">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" variant="text" density="compact" icon="mdi-pencil"
+                   @click="$router.push(`/admin/products/edit/${item.id}`)"></v-btn>
+          </template>
+        </v-tooltip>
+        <v-tooltip text="Supprimer">
+          <template v-slot:activator="{ props }">
+            <DeleteButton v-bind="props" variant="text" density="compact" icon="mdi-delete"
+                          :deleteFunction="() => deleteProduct(item.id)"/>
+          </template>
+        </v-tooltip>
       </div>
     </template>
   </DataTable>

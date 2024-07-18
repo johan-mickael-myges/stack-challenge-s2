@@ -117,7 +117,6 @@ export function useForm(initialData: InitialData, schema: ZodSchema<any>) {
     };
 
     const mapExpressErrorsToValidationErrors = (errors: ExpressError[]) => {
-        console.log(errors);
         errors.forEach((error: ExpressError) => {
             if (!formState.validationErrors[error.path]) {
                 formState.validationErrors[error.path] = [];

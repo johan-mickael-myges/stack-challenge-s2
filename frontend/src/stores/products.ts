@@ -84,7 +84,6 @@ export const useProductStore = defineStore('products', {
                 const response = await apiClient.post('/products', formData, { signal });
                 this.products.push(response.data);
             } catch (error) {
-                console.log(error);
                 throw error;
             } finally {
                 this.loading = false;
@@ -125,7 +124,17 @@ export const useProductStore = defineStore('products', {
         async setSortBy(sortBy: any) {
             this.sortBy = sortBy;
             await this.fetchProducts();
-        }
+        },
+        async addStock(data, signal?: AbortSignal) {
+            this.loading = true;
+            try {
+                await apiClient.post(`/products/${data.id}/stocks`, data, { signal });
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
     },
     getters: {
         totalPage(): number {

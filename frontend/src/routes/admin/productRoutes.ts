@@ -12,7 +12,7 @@ const routes: Array<RouteRecordRaw> = [
             { path: '', name: 'AdminProductList', component: AdminProductList },
             { path: 'new', name: 'AdminProductForm', component: AdminProductForm },
             { path: 'edit/:id', name: 'AdminProductEdit', component: AdminProductForm },
-            { path: ':id/stock', name: 'AdminProductStockForm', component: AdminProductStockForm }
+            { path: ':id/stocks', name: 'AdminProductStockForm', component: AdminProductStockForm }
         ],
         meta: {
             requiresAdmin: true,

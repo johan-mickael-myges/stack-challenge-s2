@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const { checkToken, authorizeRoles } = require('~middlewares/authMiddleware');
+const { validateStockCreation } = require('~middlewares/validations/validateStock');
 
 const stockController = require('~controllers/stockController');
 
@@ -21,6 +22,7 @@ router.post(
     '/',
     checkToken,
     authorizeRoles(['ROLE_ADMIN']),
+    validateStockCreation,
     stockController.addProductStock
 )
 
