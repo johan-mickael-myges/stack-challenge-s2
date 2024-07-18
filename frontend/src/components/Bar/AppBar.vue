@@ -4,9 +4,10 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import CustomAutocomplete from "./CustomAutocomplete.vue";
 import CategoryButtons from "./CategoryButtons.vue";
 import { useRouter } from 'vue-router';
+import { useAuthStore } from "@/stores/auth";
 
 const { goToByName } = useGoToUrl();
-const login = () => goToByName('login');
+const authStore = useAuthStore();
 
 const isSmallScreen = ref(false);
 const isMediumScreen = ref(false);
@@ -32,14 +33,21 @@ onBeforeUnmount(() => {
 
 const router = useRouter();
 const goToCart = () => router.push({ name: 'UserCart' });
-const goToHome = () => router.push('/'); 
+const goToHome = () => router.push('/');
+
+const goToProfile = () => {
+  if (authStore.isAuthenticated) {
+    router.push({ name: 'UserProfile' });
+  } else {
+    goToByName('login');
+  }
+};
 
 </script>
 
 <template>
   <v-app-bar :elevation="isMediumScreen ? 1 : 0" height="80">
     <v-row class="align-center">
-
       <v-col>
         <v-row class="align-center">
           <v-btn class="pl-9">
@@ -66,7 +74,7 @@ const goToHome = () => router.push('/');
           <v-icon size="20px">mdi-heart-outline</v-icon>
         </v-btn>
 
-        <v-btn icon @click="login">
+        <v-btn icon @click="goToProfile">
           <v-icon size="20px">mdi-account-outline</v-icon>
         </v-btn>
 
@@ -76,7 +84,6 @@ const goToHome = () => router.push('/');
       </v-col>
     </v-row>
   </v-app-bar>
-  <!-- @TODO mettre dynamiquement elements du menu, en fonction de la selection de la categorie de l'admin -->
   <v-app-bar v-if="!isMediumScreen" elevation="1" height="40" class="pb-3">
     <CategoryButtons :categories="categories" />
   </v-app-bar>
@@ -91,6 +98,6 @@ const goToHome = () => router.push('/');
 <style scoped>
 .v-app-bar-title {
   letter-spacing: 3px;
-  cursor: pointer; 
+  cursor: pointer;
 }
 </style>

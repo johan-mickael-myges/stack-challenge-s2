@@ -13,6 +13,7 @@ exports.countProducts = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
     try {
+        console.log('USER' , req.user);
         let options = buildQueryOptions(req.query);
         const products = await repository.all(options);
         res.status(200).json(products);
