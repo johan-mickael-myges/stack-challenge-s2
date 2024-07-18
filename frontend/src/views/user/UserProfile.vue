@@ -41,14 +41,17 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import Heading from '@/components/Typography/Heading.vue';
 
 const authStore = useAuthStore();
+const router = useRouter();
 const user = computed(() => authStore.user);
 
 const logout = async () => {
   try {
     await authStore.logout();
+    router.push({ name: 'Login' });
   } catch (error) {
     console.error("Failed to logout", error);
   }

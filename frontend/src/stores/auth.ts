@@ -65,21 +65,17 @@ export const useAuthStore = defineStore('auth', () => {
     const logout = async () => {
         resetState();
         try {
-            await apiClient.post('/auth/logout');
-            isAuthenticated.value = false; // Définition de isAuthenticated à false
-            user.value = null; // Effacer les données utilisateur
-            localStorage.removeItem('user'); // Supprimer du localStorage
-            // Redirection vers la page de connexion
-            await router.push({
-                name: 'Login',
-            });
+          await apiClient.post('/auth/logout');
+          isAuthenticated.value = false;
+          user.value = null;
+          await router.push({ name: 'Login' });  // Assurez-vous que 'Login' est le bon nom de route
         } catch (err: any) {
-            hasError.value = true;
-            throw err;
+          hasError.value = true;
+          throw err;
         } finally {
-            loading.value = false;
+          loading.value = false;
         }
-    }
+      };
 
     // Fonction pour récupérer les données utilisateur depuis le localStorage
     const loadUserFromStorage = () => {
