@@ -1,4 +1,4 @@
-const {DataTypes, Model} = require('sequelize');
+const { DataTypes, Model } = require('sequelize');
 
 class Order extends Model {
     static associate(models) {
@@ -18,39 +18,39 @@ class Order extends Model {
 
 module.exports = (sequelize) => {
     Order.init(
-            {
-                id: {
-                    type: DataTypes.INTEGER,
-                    autoIncrement: true,
-                    primaryKey: true,
-                },
-                paymentMethod: {
-                    type: DataTypes.ENUM('PAYPAL', 'CARD'),
-                    allowNull: false,
-                    validate: {
-                        isIn: {
-                            args: [['PAYPAL', 'CARD']],
-                            msg: 'Le mode de paiement doit être PAYPAL ou CARD',
-                        },
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true,
+            },
+            paymentMethod: {
+                type: DataTypes.ENUM('PAYPAL', 'CARD'),
+                allowNull: false,
+                validate: {
+                    isIn: {
+                        args: [['PAYPAL', 'CARD']],
+                        msg: 'Le mode de paiement doit être PAYPAL ou CARD',
                     },
-                },
-                userId: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false,
-                    references: {
-                        model: 'users',
-                        key: 'id'
-                    },
-                    onDelete: 'CASCADE',
-                    onUpdate: 'CASCADE'
                 },
             },
-            {
-                sequelize,
-                modelName: 'Order',
-                tableName: 'orders',
-                timestamps: true,
-            }
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'users',
+                    key: 'id'
+                },
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE'
+            },
+        },
+        {
+            sequelize,
+            modelName: 'Order',
+            tableName: 'orders',
+            timestamps: true,
+        }
     );
 
     return Order;
