@@ -1,5 +1,11 @@
 require('dotenv').config();
 
+if (process.env.NODE_ENV === 'production') {
+    require('dotenv').config({
+        path: '.env.production',
+    });
+}
+
 if (process.env.NODE_ENV === 'development') {
     require('dotenv').config({
         path: '.env.local',
@@ -43,6 +49,9 @@ const config = {
     awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     awsRegion: process.env.AWS_REGION,
     s3Bucket: process.env.S3_BUCKET,
+    sendInBlueApiKey: process.env.SENDINBLUE_API_KEY,
+    sendInBlueSender: process.env.SENDINBLUE_SENDER,
+    sendInBlueSenderName: process.env.SENDINBLUE_SENDER_NAME,
 };
 
 if (!config.jwtSecret) {
