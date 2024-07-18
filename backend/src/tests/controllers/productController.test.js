@@ -68,6 +68,7 @@ describe('Product Controller', () => {
             const response = await request(app).get('/products');
 
             expect(response.statusCode).toBe(500);
+            expect(response.error.text).toBe('Database error');
         });
     });
 
@@ -97,6 +98,7 @@ describe('Product Controller', () => {
             const response = await request(app).get('/products/1');
 
             expect(response.statusCode).toBe(404);
+            expect(response.error.text).toBe('Not Found');
         });
 
         it('should return a 500 status code when an error occurs', async () => {
@@ -105,6 +107,7 @@ describe('Product Controller', () => {
             const response = await request(app).get('/products/1');
 
             expect(response.statusCode).toBe(500);
+            expect(response.error.text).toBe('Database error');
         });
     });
 
@@ -125,6 +128,7 @@ describe('Product Controller', () => {
                 .send(newProduct);
 
             expect(response.statusCode).toBe(401);
+            expect(response.error.text).toBe('Unauthorized');
         });
 
         it('should be able to create a new product as admin', async () => {
@@ -202,6 +206,7 @@ describe('Product Controller', () => {
                 .send(updatedProduct);
 
             expect(response.statusCode).toBe(401);
+            expect(response.error.text).toBe('Unauthorized');
         });
 
         it('should be able to update a product as admin', async () => {
@@ -249,6 +254,7 @@ describe('Product Controller', () => {
             const response = await request(app).delete('/products/1');
 
             expect(response.statusCode).toBe(401);
+            expect(response.error.text).toBe('Unauthorized');
         });
 
         it('should be able to delete a product as admin', async () => {
@@ -264,6 +270,7 @@ describe('Product Controller', () => {
                 .set('Cookie', ['token=valid-token']);
 
             expect(response.statusCode).toBe(204);
+            expect(response.body).toEqual({});
         });
     });
 });

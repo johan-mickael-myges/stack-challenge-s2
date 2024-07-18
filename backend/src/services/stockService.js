@@ -49,8 +49,40 @@ const countRemainingForProduct = async (productId) => {
     return countStocks(stocks);
 }
 
+const addProductStock = async (productId, quantity, type) => {
+    if (!productId) {
+        throw new BadRequestError('Product ID is required');
+    }
+
+    if (!quantity || quantity <= 0) {
+        throw new BadRequestError('Quantity must be a positive number');
+    }
+
+    if (!type) {
+        throw new BadRequestError('Type is required');
+    }
+
+    const product = await Product.findByPk(productId);
+    if (!product) {
+        throw new NotFoundError('Product not found');
+    }
+
+    const remaining = await countRemainingForProduct(productId);
+
+    if (type === 'out' && quantity > remaining) {
+        throw new BadRequestError('Not enough stock');
+    }
+
+    return await Stock.create({
+        productId,
+        quantity,
+        type
+    });
+}
+
 module.exports = {
     getAllForProduct,
     countStocks,
     countRemainingForProduct,
+    addProductStock,
 }

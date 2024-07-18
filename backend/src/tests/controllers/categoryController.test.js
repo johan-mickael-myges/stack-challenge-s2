@@ -64,6 +64,7 @@ describe('Category Controller', () => {
             const response = await request(app).get('/categories');
 
             expect(response.statusCode).toBe(500);
+            expect(response.error.text).toBe('Database error');
         });
     });
 
@@ -87,6 +88,7 @@ describe('Category Controller', () => {
             const response = await request(app).get('/categories/1');
 
             expect(response.statusCode).toBe(404);
+            expect(response.error.text).toBe('Not Found');
         });
 
         it('should return a 500 status code when an error occurs', async () => {
@@ -95,6 +97,7 @@ describe('Category Controller', () => {
             const response = await request(app).get('/categories/1');
 
             expect(response.statusCode).toBe(500);
+            expect(response.error.text).toBe('Database error');
         });
     });
 
@@ -104,12 +107,14 @@ describe('Category Controller', () => {
                 name: '',
             };
 
+            const errors = [
+                { msg: 'Le nom est requis', param: 'name' },
+                { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
+            ];
+
             validationResult.mockReturnValue({
                 isEmpty: () => false,
-                array: () => [
-                    { msg: 'Le nom est requis', param: 'name' },
-                    { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
-                ],
+                array: () => errors,
             });
 
             jwt.verify.mockImplementation((token, secret, callback) => {
@@ -122,10 +127,8 @@ describe('Category Controller', () => {
                     .send(newCategory);
 
             expect(response.statusCode).toBe(400);
-            expect(response.body).toEqual([
-                { msg: 'Le nom est requis', param: 'name' },
-                { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
-            ]);
+            expect(response.error.text).toBe(JSON.stringify(errors));
+            expect(response.body).toEqual(errors);
         });
 
         it('should be able to create a new category as admin', async () => {
@@ -182,12 +185,14 @@ describe('Category Controller', () => {
                 name: '',
             };
 
+            const errors = [
+                { msg: 'Le nom est requis', param: 'name' },
+                { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
+            ];
+
             validationResult.mockReturnValue({
                 isEmpty: () => false,
-                array: () => [
-                    { msg: 'Le nom est requis', param: 'name' },
-                    { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
-                ],
+                array: () => errors,
             });
 
             jwt.verify.mockImplementation((token, secret, callback) => {
@@ -200,10 +205,8 @@ describe('Category Controller', () => {
                     .send(invalidUpdatedCategory);
 
             expect(response.statusCode).toBe(400);
-            expect(response.body).toEqual([
-                { msg: 'Le nom est requis', param: 'name' },
-                { msg: 'Le nom doit comporter entre 1 et 255 caractères', param: 'name' },
-            ]);
+            expect(response.error.text).toBe(JSON.stringify(errors))
+            expect(response.body).toEqual(errors);
         });
 
         it('should be able to update a category as admin', async () => {
@@ -248,6 +251,7 @@ describe('Category Controller', () => {
             const response = await request(app).delete('/categories/1');
 
             expect(response.statusCode).toBe(401);
+            expect(response.error.text).toBe('Unauthorized');
         });
 
         it('should be able to delete a category as admin', async () => {

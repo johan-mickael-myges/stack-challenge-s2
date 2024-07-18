@@ -17,4 +17,11 @@ router.get(
     stockController.countRemainingForProduct
 );
 
+router.post(
+    '/',
+    checkToken,
+    authorizeRoles(['ROLE_ADMIN']),
+    stockController.addProductStock
+)
+
 module.exports = router;

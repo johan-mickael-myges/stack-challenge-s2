@@ -88,3 +88,6 @@ db-recreate:
 # Run tests
 test:
 	$(DOCKER_COMPOSE) npm test
+
+test-watch:
+	$(DOCKER_COMPOSE) npm run test-watch

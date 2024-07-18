@@ -26,6 +26,7 @@ describe('Stock Controller', () => {
             const response = await request(app).get('/products/1/stocks');
 
             expect(response.statusCode).toBe(401);
+            expect(response.error.text).toBe('Unauthorized');
         });
 
         it('should return 403 if the user is not authorized', async () => {
@@ -38,6 +39,7 @@ describe('Stock Controller', () => {
                     .set('Cookie', ['token=valid-token']);
 
             expect(response.statusCode).toBe(403);
+            expect(response.error.text).toBe('Forbidden');
         });
 
         it('should return 404 if product is not found', async () => {
@@ -52,6 +54,7 @@ describe('Stock Controller', () => {
                     .set('Cookie', ['token=valid-token']);
 
             expect(response.statusCode).toBe(404);
+            expect(response.error.text).toBe('Not Found');
         });
 
         it('should return 200 with stocks for the given product ID', async () => {
@@ -79,13 +82,14 @@ describe('Stock Controller', () => {
                 callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
             });
 
-            service.getAllForProduct.mockRejectedValue(new Error());
+            service.getAllForProduct.mockRejectedValue(new Error('System error'));
 
             const response = await request(app)
                     .get('/products/1/stocks')
                     .set('Cookie', ['token=valid-token']);
 
             expect(response.statusCode).toBe(500);
+            expect(response.error.text).toBe('System error');
         });
     });
 
@@ -98,6 +102,7 @@ describe('Stock Controller', () => {
             const response = await request(app).get('/products/1/stocks/count');
 
             expect(response.statusCode).toBe(401);
+            expect(response.error.text).toBe('Unauthorized');
         });
 
         it('should return 404 if product is not found', async () => {
@@ -112,6 +117,7 @@ describe('Stock Controller', () => {
                     .set('Cookie', ['token=valid-token']);
 
             expect(response.statusCode).toBe(404);
+            expect(response.error.text).toBe('Not Found');
         });
 
         it('should return 200 with the correct remaining stock count', async () => {
@@ -136,13 +142,14 @@ describe('Stock Controller', () => {
                 callback(null, { id: 1, username: 'testUser', roles: ['ROLE_ADMIN'] });
             });
 
-            service.countRemainingForProduct.mockRejectedValue(new Error());
+            service.countRemainingForProduct.mockRejectedValue(new Error('Application Error'));
 
             const response = await request(app)
                     .get('/products/1/stocks/count')
                     .set('Cookie', ['token=valid-token']);
 
             expect(response.statusCode).toBe(500);
+            expect(response.error.text).toBe('Application Error');
         });
     });
 });

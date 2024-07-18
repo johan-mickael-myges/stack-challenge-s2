@@ -49,6 +49,7 @@ describe('Auth Controller', () => {
                     .set('Cookie', ['token=invalid-token']);
 
             expect(response.statusCode).toBe(401);
+            expect(response.error.text).toBe('Unauthorized');
             expect(jwt.verify).toHaveBeenCalledWith('invalid-token', expect.any(String), expect.any(Function));
         });
     });
@@ -60,6 +61,7 @@ describe('Auth Controller', () => {
             const response = await request(app).post('/auth/login').send({ email: '', password: '' });
 
             expect(response.statusCode).toBe(400);
+            expect(response.error.text).toBe('Bad Request');
         });
 
         it('should login a user and set a token cookie', async () => {
@@ -82,13 +84,14 @@ describe('Auth Controller', () => {
         it('should respond with 500 if there is an error during login', async () => {
             validationResult.mockReturnValue({ isEmpty: () => true });
 
-            userService.loginUser.mockRejectedValue(new Error());
+            userService.loginUser.mockRejectedValue(new Error('Login Error'));
 
             const response = await request(app)
                     .post('/auth/login')
                     .send({ email: 'test@example.com', password: 'password' });
 
             expect(response.statusCode).toBe(500);
+            expect(response.error.text).toBe('Login Error');
         });
     });
 
@@ -96,7 +99,7 @@ describe('Auth Controller', () => {
         it('should respond with 400 if validation fails', async () => {
             validationResult.mockReturnValue({
                 isEmpty: () => false,
-                array: () => [{msg: 'Validation error'}]
+                array: () => ['Validation error']
             });
 
             const response = await request(app).post('/auth/register').send({
@@ -109,6 +112,7 @@ describe('Auth Controller', () => {
             });
 
             expect(response.statusCode).toBe(400);
+            expect(response.error.text).toBe('[\"Validation error\"]');
         });
 
         it('should register a new user and respond with 201', async () => {
@@ -156,6 +160,7 @@ describe('Auth Controller', () => {
                     });
 
             expect(response.statusCode).toBe(500);
+            expect(response.error.text).toBe('Registration error');
         });
     });
 

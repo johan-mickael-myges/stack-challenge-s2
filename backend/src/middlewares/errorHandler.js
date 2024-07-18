@@ -1,13 +1,9 @@
-const config = require('~config/config');
-
 const errorHandler = (err, req, res, next) => {
     if (err.isOperational) {
-        res.sendStatus(err.statusCode);
+        const code = err.statusCode || 500;
+        res.status(code).send(err.message);
     } else {
-        if (config.env === 'development') {
-            console.error(err);
-        }
-        res.sendStatus(500);
+        res.status(500).send(err.message);
     }
 };
 

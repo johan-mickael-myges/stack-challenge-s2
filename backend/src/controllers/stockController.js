@@ -21,3 +21,15 @@ exports.countRemainingForProduct = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.addProductStock = async (req, res, next) => {
+    const { id } = req.params;
+    const { quantity, type } = req.body;
+
+    try {
+        await service.addProductStock(id, quantity, type);
+        res.sendStatus(201);
+    } catch (error) {
+        next(error);
+    }
+}
