@@ -19,14 +19,6 @@ module.exports = {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
       },
-      orderItemId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'orders',
-          key: 'id'
-        },
-      },
       paymentMethod: {
         type: Sequelize.ENUM('PAYPAL', 'CARD'),
         allowNull: false,
