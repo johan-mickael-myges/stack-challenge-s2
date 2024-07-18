@@ -52,7 +52,8 @@ module.exports = (sequelize) => {
         }
     }, {
         sequelize,
-        modelName: 'stocks',
+        tableName: 'stocks',
+        modelName: 'Stock',
         timestamps: true,
     });
 

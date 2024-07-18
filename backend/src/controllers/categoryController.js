@@ -1,10 +1,9 @@
 const { Category } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
-const repository = require("~repositories/categoryRepository");
 
 const countCategories = async (req, res, next) => {
     try {
-        const count = await repository.count();
+        const count = await Category.count();
         res.status(200).json(count);
     } catch (error) {
         next(error);
@@ -14,7 +13,7 @@ const countCategories = async (req, res, next) => {
 const getAllCategories = async (req, res, next) => {
     try {
         let options = buildQueryOptions(req.query);
-        const categories = await repository.all(options);
+        const categories = await Category.findAll(options);
         res.status(200).json(categories);
     } catch (error) {
         next(error);
@@ -23,7 +22,7 @@ const getAllCategories = async (req, res, next) => {
 
 const getCategoryById = async (req, res, next) => {
     try {
-        const category = await repository.one(req.params.id, {});
+        const category = await Category.findByPk(req.params.id);
         if (!category) {
             return res.sendStatus(404);
         }

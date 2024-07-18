@@ -13,6 +13,8 @@ const {
     deleteProduct
 } = require('~controllers/productController');
 
+const stockController = require('~controllers/stockController');
+
 router.get('/count', countProducts);
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);
@@ -42,5 +44,15 @@ router.delete(
     authorizeRoles(['ROLE_ADMIN']),
     deleteProduct
 );
+
+// ######################### ROUTES FOR STOCKS #########################
+
+router.get(
+    '/:id/stocks',
+    checkToken,
+    authorizeRoles(['ROLE_ADMIN']),
+    stockController.allForProduct
+);
+
 
 module.exports = router;

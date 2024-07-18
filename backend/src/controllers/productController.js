@@ -1,10 +1,10 @@
-const repository = require('~repositories/productRepository');
 const productService = require('~services/productService');
 const { buildQueryOptions } = require('~utils/queryOptionsFactory');
+const { Product } = require('~models');
 
 exports.countProducts = async (req, res, next) => {
     try {
-        const count = await repository.count(req.user);
+        const count = await Product.count();
         res.status(200).json(count);
     } catch (error) {
         next(error);
@@ -14,7 +14,7 @@ exports.countProducts = async (req, res, next) => {
 exports.getAllProducts = async (req, res, next) => {
     try {
         let options = buildQueryOptions(req.query);
-        const products = await repository.all(options);
+        const products = await Product.findAll(options);
         res.status(200).json(products);
     } catch (error) {
         next(error);
@@ -23,7 +23,7 @@ exports.getAllProducts = async (req, res, next) => {
 
 exports.getProductById = async (req, res, next) => {
     try {
-        const product = await repository.one(req.params.id);
+        const product = await Product.findByPk(req.params.id);
         if (!product) {
             return res.sendStatus(404);
         }
