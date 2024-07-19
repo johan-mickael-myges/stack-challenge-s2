@@ -1,12 +1,15 @@
 import { RouteRecordRaw } from 'vue-router';
+import OrderDetails from '@/views/user/cart/OrderDetails.vue';
+import UserLayout from '@/layouts/UserLayout.vue';
 
-const orderRoutes: Array<RouteRecordRaw> = [
-  {
-    path: '/order-details/:orderId',
-    name: 'OrderDetails',
-    component: () => import('@/views/user/cart/OrderDetails.vue'),
-    meta: { requiresAuth: true }
-  }
+const routes: Array<RouteRecordRaw> = [
+    {
+        path: '/order-details/:orderId',
+        component: UserLayout,
+        children: [
+            { path: '', name: 'OrderDetails', component: OrderDetails, meta: { requiresAuth: true } },
+        ],
+    }
 ];
 
-export default orderRoutes;
+export default routes;
