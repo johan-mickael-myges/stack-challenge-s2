@@ -4,7 +4,7 @@ const { faker } = require('@faker-js/faker');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const amount = 100;
+    const amount = 15;
     const products = [];
 
     for (let i = 0; i < amount; i++) {
