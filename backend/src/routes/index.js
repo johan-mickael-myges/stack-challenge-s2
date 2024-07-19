@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const errorHandler = require('~middlewares/errorHandler');
 const sendMail = require('~services/mailerService');
+const config = require('~config/config');
 
 const authRoutes = require('./authRoutes');
 const productRoutes = require('./productRoutes');
@@ -21,11 +22,5 @@ router.use('/config', configRoutes);
 router.use('/payment', paymentRoutes);
 router.use('/orders', orderRoutes);
 router.use(errorHandler);
-
-router.get('/test', async (req, res) => {
-    await sendMail('m.johan.rkt@gmail.com', 'Test', '<h1>Test</h1>');
-
-    res.send('Mail route');
-});
 
 module.exports = router;

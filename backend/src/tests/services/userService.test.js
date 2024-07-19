@@ -2,8 +2,16 @@ const { registerUser } = require('~services/userService');
 const { User, Role } = require('~models');
 const { ROLE_USER } = require('~constants/roles');
 const BadRequestError = require('~errors/BadRequestError');
+const sendMail = require('~services/mailerService');
+const config = require('~config/config');
 
 jest.mock('~models');
+jest.mock('~services/mailerService');
+
+jest.mock('~config/config', () => ({
+    ...jest.requireActual('~config/config'),
+    frontendUrl: 'https://layalin.com',
+}));
 
 describe('UserService - registerUser', () => {
     afterEach(() => {
@@ -38,6 +46,12 @@ describe('UserService - registerUser', () => {
         expect(User.create).toHaveBeenCalledWith(mockUserData);
         expect(Role.findOne).toHaveBeenCalledWith({ where: { id: ROLE_USER } });
         expect(mockUser.addRole).toHaveBeenCalledWith(mockRole);
+
+        expect(sendMail).toHaveBeenCalledWith(mockUserData.email, 'Bienvenue', 'welcome-user', {
+            user: mockUser,
+            loginUrl: `https://layalin.com/login`,
+        });
+
         expect(result).toEqual(mockUser);
     });
 

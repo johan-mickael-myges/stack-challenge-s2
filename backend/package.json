@@ -24,6 +24,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
     "express": "^4.18.3",
     "express-validator": "^7.1.0",
     "install": "^0.13.0",
@@ -58,6 +59,7 @@
     "~repositories": "src/repositories",
     "~routes": "src/routes",
     "~services": "src/services",
+    "~templates": "src/templates",
     "~utils": "src/utils"
   }
 }

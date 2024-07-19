@@ -6,6 +6,7 @@ const { Role } = require('~models');
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('~errors/UnauthorizedError');
 const BadRequestError = require('~errors/BadRequestError');
+const sendMail = require('~services/mailerService');
 
 exports.registerUser = async (userData) => {
     const existingUser = await User.findOne({ where: { email: userData.email } });
@@ -17,6 +18,15 @@ exports.registerUser = async (userData) => {
 
     const role = await Role.findOne({ where: { id: ROLE_USER } });
     await user.addRole(role);
+
+    try {
+        await sendMail(user.email, 'Bienvenue', 'welcome-user', {
+            user: user,
+            loginUrl: `${config.frontendUrl}/login`,
+        });
+    } catch (error) {
+        console.error('Error sending welcome email', error);
+    }
 
     return user;
 };
