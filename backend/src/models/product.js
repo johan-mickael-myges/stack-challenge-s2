@@ -1,4 +1,4 @@
-const {DataTypes, Model} = require('sequelize');
+const { DataTypes, Model } = require('sequelize');
 
 class Product extends Model {
     static associate(models) {
@@ -19,6 +19,18 @@ class Product extends Model {
         });
         Product.hasMany(models.CartItem, { foreignKey: 'productId' });
         Product.hasMany(models.OrderItem, { foreignKey: 'productId' });
+        Product.belongsToMany(models.Material, {
+            through: 'product_materials',
+            foreignKey: 'productId',
+            otherKey: 'materialId',
+            timestamps: false
+        });
+        Product.belongsToMany(models.Color, {
+            through: 'product_colors',
+            foreignKey: 'productId',
+            otherKey: 'colorId',
+            timestamps: false
+        });
     }
 }
 
@@ -99,6 +111,19 @@ module.exports = (sequelize) => {
                             if (!Array.isArray(value) || !value.every(url => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url))) {
                                 throw new Error('Chaque image doit être une URL valide');
                             }
+                        }
+                    }
+                },
+                weight: {
+                    type: DataTypes.FLOAT,
+                    allowNull: true,
+                    validate: {
+                        isFloat: {
+                            msg: 'Le poids doit être une valeur décimale'
+                        },
+                        min: {
+                            args: [0],
+                            msg: 'Le poids doit être une valeur positive'
                         }
                     }
                 },

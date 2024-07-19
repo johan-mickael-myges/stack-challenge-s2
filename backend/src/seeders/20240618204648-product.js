@@ -15,6 +15,7 @@ module.exports = {
         price: parseFloat(faker.commerce.price()),
         thumbnail: faker.image.url(),
         images: [faker.image.url(), faker.image.url(), faker.image.url()],
+        weight: Math.floor(Math.random() * 1000) / 100, // Random weight between 0 and 10
         createdAt: new Date(),
         updatedAt: new Date(),
       });
