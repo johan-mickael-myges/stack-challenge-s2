@@ -90,7 +90,6 @@ export const useCartStore = defineStore('carts', {
         async updateCartItemQuantity(productId: number, quantity: number, signal?: AbortSignal) {
             this.loading = true;
             try {
-                console.log(`Updating product ${productId} to quantity ${quantity}`);
                 const response = await apiClient.patch(`/carts/${productId}`, { quantity }, { signal });
                 const updatedCartItem = baseCartItemSchema.parse(response.data);
                 
@@ -101,18 +100,26 @@ export const useCartStore = defineStore('carts', {
                         item.quantity = quantity;
                     }
                 }
-
-                console.log('Update response:', response.data);
             } catch (error) {
                 console.error('Error updating cart item quantity:', error);
                 throw error;
             } finally {
                 this.loading = false;
             }
+        },
+        async clearCart() {
+            this.cart = null;
+            try {
+                await apiClient.post('/carts/clear', {}, {
+                    withCredentials: true,
+                });
+            } catch (error) {
+                console.error('Failed to clear cart:', error);
+            }
         }
     },
     getters: {
-        cartTotal(): Number {
+        cartTotal(): number {
             if (!this.cart) {
                 return 0;
             }

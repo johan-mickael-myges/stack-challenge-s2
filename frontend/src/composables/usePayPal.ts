@@ -1,8 +1,12 @@
 import { ref, nextTick } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+import { useCartStore } from '@/stores/cart.ts';
 
 export const usePayPal = () => {
   const paypalLoaded = ref(false);
+  const router = useRouter();
+  const cartStore = useCartStore();
 
   const loadPayPalScript = async (setupPayPalButton: Function) => {
     if (document.getElementById('paypal-sdk')) {
@@ -51,11 +55,15 @@ export const usePayPal = () => {
           try {
             const response = await axios.post('http://localhost:8000/payment/capture-order', {
               orderID: data.orderID,
-              localOrderId: orderId, // Ensure you pass the local order ID
+              localOrderId: orderId,
             }, {
               withCredentials: true,
             });
             alert('Transaction completed!');
+            // Clear the cart
+            await cartStore.clearCart();
+            // Redirect to order confirmation page
+            router.push({ name: 'OrderConfirmation' });
           } catch (err) {
             console.error('Failed to capture PayPal order:', err);
             alert('Failed to complete transaction.');
