@@ -20,7 +20,6 @@ exports.createOrder = async (req, res) => {
 
   try {
     const order = await client.execute(request);
-    console.log('PayPal Order Created:', order); 
     res.json({ orderID: order.result.id });
   } catch (err) {
     console.error('Error creating PayPal order:', err);
@@ -35,16 +34,12 @@ exports.captureOrder = async (req, res) => {
 
   try {
     const capture = await client.execute(request);
-    console.log('PayPal Order Captured:', capture); 
-
     const { id, status, purchase_units, payer } = capture.result;
     const { amount } = purchase_units[0].payments.captures[0];
 
     if (!amount || !payer) {
       throw new Error('Invalid data received from PayPal capture');
     }
-
-    console.log(`Creating payment record with localOrderId: ${localOrderId}`);
 
     // Create payment record in database
     await Payment.create({

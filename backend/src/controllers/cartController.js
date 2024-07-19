@@ -111,3 +111,26 @@ exports.updateCartItemQuantity = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.clearCart = async (req, res, next) => {
+    try {
+        const userId = req.user.userId;
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.sendStatus(404);
+        }
+
+        const cart = await Cart.findOne({ where: { userId } });
+        if (!cart) {
+            return res.sendStatus(404);
+        }
+
+        await CartItem.destroy({ where: { cartId: cart.id } });
+
+        return res.status(200).json({ message: 'Cart cleared successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
