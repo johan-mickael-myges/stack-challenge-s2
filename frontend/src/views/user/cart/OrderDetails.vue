@@ -34,39 +34,22 @@ import { defineComponent, ref, onMounted, nextTick } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 import { usePayPal } from '@/composables/usePayPal';
+import useOrderDetails from '@/composables/useOrderDetails';
 
 export default defineComponent({
   name: 'OrderDetails',
   setup() {
     const route = useRoute();
     const orderId = route.params.orderId as string;
-    const order = ref<any>(null);
-    const loading = ref(true);
-    const error = ref(null);
-    const totalPrice = ref(0);
+    const { order, loading, error, totalPrice, fetchOrderDetails } = useOrderDetails(orderId);
 
     const { loadPayPalScript, setupPayPalButton } = usePayPal();
 
-    const fetchOrderDetails = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8000/orders/${orderId}`, {
-          withCredentials: true,
-        });
-        order.value = response.data;
-        totalPrice.value = response.data.OrderItems.reduce((sum: number, item: any) => sum + parseFloat(item.subtotal), 0);
-      } catch (err) {
-        console.error('Failed to fetch order details:', err);
-        error.value = err;
-      } finally {
-        loading.value = false;
-        nextTick(() => {
-          loadPayPalScript(() => setupPayPalButton(totalPrice.value));
-        });
-      }
-    };
-
-    onMounted(() => {
-      fetchOrderDetails();
+    onMounted(async () => {
+      await fetchOrderDetails();
+      nextTick(() => {
+        loadPayPalScript(() => setupPayPalButton(totalPrice.value, orderId));
+      });
     });
 
     return {

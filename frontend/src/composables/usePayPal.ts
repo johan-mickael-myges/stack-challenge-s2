@@ -33,10 +33,10 @@ export const usePayPal = () => {
     }
   };
 
-  const setupPayPalButton = (totalPrice: number) => {
+  const setupPayPalButton = (totalPrice: number, orderId: string) => {
     if (window.paypal) {
       window.paypal.Buttons({
-        createOrder: async (data: any, actions: any) => {
+        createOrder: async (data, actions) => {
           try {
             const response = await axios.post('http://localhost:8000/payment/create-order', { totalPrice }, {
               withCredentials: true,
@@ -47,9 +47,12 @@ export const usePayPal = () => {
             throw err;
           }
         },
-        onApprove: async (data: any, actions: any) => {
+        onApprove: async (data, actions) => {
           try {
-            const response = await axios.post('http://localhost:8000/payment/capture-order', { orderID: data.orderID }, {
+            const response = await axios.post('http://localhost:8000/payment/capture-order', {
+              orderID: data.orderID,
+              localOrderId: orderId, // Ensure you pass the local order ID
+            }, {
               withCredentials: true,
             });
             alert('Transaction completed!');
@@ -58,7 +61,7 @@ export const usePayPal = () => {
             alert('Failed to complete transaction.');
           }
         },
-        onError: (err: any) => {
+        onError: (err) => {
           console.error('PayPal Button error:', err);
           alert('An error occurred during the transaction.');
         }
