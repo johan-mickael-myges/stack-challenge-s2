@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const config = require('../config/config')[process.env.NODE_ENV || 'development'];
+const config = require('../config/config');
 
 const basename = path.basename(__filename);
 
-const sequelize = new Sequelize(config.database, config.username, config.password, {
-    host: config.host,
-    dialect: config.dialect,
+const sequelize = new Sequelize(config.postgres.database, config.postgres.username, config.postgres.password, {
+    host: config.postgres.host,
+    dialect: config.postgres.dialect,
 });
 
 const db = {};

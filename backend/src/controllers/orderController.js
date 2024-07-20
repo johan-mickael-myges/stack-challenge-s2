@@ -33,8 +33,6 @@ exports.getOrderDetails = async (req, res, next) => {
     try {
       const { orderId } = req.params;
   
-      console.log('Fetching order details for order ID:', orderId);
-  
       // Find the order by ID
       const order = await Order.findByPk(orderId, {
         include: [

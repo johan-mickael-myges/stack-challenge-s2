@@ -21,24 +21,10 @@ if (process.env.NODE_ENV === 'test') {
 const config = {
     env: process.env.NODE_ENV || 'development',
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
-    development: {
+    postgres: {
         username: process.env.POSTGRES_USER || '',
         password: process.env.POSTGRES_PASSWORD || '',
         database: process.env.POSTGRES_DB || '',
-        host: process.env.POSTGRES_HOST || '',
-        dialect: 'postgres',
-    },
-    test: {
-        username: process.env.POSTGRES_USER || '',
-        password: process.env.POSTGRES_PASSWORD || '',
-        database: process.env.POSTGRES_TEST_DB || '',
-        host: process.env.POSTGRES_HOST || '',
-        dialect: 'postgres',
-    },
-    production: {
-        username: process.env.POSTGRES_USER || '',
-        password: process.env.POSTGRES_PASSWORD || '',
-        database: process.env.POSTGRES_PROD_DB || '',
         host: process.env.POSTGRES_HOST || '',
         dialect: 'postgres',
     },
