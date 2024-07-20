@@ -91,3 +91,6 @@ test:
 
 test-watch:
 	$(DOCKER_COMPOSE) npm run test-watch
+
+db-denormalize:
+	$(DOCKER_COMPOSE) sh -c "node src/scripts/mongoose/migrateData.js"

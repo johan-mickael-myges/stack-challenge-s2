@@ -38,6 +38,7 @@ const config = {
     sendInBlueApiKey: process.env.SENDINBLUE_API_KEY,
     sendInBlueSender: process.env.SENDINBLUE_SENDER,
     sendInBlueSenderName: process.env.SENDINBLUE_SENDER_NAME,
+    mongoURI: process.env.MONGO_URI,
 };
 
 if (!config.jwtSecret) {
