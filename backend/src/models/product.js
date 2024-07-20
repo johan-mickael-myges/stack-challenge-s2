@@ -6,16 +6,19 @@ class Product extends Model {
             through: 'product_categories',
             foreignKey: 'productId',
             otherKey: 'categoryId',
-            timestamps: false
+            timestamps: false,
+            as: 'categories'
         });
         Product.belongsTo(models.Brand, {
             foreignKey: 'brandId',
+            as: 'brand'
         });
         Product.belongsToMany(models.Promotion, {
             through: 'product_promotions',
             foreignKey: 'productId',
             otherKey: 'promotionId',
-            timestamps: false
+            timestamps: false,
+            as: 'promotions'
         });
         Product.hasMany(models.CartItem, { foreignKey: 'productId' });
         Product.hasMany(models.OrderItem, { foreignKey: 'productId' });
@@ -23,13 +26,15 @@ class Product extends Model {
             through: 'product_materials',
             foreignKey: 'productId',
             otherKey: 'materialId',
-            timestamps: false
+            timestamps: false,
+            as: 'materials'
         });
         Product.belongsToMany(models.Color, {
             through: 'product_colors',
             foreignKey: 'productId',
             otherKey: 'colorId',
-            timestamps: false
+            timestamps: false,
+            as: 'colors'
         });
     }
 }

@@ -3,8 +3,18 @@ const app = require('../../app');
 const { Product } = require('~models');
 const jwt = require('jsonwebtoken');
 const { uploadToS3, generateFileDestination } = require('~services/s3Service');
+const productService = require('~services/productService');
+const { validationResult } = require('express-validator');
 
 jest.mock('jsonwebtoken');
+
+jest.mock('express-validator', () => {
+    const originalModule = jest.requireActual('express-validator');
+    return {
+        ...originalModule,
+        validationResult: jest.fn(),
+    };
+});
 
 jest.mock('~models', () => ({
     Product: {
@@ -21,6 +31,12 @@ jest.mock('~models', () => ({
 jest.mock('~services/s3Service', () => ({
     uploadToS3: jest.fn(),
     generateFileDestination: jest.fn(),
+}));
+
+jest.mock('~services/productService', () => ({
+    ...jest.requireActual('~services/productService'),
+    createProduct: jest.fn(),
+    updateProduct: jest.fn(),
 }));
 
 describe('Product Controller', () => {
@@ -98,7 +114,7 @@ describe('Product Controller', () => {
             const response = await request(app).get('/products/1');
 
             expect(response.statusCode).toBe(404);
-            expect(response.error.text).toBe('Not Found');
+            expect(response.error.text).toBe('Product not found');
         });
 
         it('should return a 500 status code when an error occurs', async () => {
@@ -115,12 +131,6 @@ describe('Product Controller', () => {
         it('should not be able to create a new product as non admin', async () => {
             const newProduct = {
                 name: 'Test Product',
-                reference: '123ABC',
-                price: 100.0,
-                description: 'A product for testing',
-                images: ['http://example.com/image1.jpg'],
-                quantity: 10,
-                brandId: 1,
             };
 
             const response = await request(app)
@@ -133,14 +143,10 @@ describe('Product Controller', () => {
 
         it('should be able to create a new product as admin', async () => {
             const newProduct = {
-               name: 'Test Product',
-               reference: '123ABCD',
-               price: 100.0,
-               description: 'A product for testing',
-               images: ['https://example.com/image1.jpg'],
-               quantity: 10,
-               brandId: 1,
+                name: 'Test Product',
             };
+
+            validationResult.mockReturnValue({ isEmpty: () => true });
 
             jwt.verify.mockImplementation((token, secret, callback) => {
                 callback(null, { roles: ['ROLE_ADMIN'] });
@@ -153,8 +159,7 @@ describe('Product Controller', () => {
 
             uploadToS3.mockResolvedValue('https://example.com/image1.jpg');
 
-            Product.findOne.mockResolvedValue(null);
-            Product.create.mockResolvedValue(newProduct);
+            productService.createProduct.mockResolvedValue(newProduct);
 
             const response = await request(app)
                 .post('/products')
@@ -164,46 +169,38 @@ describe('Product Controller', () => {
             expect(response.statusCode).toBe(201);
             expect(response.body).toEqual(newProduct);
         });
+
+        it ('should return a 400 status code when validation fails', async () => {
+            const newProduct = {
+                name: 'Test Product',
+            };
+
+            validationResult.mockReturnValue({
+                isEmpty: () => false ,
+                array: () => ['Validation error'],
+            });
+
+            jwt.verify.mockImplementation((token, secret, callback) => {
+                callback(null, { roles: ['ROLE_ADMIN'] });
+            });
+
+            const response = await request(app)
+                .post('/products')
+                .set('Cookie', ['token=valid-token'])
+                .send(newProduct);
+
+            expect(response.statusCode).toBe(400);
+            expect(response.error.text).toBe(JSON.stringify(['Validation error']));
+        });
     });
 
     describe('PUT /products/:id', () => {
-        let product;
-        let updatedProduct;
-        let updatedProductEntity;
-
-        beforeEach(() => {
-            product = {
-                id: 1,
-                name: 'Test Product',
-                reference: '123ABC',
-                price: 100.0,
-                description: 'A product for testing',
-                images: ['http://example.com/image1.jpg'],
-                quantity: 10,
-                brandId: 1,
-            };
-
-            updatedProduct = {
-                id: 1,
-                name: 'Test Product updated',
-                reference: '123ABC updated',
-                price: 200.0,
-                description: 'A product for testing updated',
-                images: ['http://example.com/image1.jpg'],
-                quantity: 20,
-                brandId: 2,
-            };
-
-            updatedProductEntity = {
-                ...updatedProduct,
-                update: jest.fn().mockResolvedValue(this)
-            };
-        });
-
         it('should not be able to update a product as non admin', async () => {
             const response = await request(app)
                 .put('/products/1')
-                .send(updatedProduct);
+                .send({
+                    name: 'Test Product',
+                });
 
             expect(response.statusCode).toBe(401);
             expect(response.error.text).toBe('Unauthorized');
@@ -215,8 +212,14 @@ describe('Product Controller', () => {
                 callback(null, { roles: ['ROLE_ADMIN'] });
             });
 
-            Product.findByPk.mockResolvedValue(updatedProductEntity);
-            Product.update.mockResolvedValue(updatedProduct);
+            const updatedProduct = {
+                id: 1,
+                name: 'Test Product updated',
+            };
+
+            validationResult.mockReturnValue({ isEmpty: () => true });
+
+            productService.updateProduct.mockResolvedValue(updatedProduct);
 
             const response = await request(app)
                 .put('/products/1')

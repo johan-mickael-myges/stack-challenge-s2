@@ -22,10 +22,28 @@ const productSchemaEntity = z.object({
     reference: z.string(),
     description: z.string().optional(),
     price: z.number(),
+    weight: z.number(),
     thumbnail: z.string(),
     images: z.array(z.string()).optional(),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
+    categories: z.array(z.object({
+        id: z.number(),
+        name: z.string(),
+    })),
+    colors: z.array(z.object({
+        id: z.number(),
+        name: z.string(),
+    })),
+    materials: z.array(z.object({
+        id: z.number(),
+        name: z.string(),
+    })),
+    brand: z.object({
+        id: z.number(),
+        name: z.string(),
+    }),
+
 });
 
 export type Product = z.infer<typeof productSchema>;

@@ -1,5 +1,53 @@
-const { Product } = require('~models');
+const { Product, Color, Brand, Category, Material } = require('~models');
 const { uploadToS3, generateFileDestination } = require('~services/s3Service');
+const NotFoundError = require('~errors/NotFoundError');
+const BadRequestError = require('~errors/BadRequestError');
+
+const countProducts = async () => {
+    return Product.count();
+}
+
+const getAllProducts = async (options) => {
+    return Product.findAll(options);
+}
+
+const getProductById = async (productId) => {
+    if (!productId) {
+        throw new BadRequestError('Product ID is required');
+    }
+
+    const options = {
+        include: [
+            {
+                association: 'categories',
+                attributes: ['id', 'name'],
+                through: { attributes: [] },
+            },
+            {
+                association: 'colors',
+                attributes: ['id', 'name'],
+                through: { attributes: [] }
+            },
+            {
+                association: 'materials',
+                attributes: ['id', 'name'],
+                through: { attributes: [] }
+            },
+            {
+                association: 'brand',
+                attributes: ['id', 'name']
+            }
+        ],
+    }
+
+    const product = await Product.findByPk(productId, options);
+
+    if (!product) {
+        throw new NotFoundError('Product not found');
+    }
+
+    return product;
+}
 
 const createProduct = async (productData, files) => {
     let thumbnailFile, imagesFiles, thumbnailDestination, imagesDestinations;
@@ -22,7 +70,34 @@ const createProduct = async (productData, files) => {
         }
     }
 
-    const product = await Product.create(productData);
+    const { categories, colors, materials, brand, ...productDetails } = productData;
+
+    const product = await Product.create(productDetails);
+
+    const categoriesValues = categories ? categories.split(',').map(category => Number(category)) : [];
+    if (categories) {
+        const categoriesInstances = await Category.findAll({ where: { id: categoriesValues } });
+        await product.setCategories(categoriesInstances);
+    }
+
+    const colorsValues = colors ? colors.split(',').map(color => Number(color)) : [];
+    if (colors) {
+        const colorsInstances = await Color.findAll({ where: { id: colorsValues } });
+        await product.setColors(colorsInstances);
+    }
+
+    const materialsValues = materials ? materials.split(',').map(material => Number(material)) : [];
+    if (materials) {
+        const materialsInstances = await Material.findAll({ where: { id: materialsValues } });
+        await product.setMaterials(materialsInstances);
+    }
+
+    if (brand) {
+        const brandInstance = await Brand.findByPk(brand);
+        await product.setBrand(brandInstance);
+    }
+
+    await product.save();
 
     if (files) {
         if (thumbnailDestination) {
@@ -57,19 +132,46 @@ const updateProduct = async (productId, productData, files) => {
         })) : [];
     }
 
-    productData.thumbnail = thumbnailDestination ? thumbnailDestination.url : product.thumbnail;
-    productData.images = imagesDestinations ? imagesDestinations.map(image => image.url) : product.images;
+    const { categories, colors, materials, brand, ...productDetails } = productData;
 
-    await product.update(productData);
+    productDetails.thumbnail = thumbnailDestination ? thumbnailDestination.url : product.thumbnail;
+    productDetails.images = imagesDestinations ? imagesDestinations.map(image => image.url) : product.images;
 
-    if (thumbnailFile) {
-        await uploadToS3(thumbnailFile, thumbnailDestination);
+    await product.update(productDetails);
+
+    const categoriesValues = categories ? categories.split(',').map(category => Number(category)) : [];
+    if (categories) {
+        const categoriesInstances = await Category.findAll({ where: { id: categoriesValues } });
+        await product.setCategories(categoriesInstances);
     }
 
-    if (imagesFiles) {
-        await Promise.all(imagesFiles.map(async (image, index) => {
-            await uploadToS3(image, imagesDestinations[index]);
-        }));
+    const colorsValues = colors ? colors.split(',').map(color => Number(color)) : [];
+    if (colors) {
+        const colorsInstances = await Color.findAll({ where: { id: colorsValues } });
+        await product.setColors(colorsInstances);
+    }
+
+    const materialsValues = materials ? materials.split(',').map(material => Number(material)) : [];
+    if (materials) {
+        const materialsInstances = await Material.findAll({ where: { id: materialsValues } });
+        await product.setMaterials(materialsInstances);
+    }
+
+    if (brand) {
+        const brandInstance = await Brand.findByPk(brand);
+        await product.setBrand(brandInstance);
+    }
+
+    if (files) {
+        if (thumbnailFile) {
+            await uploadToS3(thumbnailFile, thumbnailDestination);
+        }
+
+        if (imagesFiles) {
+            await Promise.all(imagesFiles.map(async (image, index) => {
+                await uploadToS3(image, imagesDestinations[index]);
+            }));
+        }
     }
 
     return product;
@@ -84,6 +186,9 @@ const deleteProduct = async (productId) => {
 };
 
 module.exports = {
+    countProducts,
+    getAllProducts,
+    getProductById,
     createProduct,
     updateProduct,
     deleteProduct,

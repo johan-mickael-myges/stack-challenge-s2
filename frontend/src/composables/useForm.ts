@@ -2,13 +2,8 @@ import { reactive, watch } from 'vue';
 import { ZodSchema, ZodError } from 'zod';
 import { ExpressError } from '@/types'; // Import the ExpressError type
 
-interface Rule<T> {
-    (value: T): boolean | string;
-}
-
 interface FormField<T> {
     value: T;
-    rules?: Rule<T>[];
     transform?: (value: T) => T; // Add transform function here
 }
 
@@ -31,6 +26,24 @@ export function useForm(initialData: InitialData, schema: ZodSchema<any>) {
         isSubmitting: false,
         validationErrors: {},
         httpError: null,
+    });
+
+    // Apply transformations if defined
+    const transformFlags = {} as { [key: string]: boolean };
+    Object.keys(initialData).forEach((key) => {
+        if (typeof initialData[key].transform === 'function') {
+            transformFlags[key] = false; // Initialize transform flags
+            watch(
+                () => formState.data[key].value,
+                (newValue) => {
+                    if (!transformFlags[key]) {
+                        transformFlags[key] = true;
+                        formState.data[key].value = initialData[key].transform!(newValue);
+                        transformFlags[key] = false;
+                    }
+                }
+            );
+        }
     });
 
     const transformField = (fieldName: string, transformFn: (value: any) => any) => {
@@ -100,18 +113,11 @@ export function useForm(initialData: InitialData, schema: ZodSchema<any>) {
         }, {} as { [key: string]: any });
     };
 
-    const rules = () => {
-        return Object.keys(formState.data).reduce((acc, key) => {
-            acc[key] = formState.data[key].rules;
-            return acc;
-        }, {} as { [key: string]: Rule<any>[] });
-    };
-
-    const initData = (data, rules) => {
+    const initData = (data, initialData) => {
         Object.keys(data).forEach((key) => {
             formState.data[key] = {
                 value: data[key],
-                rules: rules[key],
+                transform: initialData[key]?.transform || undefined,
             };
         });
     };
@@ -131,7 +137,6 @@ export function useForm(initialData: InitialData, schema: ZodSchema<any>) {
         submitForm,
         cancelRequest,
         values,
-        rules,
         initData,
     };
 }

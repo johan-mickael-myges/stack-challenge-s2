@@ -20,6 +20,14 @@ export const useBrandStore = defineStore('brands', {
         sortBy: [] as any,
     }),
     actions: {
+        async countBrands() {
+            try {
+                const response = await apiClient.get('/brands/count');
+                this.total = response.data;
+            } catch (error) {
+                throw error;
+            }
+        },
         async fetchBrands() {
             this.loading = true;
             try {
@@ -30,8 +38,7 @@ export const useBrandStore = defineStore('brands', {
                         sortBy: this.sortBy,
                     },
                 });
-                this.brands = response.data.items;
-                this.total = response.data.total;
+                this.brands = response.data;
             } catch (error) {
                 throw error;
             } finally {
@@ -77,6 +84,10 @@ export const useBrandStore = defineStore('brands', {
             } finally {
                 this.loading = false;
             }
+        },
+        async refreshList() {
+            await this.fetchBrands();
+            await this.countBrands();
         },
         async setPage(page: number) {
             this.currentPage = page;

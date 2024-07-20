@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const errorHandler = require('~middlewares/errorHandler');
-const sendMail = require('~services/mailerService');
-const config = require('~config/config');
 
 const authRoutes = require('./authRoutes');
 const productRoutes = require('./productRoutes');
@@ -12,6 +10,8 @@ const cartRoutes = require('./cartRoutes');
 const configRoutes = require('./configRoutes');
 const paymentRoutes = require('./paymentRoutes');
 const orderRoutes = require('./orderRoutes');
+const colorRoutes = require('./colorRoutes');
+const materialRoutes = require('./materialRoutes');
 
 router.use('/auth', authRoutes);
 router.use('/products', productRoutes);
@@ -21,6 +21,8 @@ router.use('/carts', cartRoutes);
 router.use('/config', configRoutes);
 router.use('/payment', paymentRoutes);
 router.use('/orders', orderRoutes);
+router.use('/colors', colorRoutes);
+router.use('/materials', materialRoutes);
 router.use(errorHandler);
 
 module.exports = router;

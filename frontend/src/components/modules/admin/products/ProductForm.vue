@@ -1,10 +1,15 @@
 <template>
-  <v-form ref="productForm" @submit.prevent="handleSubmit" :model-value="true" lazy-validation enctype="multipart/form-data">
+  <v-form
+      ref="productForm"
+      @submit.prevent="handleSubmit"
+      :model-value="true"
+      lazy-validation
+      enctype="multipart/form-data"
+  >
     <v-text-field
         v-model="formState.data.name.value"
         label="Nom"
         required
-        :rules="rules.name"
         :error-messages="formState.validationErrors?.name?.join(' | ')"
     >
     </v-text-field>
@@ -13,7 +18,6 @@
         v-model="formState.data.reference.value"
         label="Référence"
         required
-        :rules="rules.reference"
         :error-messages="formState.validationErrors?.reference?.join(' | ')"
     >
     </v-text-field>
@@ -25,66 +29,134 @@
     >
     </v-textarea>
 
-    <v-text-field
+    <v-number-input
         v-model.number="formState.data.price.value"
         label="Prix"
         required
-        :rules="rules.price"
         :error-messages="formState.validationErrors?.price?.join(' | ')"
-    >
-    </v-text-field>
+        :min="0"
+    />
 
-    <v-file-input
+    <v-number-input
+        v-model.number="formState.data.weight.value"
+        label="Poids"
+        required
+        :error-messages="formState.validationErrors?.weight?.join(' | ')"
+        :min="0"
+    />
+
+    <v-select
+        v-model="formState.data.categories.value"
+        label="Catégories"
+        multiple
+        :items="categories"
+        item-title="name"
+        item-value="id"
+        required
+        :error-messages="formState.validationErrors?.categories"
+    />
+
+    <v-select
+        v-model="formState.data.brand.value"
+        label="Marque"
+        :items="brands"
+        item-title="name"
+        item-value="id"
+        :error-messages="formState.validationErrors?.brand"
+    />
+
+    <v-select
+        v-model="formState.data.colors.value"
+        label="Couleurs"
+        multiple
+        :items="colors"
+        item-title="name"
+        item-value="id"
+        :error-messages="formState.validationErrors?.colors"
+    />
+
+    <v-select
+        v-model="formState.data.materials.value"
+        label="Matières"
+        multiple
+        :items="materials"
+        item-title="name"
+        item-value="id"
+        :error-messages="formState.validationErrors?.materials"
+    />
+
+    <file-input
         v-model="formState.data.thumbnail.value"
         label="Miniature"
         accept="image/*"
-        :rules="rules.thumbnail"
         :error-messages="formState.validationErrors?.thumbnail?.join(' | ')"
-    >
-    </v-file-input>
-    <v-img v-if="isEditing" :src="product?.thumbnail" width="200" height="200"></v-img>
+        chips
+    />
 
-    <v-file-input
+    <file-input
         v-model="formState.data.images.value"
         label="Images"
         multiple
         accept="image/*"
-        :rules="rules.images"
         :error-messages="formState.validationErrors?.images?.join(' | ')"
+        chips
     >
-    </v-file-input>
-    <v-img v-if="isEditing" v-for="(image, key) in product?.images" :key="'product-' + product?.id + '-images-' + key" :src="image" width="100" height="100"></v-img>
+    </file-input>
 
-    <v-btn type="submit" color="primary" :disabled="!valid || formState.isSubmitting">Enregistrer</v-btn>
-    <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Annuler</v-btn>
+    <v-row class="mt-2">
+      <v-col cols="12">
+        <v-btn type="submit" color="primary" :disabled="!valid || formState.isSubmitting">Enregistrer</v-btn>
+        <v-btn color="gray" variant="text" @click="cancelRequest" v-if="formState.isSubmitting">Annuler</v-btn>
+      </v-col>
+    </v-row>
+
     <v-progress-linear v-if="formState.isSubmitting" indeterminate color="primary"></v-progress-linear>
     <v-alert v-if="formState.httpError" type="error">{{ formState.httpError }}</v-alert>
   </v-form>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useForm } from '@/composables/useForm.ts';
-import { z } from 'zod';
-import { useProductStore } from '@/stores/products.ts';
+import {computed, defineComponent, onMounted, ref} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {useForm} from '@/composables/useForm.ts';
+import {z} from 'zod';
+import {useProductStore} from '@/stores/products.ts';
+import {useColorStore} from '@/stores/colors';
+import {VNumberInput} from "vuetify/labs/VNumberInput";
+import {useMaterialStore} from "@/stores/materials.ts";
+import {useCategoryStore} from "@/stores/categories.ts";
+import {useBrandStore} from "@/stores/brands.ts";
+import FileInput from '@/components/Form/FileInput.vue';
 
 const productSchema = z.object({
   id: z.number().optional(),
-  name: z.string(),
-  reference: z.string(),
+  name: z.string().min(3, 'Le nom doit comporter au moins 3 caractères').max(255, 'Le nom doit comporter au plus 255 caractères'),
+  reference: z.string().min(3, 'La référence doit comporter au moins 3 caractères').max(20, 'La référence doit comporter au plus 20 caractères'),
   description: z.string().optional(),
-  price: z.number(),
+  price: z.number().gt(0, 'Le prix doit être supérieur à 0'),
+  weight: z.number().gt(0, 'Le poids doit être supérieur à 0'),
+  brand: z.number().gt(0, 'La marque est requise'),
+  categories: z.array(z.number()).min(1, 'Au moins une catégorie est requise'),
+  colors: z.array(z.number()).min(1, 'Au moins une couleur est requise'),
+  materials: z.array(z.number()).min(1, 'Au moins une matière est requise'),
   thumbnail: z.union([z.instanceof(File), z.string().url()]),
   images: z.array(z.union([z.instanceof(File), z.string().url()])).optional()
 });
 
 export default defineComponent({
   name: 'ProductForm',
+  components: {
+    VNumberInput,
+    FileInput
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
     const store = useProductStore();
+    const categoryStore = useCategoryStore();
+    const brandStore = useBrandStore();
+    const colorStore = useColorStore();
+    const materialStore = useMaterialStore();
 
     const initialData = {
       id: {
@@ -95,29 +167,59 @@ export default defineComponent({
       },
       name: {
         value: '',
-        rules: [
-          (v: string) => !!v || 'Le nom est requis',
-          (v: string) => v.length >= 3 || 'Le nom doit comporter au moins 3 caractères',
-          (v: string) => v.length <= 255 || 'Le nom doit comporter au plus 255 caractères',
-        ],
-        transform: (v: string) => v.toUpperCase(),
+        transform: (value: string) => value.trim(),
       },
       reference: {
         value: '',
-        rules: [
-          (v: string) => !!v || 'La référence est requise',
-          (v: string) => v.length >= 3 || 'La référence doit comporter au moins 3 caractères',
-          (v: string) => v.length <= 20 || 'La référence doit comporter au plus 20 caractères',
-        ]
+        transform: (value: string) => value.trim(),
       },
       description: {
         value: '',
+        transform: (value: string) => value.trim(),
       },
       price: {
         value: 0,
-        rules: [
-          (v: number) => v >= 0 || 'Le prix doit être supérieur ou égal à 0'
-        ]
+        transform: (value: string) => Number(value),
+      },
+      weight: {
+        value: 0,
+        transform: (value: string) => Number(value),
+      },
+      brand: {
+        value: undefined,
+        transform(value) {
+          return value.id ? value.id : value;
+        },
+      },
+      categories: {
+        value: [],
+        transform(value) {
+          if (value[0].id) {
+            return value.map((category) => category.id);
+          } else {
+            return value;
+          }
+        }
+      },
+      colors: {
+        value: [],
+        transform(value) {
+          if (value[0].id) {
+            return value.map((color) => color.id);
+          } else {
+            return value;
+          }
+        }
+      },
+      materials: {
+        value: [],
+        transform(value) {
+          if (value[0].id) {
+            return value.map((material) => material.id);
+          } else {
+            return value;
+          }
+        }
       },
       thumbnail: {
         value: null,
@@ -128,7 +230,7 @@ export default defineComponent({
     };
 
     const valid = ref(true);
-    const { formState, submitForm, cancelRequest, rules, initData } = useForm(initialData, productSchema);
+    const {formState, submitForm, cancelRequest, initData} = useForm(initialData, productSchema);
 
     const handleSubmit = () => {
       submitForm(async (data, signal) => {
@@ -141,8 +243,14 @@ export default defineComponent({
           }
           if (key === 'images') {
             data.images.forEach((image) => {
-              formData.append('images', image);
+              if (image instanceof File) {
+                formData.append('images', image);
+              }
             });
+          } else if (key === 'thumbnail') {
+            if (data.thumbnail instanceof File) {
+              formData.append('thumbnail', data.thumbnail);
+            }
           } else {
             formData.append(key, data[key]);
           }
@@ -161,15 +269,30 @@ export default defineComponent({
       return !!route.params.id;
     };
 
-    onMounted(() => {
+    onMounted(async () => {
+      await brandStore.fetchBrands();
+      await categoryStore.fetchCategories();
+      await colorStore.fetchColors();
+      await materialStore.fetchMaterials();
       if (isEditing()) {
         store.fetchProduct(Number(route.params.id)).then(() => {
-          initData(store.product, rules())
+          initData(store.product, initialData);
         });
       }
     });
 
-    return { formState, handleSubmit, cancelRequest, rules: rules(), valid, isEditing: isEditing(), product: computed(() => store.product) };
+    return {
+      formState,
+      handleSubmit,
+      cancelRequest,
+      valid,
+      isEditing: isEditing(),
+      product: computed(() => store.product),
+      brands: computed(() => brandStore.brands),
+      categories: computed(() => categoryStore.categories),
+      colors: computed(() => colorStore.colors),
+      materials: computed(() => materialStore.materials),
+    };
   },
 });
 </script>

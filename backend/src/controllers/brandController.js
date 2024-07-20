@@ -2,9 +2,20 @@ const { Brand } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 const BadRequestError = require('~errors/BadRequestError');
 
+const countBrands = async (req, res, next) => {
+    try {
+        const count = await Brand.count();
+        res.status(200).json(count);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const getAllBrands = async (req, res, next) => {
     try {
         let options = buildQueryOptions(req.query);
+
+        options.attributes = {exclude: ['createdAt', 'updatedAt']};
 
         const brands = await Brand.findAll(options);
         res.status(200).json(brands);
@@ -69,6 +80,7 @@ const deleteBrand = async (req, res, next) => {
 };
 
 module.exports = {
+    countBrands,
     getAllBrands,
     getBrandById,
     createBrand,
