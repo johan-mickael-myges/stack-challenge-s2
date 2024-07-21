@@ -20,7 +20,7 @@ const routes: Array<RouteRecordRaw> = [
         name: 'UserInfo',
         component: UserInfo,
         meta: { requiresAuth: true },
-      },
+      }
     ],
   },
 ];

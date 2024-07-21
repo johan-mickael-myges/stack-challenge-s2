@@ -9,6 +9,7 @@ const brandRoutes = require('./brandRoutes');
 const cartRoutes = require('./cartRoutes');
 const configRoutes = require('./configRoutes');
 const paymentRoutes = require('./paymentRoutes');
+const userRoutes = require('./user');
 
 
 router.use('/auth', authRoutes);
@@ -18,6 +19,9 @@ router.use('/brands', brandRoutes);
 router.use('/carts', cartRoutes);
 router.use('/config', configRoutes);
 router.use('/payment', paymentRoutes);
+router.use('/users', userRoutes);
+
+
 
 router.use(errorHandler);
 

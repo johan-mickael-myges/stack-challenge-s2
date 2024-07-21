@@ -1,30 +1,27 @@
 <template>
   <div>
     <h2>Mes Commandes</h2>
-    <v-list>
-      <v-list-item v-for="order in orders" :key="order.id">
+    <v-list v-if="orderStore.orders.length > 0">
+      <v-list-item v-for="order in orderStore.orders" :key="order.id">
         <v-list-item-content>
           <v-list-item-title>Commande {{ order.id }}</v-list-item-title>
           <v-list-item-subtitle>{{ order.paymentMethod }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
+    <v-alert v-else type="info">Aucune commande n'est encore passée.</v-alert>
+    <v-alert v-if="orderStore.error" type="error">{{ orderStore.error }}</v-alert>
+    <v-progress-circular v-if="orderStore.loading" indeterminate></v-progress-circular>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { Order } from '@/types'; 
+import { onMounted } from 'vue';
+import { useOrderStore } from '@/stores/order';
 
-const orders = ref<Order[]>([]);
+const orderStore = useOrderStore();
 
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/user/orders');
-    orders.value = response.data as Order[]; 
-  } catch (error) {
-    console.error(error);
-  }
+onMounted(() => {
+  orderStore.fetchOrders(); // Fetch orders when component is mounted
 });
 </script>
