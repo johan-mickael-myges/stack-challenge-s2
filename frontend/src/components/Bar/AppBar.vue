@@ -2,7 +2,6 @@
 import { useGoToUrl } from "@/composables/useGoToUrl.ts";
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import CustomAutocomplete from "./CustomAutocomplete.vue";
-import CategoryButtons from "./CategoryButtons.vue";
 import { useRouter } from 'vue-router';
 
 const { goToByName } = useGoToUrl();
@@ -13,7 +12,6 @@ const isMediumScreen = ref(false);
 const isLargerScreen = ref(false);
 
 const items = ref(['item1', 'item2', 'item3']);
-const categories = ref(['Bagues', 'Boucles d\'oreilles', 'Colliers', 'Bracelets', 'Montres']);
 
 const handleResize = () => {
   isLargerScreen.value = window.innerWidth < 882;
@@ -37,7 +35,7 @@ const goToHome = () => router.push('/');
 </script>
 
 <template>
-  <v-app-bar :elevation="isMediumScreen ? 1 : 0" height="80">
+  <v-app-bar id="navbar" elevation="1" height="80">
     <v-row class="align-center">
 
       <v-col>
@@ -75,10 +73,6 @@ const goToHome = () => router.push('/');
         </v-btn>
       </v-col>
     </v-row>
-  </v-app-bar>
-  <!-- @TODO mettre dynamiquement elements du menu, en fonction de la selection de la categorie de l'admin -->
-  <v-app-bar v-if="!isMediumScreen" elevation="1" height="40" class="pb-3">
-    <CategoryButtons :categories="categories" />
   </v-app-bar>
 
   <v-app-bar elevation="0" height="60" v-if="isLargerScreen">

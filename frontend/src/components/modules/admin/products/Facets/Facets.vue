@@ -13,6 +13,8 @@
 import {defineComponent} from 'vue';
 import RangeFacets from "@/components/Form/RangeFacets.vue";
 import CheckboxFacets from "@/components/Form/CheckboxFacets.vue";
+import {z} from "zod";
+import {ProductFacetsSchema} from "@/types/schemas/products.ts";
 
 
 export default defineComponent({
@@ -20,7 +22,7 @@ export default defineComponent({
   components: {CheckboxFacets, RangeFacets},
   props: {
     facets: {
-      type: Array,
+      type: Array as () => z.infer<typeof ProductFacetsSchema>,
       required: true,
     },
   },
