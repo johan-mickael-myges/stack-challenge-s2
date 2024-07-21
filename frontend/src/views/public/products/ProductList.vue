@@ -10,12 +10,12 @@
     <div v-else>
       <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-4 mt-7">
 
-        <div v-for="product in products" :key="product.id">
+        <div v-for="product in products" :key="product.originalId">
 
           <v-card variant="elevated"
-                  @mouseover="handleMouseOver(product.id)"
+                  @mouseover="handleMouseOver(product.originalId)"
                   @mouseleave="handleMouseLeave()"
-                  @click="$router.push(`/products/${product.id}`)">
+                  @click="$router.push(`/products/${product.originalId}`)">
 
             <v-progress-linear
                 v-if="loading"
@@ -32,10 +32,10 @@
                    :src="product.thumbnail ? product.thumbnail : notFoundImage"
             >
 
-              <template v-if="hoveredCard === product.id">
+              <template v-if="hoveredCard === product.originalId">
                 <v-card-actions
                     class="absolute bottom-0 left-0 w-full z-10 text-center bg-black bg-opacity-70 transition-opacity duration-700">
-                  <v-btn color="white" block prepend-icon="mdi-cart-plus" @click.stop="addProductToCart(product.id)">
+                  <v-btn color="white" block prepend-icon="mdi-cart-plus" @click.stop="addProductToCart(product.originalId)">
                     <v-icon color="white"></v-icon>
                     <span> Ajouter au panier</span>
                   </v-btn>
@@ -92,8 +92,7 @@ export default defineComponent({
     const currentPage = ref(store.currentPage);
 
     onMounted(() => {
-      store.fetchProducts();
-      store.countProducts();
+      store.fetchAndCountProducts();
     });
 
     const isLoading = computed(() => store.loading);

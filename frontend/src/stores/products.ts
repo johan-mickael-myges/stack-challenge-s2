@@ -60,36 +60,42 @@ export const useProductStore = defineStore('products', {
         sortBy: [] as any,
     }),
     actions: {
-        async countProducts() {
+        async countProducts(params?: {}) {
             try {
-                const response = await apiClient.get('/products/count');
+                const response = await apiClient.get('/products/count', {
+                    params: {
+                        denormalize: true,
+                        ...params,
+                    }
+                });
                 this.total = response.data;
             } catch (error) {
                 throw error;
             }
         },
-        async fetchProducts() {
-            this.loading = true;
+        async fetchProducts(params?: {}) {
             try {
                 const response = await apiClient.get('/products', {
                     params: {
+                        denormalize: true,
                         page: this.currentPage,
                         limit: this.itemsPerPage,
                         sortBy: this.sortBy,
+                        ...params,
                     },
                 });
                 this.products = response.data;
             } catch (error) {
                 throw error;
-            } finally {
-                this.loading = false;
             }
         },
-        async fetchProduct(id: number) {
+        async fetchProduct(id: number, params: {}) {
             this.loading = true;
             try {
-                const response = await apiClient.get(`/products/${id}`);
-                this.product = productSchemaEntity.parse(response.data);
+                const response = await apiClient.get(`/products/${id}`, {
+                    params
+                });
+                this.product = response.data;
             } catch (error) {
                 throw error;
             } finally {
@@ -120,16 +126,18 @@ export const useProductStore = defineStore('products', {
         async deleteProduct(id: number, signal?: AbortSignal) {
             try {
                 await apiClient.delete(`/products/${id}`, { signal });
-                await this.refreshList();
+                await this.fetchAndCountProducts();
             } catch (error) {
                 throw error;
             } finally {
                 this.loading = false;
             }
         },
-        async refreshList() {
-            await this.fetchProducts();
-            await this.countProducts();
+        async fetchAndCountProducts(params?: {}) {
+            this.loading = true;
+            await this.fetchProducts(params);
+            await this.countProducts(params);
+            this.loading = false;
         },
         async setPage(page: number) {
             this.currentPage = page;

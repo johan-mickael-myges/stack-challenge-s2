@@ -20,19 +20,19 @@
         <v-tooltip text="Gérer le stock">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" variant="text" density="compact" icon="mdi-package"
-                   @click="$router.push(`/admin/products/${item.id}/stocks`)"></v-btn>
+                   @click="$router.push(`/admin/products/${item.originalId}/stocks`)"></v-btn>
           </template>
         </v-tooltip>
         <v-tooltip text="Modifier">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" variant="text" density="compact" icon="mdi-pencil"
-                   @click="$router.push(`/admin/products/edit/${item.id}`)"></v-btn>
+                   @click="$router.push(`/admin/products/edit/${item.originalId}`)"></v-btn>
           </template>
         </v-tooltip>
         <v-tooltip text="Supprimer">
           <template v-slot:activator="{ props }">
             <DeleteButton v-bind="props" variant="text" density="compact" icon="mdi-delete"
-                          :deleteFunction="() => deleteProduct(item.id)"/>
+                          :deleteFunction="() => deleteProduct(item.originalId)"/>
           </template>
         </v-tooltip>
       </div>
@@ -61,8 +61,7 @@ export default defineComponent({
     const {exportCSV} = useCSVExport();
 
     onMounted(async () => {
-      await productStore.fetchProducts();
-      await productStore.countProducts();
+      await productStore.fetchAndCountProducts();
     });
 
     const items = computed(() => productStore.products);
@@ -82,6 +81,7 @@ export default defineComponent({
       await productStore.setPage(options.page);
       await productStore.setItemsPerPage(options.itemsPerPage);
       await productStore.setSortBy(options.sortBy);
+      await productStore.fetchAndCountProducts(options);
     };
 
     return {
@@ -97,10 +97,49 @@ export default defineComponent({
   data() {
     return {
       headers: [
-        {title: 'Nom', value: 'name', sortable: true},
-        {title: 'Référence', value: 'reference', sortable: true},
-        {title: 'Prix', value: 'price', sortable: true},
-        {title: '', value: 'actions', sortable: false},
+        {
+          title: 'Nom',
+          value: 'name',
+          sortable: true
+        },
+        {
+          title: 'Référence',
+          value: 'reference',
+          sortable: true
+        },
+        {
+          title: 'Prix',
+          value: 'price',
+          sortable: true
+        },
+        {
+          title: 'Marque',
+          value: 'brand',
+          sortable: true
+        },
+        {
+          title: 'Catégories',
+          value: 'categories',
+          sortable: true,
+          transform: (item: any) => item.categories.map((category: any) => category).join(', ')
+        },
+        {
+          title: 'Couleurs',
+          value: 'colors',
+          sortable: true,
+          transform: (item: any) => item.colors.map((color: any) => color).join(', ')
+        },
+        {
+          title: 'Matières',
+          value: 'materials',
+          sortable: true,
+          transform: (item: any) => item.materials.map((color: any) => color).join(', ')
+        },
+        {
+          title: '',
+          value: 'actions',
+          sortable: false
+        },
       ] as Header[],
     };
   },

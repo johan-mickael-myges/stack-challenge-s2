@@ -15,10 +15,9 @@ module.exports = {
     );
 
     const productBrandAssociations = productIds.map(product => {
-      const shouldHaveBrand = faker.datatype.boolean();
       return {
         productId: product.id,
-        brandId: shouldHaveBrand ? faker.helpers.arrayElement(brandIds).id : null,
+        brandId: faker.helpers.arrayElement(brandIds).id,
       };
     });
 

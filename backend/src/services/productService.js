@@ -4,45 +4,64 @@ const NotFoundError = require('~errors/NotFoundError');
 const BadRequestError = require('~errors/BadRequestError');
 const eventEmitter = require('~services/eventEmitter');
 const MongooseProduct = require('~models/mongoose/Product');
+const { buildMongooseQuery, getBoolValue } = require('~utils/queryOptionsFactory');
 
-const countProducts = async () => {
+const countProducts = async (options = {}) => {
+    console.log(options);
+    if (getBoolValue(options['denormalize'])) {
+        return MongooseProduct.countDocuments();
+    }
+
     return Product.count();
 }
 
-const getAllProducts = async (options) => {
+const getAllProducts = async (options = {}) => {
+    if (getBoolValue(options['denormalize'])) {
+        const builtQuery = buildMongooseQuery(MongooseProduct.find(), options);
+        return builtQuery.exec();
+    }
+
     return Product.findAll(options);
 }
 
-const getProductById = async (productId) => {
+const getProductById = async (productId, options = {}) => {
     if (!productId) {
         throw new BadRequestError('Product ID is required');
     }
 
-    const options = {
-        include: [
-            {
-                association: 'categories',
-                attributes: ['id', 'name'],
-                through: { attributes: [] },
-            },
-            {
-                association: 'colors',
-                attributes: ['id', 'name'],
-                through: { attributes: [] }
-            },
-            {
-                association: 'materials',
-                attributes: ['id', 'name'],
-                through: { attributes: [] }
-            },
-            {
-                association: 'brand',
-                attributes: ['id', 'name']
-            }
-        ],
-    }
+    let product;
 
-    const product = await Product.findByPk(productId, options);
+    if (getBoolValue(options['denormalize'])) {
+        product = MongooseProduct.findOne({ originalId: productId });
+    } else {
+        const sequelizeOptions = {
+            include: [
+                {
+                    association: 'categories',
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                },
+                {
+                    association: 'colors',
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] }
+                },
+                {
+                    association: 'materials',
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] }
+                },
+                {
+                    association: 'brand',
+                    attributes: ['id', 'name']
+                }
+            ],
+        };
+
+        options = { ...options, ...sequelizeOptions };
+
+        product = await Product.findByPk(productId, options);
+    }
 
     if (!product) {
         throw new NotFoundError('Product not found');

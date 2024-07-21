@@ -55,6 +55,7 @@
     "~constants": "src/constants",
     "~controllers": "src/controllers",
     "~errors": "src/errors",
+    "~factories": "src/factories",
     "~listeners": "src/listeners",
     "~middlewares": "src/middlewares",
     "~models": "src/models",

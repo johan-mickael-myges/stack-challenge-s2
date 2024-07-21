@@ -17,15 +17,15 @@ eventEmitter.on('productCreated', async (product) => {
 });
 
 eventEmitter.on('productUpdated', async (data) => {
-    const { productId, product } = data;
+    const {productId, product} = data;
 
     try {
         const productData = await productFactory(product);
 
         const updatedProduct = await MongooseProduct.findOneAndUpdate(
-                { originalId: productId },
+                {originalId: productId},
                 productData,
-                { new: true, useFindAndModify: false }
+                {new: true, useFindAndModify: false}
         );
 
         if (!updatedProduct) {
@@ -38,6 +38,26 @@ eventEmitter.on('productUpdated', async (data) => {
         console.error('Error transforming and saving product', {
             error,
             product
+        });
+    }
+});
+
+eventEmitter.on('productDeleted', async (productId) => {
+    try {
+        const deletedProduct = await MongooseProduct.findOneAndDelete(
+                {originalId: productId}
+        );
+
+        if (!deletedProduct) {
+            console.error('Product not found in MongoDB', productId);
+            return;
+        }
+
+        console.info('Product deleted successfully in MongoDB', deletedProduct);
+    } catch (error) {
+        console.error('Error deleting product', {
+            error,
+            productId
         });
     }
 });

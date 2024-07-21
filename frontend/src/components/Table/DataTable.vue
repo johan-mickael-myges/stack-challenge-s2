@@ -9,7 +9,7 @@
     <v-data-table-server
         v-bind="$attrs"
         :headers="headers"
-        :items="items"
+        :items="transformedItems"
         :items-length="itemsLength"
         @update:options="loadItems"
         class="shadow"
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from 'vue';
+import {computed, defineComponent, PropType} from 'vue';
 import {Header} from "@/components/Table/types/Header.ts";
 
 export default defineComponent({
@@ -36,12 +36,12 @@ export default defineComponent({
     headers: {
       type: Array as PropType<Header[]>,
       required: true,
-      default: [],
+      default: () => [],
     },
     items: {
       type: Array,
       required: true,
-      default: [],
+      default: () => [],
     },
     itemsLength: {
       type: Number,
@@ -54,6 +54,30 @@ export default defineComponent({
     loadItems(options: any) {
       this.$emit('update:options', options);
     },
+  },
+    setup(props) {
+      const transformedItems = computed(() => {
+        return props.items.map((item: any) => {
+          const transformedItem: any = {};
+
+          props.headers.forEach((header: Header) => {
+            transformedItem[header.value] = header.transform ? header.transform(item) : item[header.value];
+          });
+
+          // keep the item value that is not in the headers
+          Object.keys(item).forEach((key) => {
+            if (!props.headers.find((header) => header.value === key)) {
+              transformedItem[key] = item[key];
+            }
+          });
+
+          return transformedItem;
+        });
+      });
+
+      return {
+        transformedItems,
+      };
   },
 });
 </script>

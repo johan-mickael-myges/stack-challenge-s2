@@ -4,7 +4,7 @@ const { Product } = require('~models');
 
 exports.countProducts = async (req, res, next) => {
     try {
-        const count = await productService.countProducts();
+        const count = await productService.countProducts(req.query);
         res.status(200).json(count);
     } catch (error) {
         next(error);
@@ -14,6 +14,7 @@ exports.countProducts = async (req, res, next) => {
 exports.getAllProducts = async (req, res, next) => {
     try {
         let options = buildQueryOptions(req.query);
+
         const products = await productService.getAllProducts(options);
         res.status(200).json(products);
     } catch (error) {
@@ -23,7 +24,7 @@ exports.getAllProducts = async (req, res, next) => {
 
 exports.getProductById = async (req, res, next) => {
     try {
-        const product = await productService.getProductById(req.params.id);
+        const product = await productService.getProductById(req.params.id, req.query);
         res.status(200).json(product);
     } catch (error) {
         next(error);
