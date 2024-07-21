@@ -29,7 +29,7 @@ export const useProductFacetsStore = defineStore('productFacets', {
         facets: null as Facet | null,
     }),
     actions: {
-        async getProductFacets(params?: {}) {
+        async fetchProductFacets(params?: {}) {
             try {
                 const response = await apiClient.get('/products/facets', {
                     params: {
