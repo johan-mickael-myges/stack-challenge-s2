@@ -37,4 +37,4 @@ const authorizeRoles = (requiredRoles = []) => {
 module.exports = {
     checkToken,
     authorizeRoles
-}
+};

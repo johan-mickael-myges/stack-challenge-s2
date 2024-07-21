@@ -12,7 +12,6 @@ const paymentRoutes = require('./paymentRoutes');
 const orderRoutes = require('./orderRoutes');
 const colorRoutes = require('./colorRoutes');
 const materialRoutes = require('./materialRoutes');
-const userRoutes = require('./user');
 
 router.use('/auth', authRoutes);
 router.use('/products', productRoutes);
@@ -24,8 +23,6 @@ router.use('/payment', paymentRoutes);
 router.use('/orders', orderRoutes);
 router.use('/colors', colorRoutes);
 router.use('/materials', materialRoutes);
-router.use('/users', userRoutes);
-
 router.use(errorHandler);
 
 module.exports = router;
