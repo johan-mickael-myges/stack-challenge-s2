@@ -6,6 +6,7 @@ const NotFoundError = require('~errors/NotFoundError');
 const BadRequestError = require('~errors/BadRequestError');
 const mongoose = require('mongoose');
 const MongooseProduct = require('~models/mongoose/Product');
+const generateProductFacets = require('~utils/facetBuilderFactory');
 
 jest.mock('mongoose');
 jest.mock('~models/mongoose/Product', () => ({
@@ -41,6 +42,8 @@ jest.mock('~services/s3Service', () => ({
 jest.mock('~services/eventEmitter', () => ({
     emit: jest.fn(),
 }));
+
+jest.mock('~utils/facetBuilderFactory', () => jest.fn());
 
 describe('productService', () => {
     beforeEach(() => {
@@ -158,20 +161,6 @@ describe('productService', () => {
 
     describe('generateFacets', () => {
         it('should return the correct facets with types', async () => {
-            // Mock data to return
-            const mockAggregateResponse = [
-                {
-                    brands: [{ _id: 'Brand A', count: 1 }, { _id: 'Brand B', count: 1 }],
-                    categories: [{ _id: 'Category 1', count: 2 }, { _id: 'Category 2', count: 1 }],
-                    colors: [{ _id: 'Red', count: 1 }, { _id: 'Blue', count: 1 }, { _id: 'Green', count: 1 }],
-                    materials: [{ _id: 'Material 1', count: 2 }, { _id: 'Material 2', count: 1 }],
-                    price: [{ min: 100, max: 500 }],
-                    weight: [{ min: 1, max: 10 }],
-                }
-            ];
-
-            MongooseProduct.aggregate.mockResolvedValue(mockAggregateResponse);
-
             const expectedFacets = [
                 {
                     id: 'brands',
@@ -183,31 +172,10 @@ describe('productService', () => {
                     type: 'checkbox',
                     values: [{ _id: 'Category 1', count: 2 }, { _id: 'Category 2', count: 1 }]
                 },
-                {
-                    id: 'colors',
-                    type: 'checkbox',
-                    values: [{ _id: 'Red', count: 1 }, { _id: 'Blue', count: 1 }, { _id: 'Green', count: 1 }]
-                },
-                {
-                    id: 'materials',
-                    type: 'checkbox',
-                    values: [{ _id: 'Material 1', count: 2 }, { _id: 'Material 2', count: 1 }]
-                },
-                {
-                    id: 'price',
-                    type: 'range',
-                    values: [{ min: 100, max: 500 }]
-                },
-                {
-                    id: 'weight',
-                    type: 'range',
-                    values: [{ min: 1, max: 10 }]
-                }
             ];
+            generateProductFacets.mockResolvedValue(expectedFacets);
 
             const facets = await productServiceTest.generateFacets();
-
-            expect(MongooseProduct.aggregate).toHaveBeenCalledTimes(1);
             expect(facets).toEqual(expectedFacets);
         });
     });

@@ -5,6 +5,7 @@ const BadRequestError = require('~errors/BadRequestError');
 const eventEmitter = require('~services/eventEmitter');
 const MongooseProduct = require('~models/mongoose/Product');
 const { buildMongooseQuery, getBoolValue } = require('~utils/queryOptionsFactory');
+const generateProductFacets = require('~utils/facetBuilderFactory');
 
 const countProducts = async (options = {}) => {
     if (getBoolValue(options['denormalize'])) {
@@ -217,105 +218,39 @@ const deleteProduct = async (productId) => {
 const generateFacets = async () => {
     try {
         const facetsType = {
-            brands: 'checkbox',
-            categories: 'checkbox',
-            colors: 'checkbox',
-            materials: 'checkbox',
-            price: 'range',
-            weight: 'range',
+            categories: {
+                label: 'Catégories',
+                type: 'checkbox',
+                attribute: 'categories'
+            },
+            brands: {
+                label: 'Marques',
+                type: 'checkbox',
+                attribute: 'brand'
+            },
+            colors: {
+                label: 'Couleurs',
+                type: 'checkbox',
+                attribute: 'colors'
+            },
+            materials: {
+                label: 'Matériaux',
+                type: 'checkbox',
+                attribute: 'materials'
+            },
+            price: {
+                label: 'Prix',
+                type: 'range',
+                attribute: 'price'
+            },
+            weight: {
+                label: 'Poids',
+                type: 'range',
+                attribute: 'weight'
+            },
         };
 
-        const facets = await MongooseProduct.aggregate([
-            {
-                $facet: {
-                    brands: [
-                        {
-                            $group: {
-                                _id: '$brand',
-                                count: { $sum: 1 }
-                            },
-                        },
-                    ],
-                    categories: [
-                        {
-                            $unwind: '$categories'
-                        },
-                        {
-                            $group: {
-                                _id: '$categories',
-                                count: { $sum: 1 }
-                            }
-                        },
-                    ],
-                    colors: [
-                        {
-                            $unwind: '$colors'
-                        },
-                        {
-                            $group: {
-                                _id: '$colors',
-                                count: { $sum: 1 }
-                            }
-                        },
-                    ],
-                    materials: [
-                        {
-                            $unwind: '$materials'
-                        },
-                        {
-                            $group: {
-                                _id: '$materials',
-                                count: { $sum: 1 }
-                            }
-                        },
-                    ],
-                    price: [
-                        {
-                            $group: {
-                                _id: null,
-                                min: { $min: '$price' },
-                                max: { $max: '$price' }
-                            }
-                        },
-                        {
-                            $project: {
-                                _id: 0,
-                                min: { $floor: '$min' },
-                                max: { $ceil: '$max' }
-                            }
-                        },
-                    ],
-                    weight: [
-                        {
-                            $group: {
-                                _id: null,
-                                min: { $min: '$weight' },
-                                max: { $max: '$weight' }
-                            }
-                        },
-                        {
-                            $project: {
-                                _id: 0,
-                                min: { $floor: '$min' },
-                                max: { $ceil: '$max' }
-                            }
-                        },
-                    ]
-                }
-            },
-        ]);
-
-        let facetsWithTypes = [];
-
-        for (const [key, value] of Object.entries(facets[0])) {
-            facetsWithTypes.push({
-                id: key,
-                type: facetsType[key],
-                values: value
-            });
-        }
-
-        return facetsWithTypes;
+        return await generateProductFacets(facetsType, MongooseProduct);
     } catch (error) {
         console.error(error);
     }
