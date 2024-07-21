@@ -1,6 +1,6 @@
 # Define variables for commonly used commands
 DOCKER_COMPOSE = docker compose exec backend
-SEQUELIZE = npx sequelize-cli --migrations-path src/migrations --seeders-path src/seeders --config src/config/config.js
+SEQUELIZE = npx sequelize-cli --migrations-path src/migrations --seeders-path src/seeders --config src/config/sequelizeConfig.js
 
 .PHONY: db-create db-drop db-migrate db-undo-migrate db-undo-all-migrations db-seed db-undo-seed db-undo-all-seeds db-reset db-clear db-clean db-generate-migration db-sync db-init db-drop-and-sync db-status
 
@@ -80,10 +80,12 @@ db-status:
 
 # Command to recreate everything (drop, create, migrate, and seed the database)
 db-recreate:
+	$(DOCKER_COMPOSE) sh -c "node src/scripts/mongoose/dropDatabase.js"
 	$(DOCKER_COMPOSE) $(SEQUELIZE) db:drop
 	$(DOCKER_COMPOSE) $(SEQUELIZE) db:create
 	$(DOCKER_COMPOSE) $(SEQUELIZE) db:migrate
 	$(DOCKER_COMPOSE) $(SEQUELIZE) db:seed:all
+	$(DOCKER_COMPOSE) sh -c "node src/scripts/mongoose/migrateData.js"
 
 # Run tests
 test:
@@ -92,5 +94,8 @@ test:
 test-watch:
 	$(DOCKER_COMPOSE) npm run test-watch
 
-db-denormalize:
+mdb-denormalize:
 	$(DOCKER_COMPOSE) sh -c "node src/scripts/mongoose/migrateData.js"
+
+mdb-drop-database:
+	$(DOCKER_COMPOSE) sh -c "node src/scripts/mongoose/dropDatabase.js"
