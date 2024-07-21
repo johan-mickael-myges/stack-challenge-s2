@@ -4,6 +4,13 @@ const eventEmitter = require('~services/eventEmitter');
 const productServiceTest = require('~services/productService');
 const NotFoundError = require('~errors/NotFoundError');
 const BadRequestError = require('~errors/BadRequestError');
+const mongoose = require('mongoose');
+const MongooseProduct = require('~models/mongoose/Product');
+
+jest.mock('mongoose');
+jest.mock('~models/mongoose/Product', () => ({
+    aggregate: jest.fn(),
+}));
 
 jest.mock('~models', () => ({
     Product: {
@@ -146,6 +153,48 @@ describe('productService', () => {
         it('should throw error if product not found', async () => {
             Product.findByPk.mockResolvedValue(null);
             await expect(productServiceTest.deleteProduct(1)).rejects.toThrow('Product not found');
+        });
+    });
+
+    describe('generateFacets', () => {
+        it('should return the correct facets', async () => {
+            // Mock data to return
+            const mockAggregateResponse = [
+                {
+                    brands: [{ _id: 'Brand A', count: 1 }, { _id: 'Brand B', count: 1 }],
+                    categories: [{ _id: 'Category 1', count: 2 }, { _id: 'Category 2', count: 1 }],
+                    colors: [{ _id: 'Red', count: 1 }, { _id: 'Blue', count: 1 }, { _id: 'Green', count: 1 }],
+                    materials: [{ _id: 'Material 1', count: 2 }, { _id: 'Material 2', count: 1 }],
+                    priceRanges: [
+                        { range: 0, count: 0 },
+                        { range: 100, count: 1 },
+                        { range: 200, count: 1 },
+                        { range: 300, count: 0 },
+                        { range: 400, count: 0 },
+                        { range: 500, count: 0 },
+                        { range: 1000, count: 0 },
+                        { range: 'Other', count: 0 }
+                    ],
+                    weightRanges: [
+                        { range: 0, count: 0 },
+                        { range: 1, count: 0 },
+                        { range: 2, count: 1 },
+                        { range: 3, count: 1 },
+                        { range: 4, count: 0 },
+                        { range: 5, count: 0 },
+                        { range: 10, count: 0 },
+                        { range: 'Other', count: 0 }
+                    ]
+                }
+            ];
+
+            MongooseProduct.aggregate.mockResolvedValue(mockAggregateResponse);
+
+            const facets = await productServiceTest.generateFacets();
+
+            expect(MongooseProduct.aggregate).toHaveBeenCalledTimes(1);
+            expect(facets).toEqual(mockAggregateResponse);
+            expect(facets).toHaveLength(1);
         });
     });
 });

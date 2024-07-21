@@ -11,9 +11,11 @@ const {
     getProductById,
     createProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    getFacets,
 } = require('~controllers/productController');
 
+router.get('/facets', getFacets);
 router.get('/count', countProducts);
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);

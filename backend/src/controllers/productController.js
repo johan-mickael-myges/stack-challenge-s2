@@ -56,3 +56,12 @@ exports.deleteProduct = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.getFacets = async (req, res, next) => {
+    try {
+        const facets = await productService.generateFacets();
+        res.status(200).json(facets);
+    } catch (error) {
+        next(error);
+    }
+}

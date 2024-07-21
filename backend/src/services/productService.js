@@ -3,6 +3,7 @@ const { uploadToS3, generateFileDestination } = require('~services/s3Service');
 const NotFoundError = require('~errors/NotFoundError');
 const BadRequestError = require('~errors/BadRequestError');
 const eventEmitter = require('~services/eventEmitter');
+const MongooseProduct = require('~models/mongoose/Product');
 
 const countProducts = async () => {
     return Product.count();
@@ -195,6 +196,100 @@ const deleteProduct = async (productId) => {
     eventEmitter.emit('productDeleted', productId);
 };
 
+const generateFacets = async () => {
+    try {
+        const facets = await MongooseProduct.aggregate([
+            {
+                $facet: {
+                    brands: [
+                        {
+                            $group: {
+                                _id: '$brand',
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    categories: [
+                        {
+                            $unwind: '$categories'
+                        },
+                        {
+                            $group: {
+                                _id: '$categories',
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    colors: [
+                        {
+                            $unwind: '$colors'
+                        },
+                        {
+                            $group: {
+                                _id: '$colors',
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    materials: [
+                        {
+                            $unwind: '$materials'
+                        },
+                        {
+                            $group: {
+                                _id: '$materials',
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    priceRanges: [
+                        {
+                            $bucket: {
+                                groupBy: '$price',
+                                boundaries: [0, 100, 200, 300, 400, 500, 1000, Infinity],
+                                default: 'Other',
+                                output: {
+                                    count: { $sum: 1 }
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                range: '$_id',
+                                count: 1
+                            }
+                        }
+                    ],
+                    weightRanges: [
+                        {
+                            $bucket: {
+                                groupBy: '$weight',
+                                boundaries: [0, 1, 2, 3, 4, 5, 10, Infinity],
+                                default: 'Other',
+                                output: {
+                                    count: { $sum: 1 }
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                range: '$_id',
+                                count: 1
+                            }
+                        }
+                    ]
+                }
+            }
+        ]);
+
+        return facets;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 module.exports = {
     countProducts,
     getAllProducts,
@@ -202,4 +297,5 @@ module.exports = {
     createProduct,
     updateProduct,
     deleteProduct,
+    generateFacets
 };
