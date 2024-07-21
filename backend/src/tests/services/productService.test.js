@@ -157,7 +157,7 @@ describe('productService', () => {
     });
 
     describe('generateFacets', () => {
-        it('should return the correct facets', async () => {
+        it('should return the correct facets with types', async () => {
             // Mock data to return
             const mockAggregateResponse = [
                 {
@@ -165,36 +165,50 @@ describe('productService', () => {
                     categories: [{ _id: 'Category 1', count: 2 }, { _id: 'Category 2', count: 1 }],
                     colors: [{ _id: 'Red', count: 1 }, { _id: 'Blue', count: 1 }, { _id: 'Green', count: 1 }],
                     materials: [{ _id: 'Material 1', count: 2 }, { _id: 'Material 2', count: 1 }],
-                    priceRanges: [
-                        { range: 0, count: 0 },
-                        { range: 100, count: 1 },
-                        { range: 200, count: 1 },
-                        { range: 300, count: 0 },
-                        { range: 400, count: 0 },
-                        { range: 500, count: 0 },
-                        { range: 1000, count: 0 },
-                        { range: 'Other', count: 0 }
-                    ],
-                    weightRanges: [
-                        { range: 0, count: 0 },
-                        { range: 1, count: 0 },
-                        { range: 2, count: 1 },
-                        { range: 3, count: 1 },
-                        { range: 4, count: 0 },
-                        { range: 5, count: 0 },
-                        { range: 10, count: 0 },
-                        { range: 'Other', count: 0 }
-                    ]
+                    price: [{ min: 100, max: 500 }],
+                    weight: [{ min: 1, max: 10 }],
                 }
             ];
 
             MongooseProduct.aggregate.mockResolvedValue(mockAggregateResponse);
 
+            const expectedFacets = [
+                {
+                    id: 'brands',
+                    type: 'checkbox',
+                    values: [{ _id: 'Brand A', count: 1 }, { _id: 'Brand B', count: 1 }]
+                },
+                {
+                    id: 'categories',
+                    type: 'checkbox',
+                    values: [{ _id: 'Category 1', count: 2 }, { _id: 'Category 2', count: 1 }]
+                },
+                {
+                    id: 'colors',
+                    type: 'checkbox',
+                    values: [{ _id: 'Red', count: 1 }, { _id: 'Blue', count: 1 }, { _id: 'Green', count: 1 }]
+                },
+                {
+                    id: 'materials',
+                    type: 'checkbox',
+                    values: [{ _id: 'Material 1', count: 2 }, { _id: 'Material 2', count: 1 }]
+                },
+                {
+                    id: 'price',
+                    type: 'range',
+                    values: [{ min: 100, max: 500 }]
+                },
+                {
+                    id: 'weight',
+                    type: 'range',
+                    values: [{ min: 1, max: 10 }]
+                }
+            ];
+
             const facets = await productServiceTest.generateFacets();
 
             expect(MongooseProduct.aggregate).toHaveBeenCalledTimes(1);
-            expect(facets).toEqual(mockAggregateResponse);
-            expect(facets).toHaveLength(1);
+            expect(facets).toEqual(expectedFacets);
         });
     });
 });
