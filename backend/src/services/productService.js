@@ -2,6 +2,7 @@ const { Product, Color, Brand, Category, Material } = require('~models');
 const { uploadToS3, generateFileDestination } = require('~services/s3Service');
 const NotFoundError = require('~errors/NotFoundError');
 const BadRequestError = require('~errors/BadRequestError');
+const eventEmitter = require('~services/eventEmitter');
 
 const countProducts = async () => {
     return Product.count();
@@ -111,6 +112,8 @@ const createProduct = async (productData, files) => {
         }
     }
 
+    eventEmitter.emit('productCreated', product);
+
     return product;
 };
 
@@ -174,6 +177,11 @@ const updateProduct = async (productId, productData, files) => {
         }
     }
 
+    eventEmitter.emit('productUpdated', {
+        productId,
+        product,
+    });
+
     return product;
 };
 
@@ -183,6 +191,8 @@ const deleteProduct = async (productId) => {
         throw new Error('Product not found');
     }
     await product.destroy();
+
+    eventEmitter.emit('productDeleted', productId);
 };
 
 module.exports = {

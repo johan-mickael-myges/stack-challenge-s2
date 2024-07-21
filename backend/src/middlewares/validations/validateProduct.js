@@ -107,9 +107,6 @@ const validateProductCreation = [
 ];
 
 const validateProductUpdate = [
-    body('id')
-        .notEmpty().withMessage('L\'ID est requis')
-        .isInt().withMessage('L\'ID doit être un entier'),
     body('reference')
         .notEmpty().withMessage('La référence est requise')
         .isLength({ min: 3, max: 20 }).withMessage('La référence doit comporter entre 3 et 20 caractères')

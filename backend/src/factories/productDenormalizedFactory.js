@@ -1,12 +1,10 @@
-const MongooseProduct = require('../../models/mongoose/Product'); // Mongoose models
-
-const transformAndSaveProduct = async (sequelizeProduct) => {
+const factory = async (sequelizeProduct) => {
     const categories = await sequelizeProduct.getCategories();
     const brand = await sequelizeProduct.getBrand();
     const materials = await sequelizeProduct.getMaterials();
     const colors = await sequelizeProduct.getColors();
 
-    const productData = {
+    return {
         originalId: sequelizeProduct.id,
         name: sequelizeProduct.name,
         reference: sequelizeProduct.reference,
@@ -20,9 +18,6 @@ const transformAndSaveProduct = async (sequelizeProduct) => {
         materials: materials.map(material => material.name),
         colors: colors.map(color => color.name)
     };
+}
 
-    const mongooseProduct = new MongooseProduct(productData);
-    await mongooseProduct.save();
-};
-
-module.exports = transformAndSaveProduct;
+module.exports = factory;

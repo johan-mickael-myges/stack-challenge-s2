@@ -25,7 +25,7 @@ describe('render', () => {
     it('should render the template with provided data', async () => {
         const result = await render(templateName, data);
 
-        const templatePath = path.join(__dirname, `../templates/${templateName}.ejs`);
+        const templatePath = path.join(__dirname, `../../templates/${templateName}.ejs`);
         expect(fs.readFileSync).toHaveBeenCalledWith(templatePath, 'utf8');
         expect(ejs.render).toHaveBeenCalledWith(templateContent, data);
         expect(result).toBe(renderedContent);

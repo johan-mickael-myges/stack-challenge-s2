@@ -1,6 +1,6 @@
 const { sequelize } = require('../../models'); // Sequelize instance
 const connectDB = require('../../config/mongoose'); // Mongoose connection
-const transformAndSaveProduct = require('../../services/mongoose/transformData');
+const transformAndSaveProduct = require('../../services/transformProductData');
 
 const migrateData = async () => {
     await connectDB();
