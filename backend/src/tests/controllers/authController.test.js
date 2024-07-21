@@ -8,6 +8,7 @@ const UnauthorizedError = require('../../errors/UnauthorizedError');
 
 jest.mock('jsonwebtoken');
 jest.mock('~services/userService');
+
 jest.mock('express-validator', () => {
     const originalModule = jest.requireActual('express-validator');
     return {
@@ -102,14 +103,7 @@ describe('Auth Controller', () => {
                 array: () => ['Validation error']
             });
 
-            const response = await request(app).post('/auth/register').send({
-                email: '',
-                password: '',
-                username: '',
-                firstname: '',
-                lastname: '',
-                number: '',
-            });
+            const response = await request(app).post('/auth/register').send({});
 
             expect(response.statusCode).toBe(400);
             expect(response.error.text).toBe('[\"Validation error\"]');
@@ -130,14 +124,7 @@ describe('Auth Controller', () => {
 
             const response = await request(app)
                     .post('/auth/register')
-                    .send({
-                        email: 'test@example.com',
-                        password: 'password123',
-                        username: 'testuser',
-                        firstname: 'Test',
-                        lastname: 'User',
-                        number: '1234567890',
-                    });
+                    .send({});
 
             expect(response.statusCode).toBe(201);
             expect(response.body).toEqual(mockUser);
@@ -150,14 +137,7 @@ describe('Auth Controller', () => {
 
             const response = await request(app)
                     .post('/auth/register')
-                    .send({
-                        email: 'test@example.com',
-                        password: 'password123',
-                        username: 'testuser',
-                        firstname: 'Test',
-                        lastname: 'User',
-                        number: '1234567890',
-                    });
+                    .send({});
 
             expect(response.statusCode).toBe(500);
             expect(response.error.text).toBe('Registration error');

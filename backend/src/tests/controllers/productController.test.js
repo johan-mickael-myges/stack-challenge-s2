@@ -37,6 +37,7 @@ jest.mock('~services/productService', () => ({
     ...jest.requireActual('~services/productService'),
     createProduct: jest.fn(),
     updateProduct: jest.fn(),
+    deleteProduct: jest.fn(),
 }));
 
 describe('Product Controller', () => {
@@ -251,6 +252,8 @@ describe('Product Controller', () => {
                 ...product,
                 destroy: jest.fn().mockResolvedValue(1)
             };
+
+            productService.deleteProduct.mockResolvedValue(fountProductEntity);
         });
 
         it('should not be able to delete a product as non admin', async () => {

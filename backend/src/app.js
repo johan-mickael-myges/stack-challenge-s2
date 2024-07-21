@@ -17,12 +17,9 @@ const cors = require('cors');
 const routes = require('./routes');
 const errorHandler = require('~middlewares/errorHandler');
 const { frontendUrl } = require('~config/config');
-const connectDB = require('~config/mongoose');
+
 const productListener = require('~listeners/productListeners');
-
-connectDB();
 productListener;
-
 
 const app = express();
 

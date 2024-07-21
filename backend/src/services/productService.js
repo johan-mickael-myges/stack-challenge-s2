@@ -7,7 +7,6 @@ const MongooseProduct = require('~models/mongoose/Product');
 const { buildMongooseQuery, getBoolValue } = require('~utils/queryOptionsFactory');
 
 const countProducts = async (options = {}) => {
-    console.log(options);
     if (getBoolValue(options['denormalize'])) {
         return MongooseProduct.countDocuments();
     }
