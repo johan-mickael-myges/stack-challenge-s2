@@ -6,9 +6,10 @@
  * @param {number} [query.page=1] - The page number for pagination.
  * @param {number} [query.limit=10] - The number of items per page for pagination.
  * @param {Array} [query.sortBy] - The sort options.
+ * @param {Object} [query.q] - The search query.
  * @returns {Object} The Sequelize query options.
  */
-const buildQueryOptions = ({ denormalize = '', page = 1, limit = 10, sortBy = [], facets = {}}) => {
+const buildQueryOptions = ({ denormalize = '', page = 1, limit = 10, sortBy = [], q = {}}) => {
     let sortOptions = [];
 
     if (sortBy.length > 0) {
@@ -23,7 +24,7 @@ const buildQueryOptions = ({ denormalize = '', page = 1, limit = 10, sortBy = []
         offset: (page - 1) * limit,
         limit: limit < 0 ? null : limit,
         order: sortOptions,
-        facets: facets ?? null,
+        q: q ?? null,
     };
 };
 
@@ -38,8 +39,8 @@ const buildMongooseQuery = (query, options = {}) => {
         mongooseQuery.sort(options['order']);
     }
 
-    if (options['facets'] && Object.keys(options['facets']).length > 0) {
-        const { brands, categories, colors, materials, priceRange, weightRange, logic = 'AND' } = options['facets'];
+    if (options['q'] && Object.keys(options['q']).length > 0) {
+        const { brands, categories, colors, materials, price, weight, logic = 'AND' } = options['q'];
         const conditions = [];
 
         if (brands && brands.length > 0) {
@@ -58,15 +59,15 @@ const buildMongooseQuery = (query, options = {}) => {
             conditions.push({ materials: { $in: materials } });
         }
 
-        if (priceRange) {
-            conditions.push({ price: { $gte: priceRange.min, $lte: priceRange.max } });
+        if (price) {
+            conditions.push({ price: { $gte: price[0], $lte: price[1] } });
         }
 
-        if (weightRange) {
+        if (weight) {
             conditions.push({
                 weight: {
-                    $gte: Math.floor(weightRange.min),
-                    $lte: Math.ceil(weightRange.max)
+                    $gte: Math.floor(weight[0]),
+                    $lte: Math.ceil(weight[1])
                 }
             });
         }

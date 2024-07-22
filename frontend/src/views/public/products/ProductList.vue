@@ -4,7 +4,7 @@
       {height: contentHeight},
       {maxHeight: contentHeight},
     ]">
-      <ProductFacets />
+      <ProductFacets @update-values="handleFacetValuesUpdate" />
     </v-col>
     <v-col cols="12" md="9">
       <div class="gap-4">
@@ -16,10 +16,15 @@
           ></v-progress-circular>
         </div>
         <div v-else>
-          <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-4 mt-7">
-
+          <v-alert
+              v-if="!products.length"
+              type="info"
+              text="Aucun produit ne correspond à votre recherche."
+              density="compact"
+              variant="tonal"
+          />
+          <div v-else class="grid md:grid-cols-3 lg:grid-cols-4 gap-4 mt-7">
             <div v-for="product in products" :key="product.originalId">
-
               <v-card variant="elevated"
                       @mouseover="handleMouseOver(product.originalId)"
                       @mouseleave="handleMouseLeave()"
@@ -87,6 +92,9 @@ import {defineComponent, computed, onMounted, ref, watch, onBeforeUnmount} from 
 import notFoundImage from '@/assets/not-found-image.png';
 import ProductFacets from "@/views/public/products/ProductFacets.vue";
 import { usePageStore } from "@/stores/page";
+import {useProductFacetsStore} from "@/stores/productFacets.ts";
+import {useFacetQuery} from "@/composables/useFacetQuery.ts";
+import debounce from 'lodash/debounce';
 
 export default defineComponent({
   name: 'ProductList',
@@ -101,6 +109,7 @@ export default defineComponent({
     const store = useProductStore();
     const cartStore = useCartStore();
     const pageStore = usePageStore();
+    const productFacetsStore = useProductFacetsStore();
 
     const itemsPerPage = ref(store.itemsPerPage);
     const currentPage = ref(store.currentPage);
@@ -152,6 +161,12 @@ export default defineComponent({
       pageStore.calculateNavbarHeight();
     };
 
+    const handleFacetValuesUpdate = debounce(async (values: Record<string, string[]>) => {
+      productFacetsStore.setSelectedFacets(values);
+      const facetQuery = useFacetQuery(values);
+      await store.fetchAndCountProducts({}, facetQuery);
+    }, 300);
+
     return {
       isLoading,
       products,
@@ -162,6 +177,7 @@ export default defineComponent({
       handleMouseLeave,
       addProductToCart,
       contentHeight,
+      handleFacetValuesUpdate,
     };
   },
 });

@@ -60,7 +60,7 @@ export const useProductStore = defineStore('products', {
         sortBy: [] as any,
     }),
     actions: {
-        async countProducts(params?: {}) {
+        async countProducts(params?: Record<string, any>) {
             try {
                 const response = await apiClient.get('/products/count', {
                     params: {
@@ -73,7 +73,7 @@ export const useProductStore = defineStore('products', {
                 throw error;
             }
         },
-        async fetchProducts(params?: {}) {
+        async fetchProducts(params?: Record<string, any>, facetParams?: Record<string, any>) {
             try {
                 const response = await apiClient.get('/products', {
                     params: {
@@ -82,6 +82,7 @@ export const useProductStore = defineStore('products', {
                         limit: this.itemsPerPage,
                         sortBy: this.sortBy,
                         ...params,
+                        ...facetParams,
                     },
                 });
                 this.products = response.data;
@@ -89,7 +90,7 @@ export const useProductStore = defineStore('products', {
                 throw error;
             }
         },
-        async fetchProduct(id: number, params: {}) {
+        async fetchProduct(id: number, params?: Record<string, any>) {
             this.loading = true;
             try {
                 const response = await apiClient.get(`/products/${id}`, {
@@ -133,10 +134,10 @@ export const useProductStore = defineStore('products', {
                 this.loading = false;
             }
         },
-        async fetchAndCountProducts(params?: {}) {
+        async fetchAndCountProducts(params?: Record<string, any>, facetParams?: Record<string, any>) {
             this.loading = true;
-            await this.fetchProducts(params);
-            await this.countProducts(params);
+            await this.fetchProducts(params, facetParams);
+            await this.countProducts(params, facetParams);
             this.loading = false;
         },
         async setPage(page: number) {

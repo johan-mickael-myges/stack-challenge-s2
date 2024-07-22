@@ -7,6 +7,7 @@ export const useProductFacetsStore = defineStore('productFacets', {
     state: () => ({
         loading: false,
         facets: [] as z.infer<typeof ProductFacetsSchema>,
+        selectedFacets: {} as Record<string, string[]>,
     }),
     actions: {
         async fetchProductFacets(params?: {}) {
@@ -22,5 +23,8 @@ export const useProductFacetsStore = defineStore('productFacets', {
                 throw error;
             }
         },
+        setSelectedFacets(values: Record<string, string[]>) {
+            this.selectedFacets = values;
+        }
     },
 });
