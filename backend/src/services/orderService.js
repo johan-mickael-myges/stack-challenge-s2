@@ -1,13 +1,5 @@
 const {Order, OrderItem, Product} = require("~models");
-const {PAYMENT_METHOD_PAYPAL, PAYMENT_METHOD_STRIPE} = require("~constants/paymentMethod");
 const BadRequestError = require("~errors/BadRequestError");
-
-const validatePaymentMethod = (method) => {
-    return [
-        PAYMENT_METHOD_PAYPAL,
-        PAYMENT_METHOD_STRIPE,
-    ].includes(method);
-}
 
 const buildOrderItem = async (item, orderId) => {
     const product = await Product.findByPk(item.productId);
@@ -30,10 +22,7 @@ const createOrder = async (userId, items = [], options = {}) => {
         throw new BadRequestError('User ID is required');
     }
 
-    const paymentMethod = options.paymentMethod || PAYMENT_METHOD_PAYPAL;
-    if (!validatePaymentMethod(paymentMethod)) {
-        throw new BadRequestError('Invalid payment method');
-    }
+    const paymentMethod = 'PAYPAL';
 
     if (items.length === 0) {
         throw new BadRequestError('Order must have items');
