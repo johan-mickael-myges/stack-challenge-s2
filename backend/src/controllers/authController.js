@@ -15,6 +15,19 @@ exports.registerUser = async (req, res, next) => {
     }
 };
 
+exports.deleteUser = async (req, res, next) => {
+    const {userId} = req.user;
+    const { password } = req.body;
+
+    try {
+        const user = await userService.deleteUser(userId, password);
+        res.status(204).json(user);
+    } catch (error) {
+       next(error);
+    }
+};
+
+
 exports.loginUser = async (req, res, next) => {
     const errors = validationResult(req);
 

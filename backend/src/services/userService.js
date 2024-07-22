@@ -8,6 +8,57 @@ const UnauthorizedError = require('~errors/UnauthorizedError');
 const BadRequestError = require('~errors/BadRequestError');
 const sendMail = require('~services/mailerService');
 
+exports.deleteUser = async (userId, password) => {
+    const existingUser = await User.findByPk(userId);
+    
+    if (!existingUser) {
+        throw new BadRequestError('L\'utilisateur n\'existe pas');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+    
+    if (!isPasswordValid) {
+        throw new UnauthorizedError('Mot de passe invalide');
+    }
+
+    // Anonymiser les informations de l'utilisateur
+    existingUser.email = `anonyme${existingUser.id}@layaline.com`;
+    existingUser.firstname = 'Anonyme';
+    existingUser.lastname = 'Utilisateur';
+    const newPassword = generatePassword(12); 
+    console.log('Generated Password:', newPassword);
+
+    console.log(existingUser);
+    await existingUser.save();
+
+    return existingUser;
+};
+
+function generatePassword(length = 12) {
+    if (length < 8) {
+        throw new Error('La longueur du mot de passe doit être d\'au moins 8 caractères.');
+    }
+
+    const lowerCaseChars = 'abcdefghijklmnopqrstuvwxyz';
+    const upperCaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numberChars = '0123456789';
+    const specialChars = '!@#$%^&*()-_=+[]{}|;:,.<>?';
+
+    const allChars = lowerCaseChars + upperCaseChars + numberChars + specialChars;
+    let password = '';
+    
+    password += upperCaseChars.charAt(Math.floor(Math.random() * upperCaseChars.length));
+    password += numberChars.charAt(Math.floor(Math.random() * numberChars.length));
+    password += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+    password += lowerCaseChars.charAt(Math.floor(Math.random() * lowerCaseChars.length));
+    
+    for (let i = password.length; i < length; i++) {
+        password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+    }
+    
+    return password.split('').sort(() => Math.random() - 0.5).join('');
+}
+
 exports.registerUser = async (userData) => {
     const existingUser = await User.findOne({ where: { email: userData.email } });
     if (existingUser) {

@@ -3,9 +3,12 @@ import { useGoToUrl } from "@/composables/useGoToUrl.ts";
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import CustomAutocomplete from "./CustomAutocomplete.vue";
 import { useRouter } from 'vue-router';
+import { useAuthStore } from "@/stores/auth.ts";
 
 const { goToByName } = useGoToUrl();
 const login = () => goToByName('login');
+const authStore = useAuthStore();
+
 
 const isSmallScreen = ref(false);
 const isMediumScreen = ref(false);
@@ -27,6 +30,14 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
+
+const goToProfile = () => {
+  if (authStore.isAuthenticated) {
+    router.push({ path: '/profile/info' }); // Par défaut, affichez les commandes
+  } else {
+    goToByName('login');
+  }
+};
 
 const router = useRouter();
 const goToCart = () => router.push({ name: 'UserCart' });
@@ -51,7 +62,7 @@ const goToHome = () => router.push('/');
           <v-icon size="20px">mdi-heart-outline</v-icon>
         </v-btn>
 
-        <v-btn icon @click="login">
+        <v-btn icon @click="goToProfile">
           <v-icon size="20px">mdi-account-outline</v-icon>
         </v-btn>
 

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {reactive, ref} from 'vue';
+import {reactive, ref, computed} from 'vue';
 import {ExpressError, LoginData, RegisterData} from '@/types';
 import apiClient from "@/config/axios.ts";
 import { useRouter } from 'vue-router';
@@ -15,6 +15,30 @@ export const useAuthStore = defineStore('auth', () => {
         loading.value = false;
         hasError.value = false;
         errors.value = {};
+    }
+
+    const saveUserToLocalStorage = () => {
+        localStorage.setItem('user', JSON.stringify(user));
+    };
+
+    const loadUserFromLocalStorage = () => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            Object.assign(user, JSON.parse(userData));
+        }
+    };
+
+    const deleteUser = async () => {
+        const userData = localStorage.getItem('user');
+        if (userData){
+            try {
+                await apiClient.post('/auth/delete');
+            }
+            catch{
+                console.log('erreur1');
+            }
+        };
+        
     }
 
     const register = async (data: RegisterData) => {
@@ -78,6 +102,21 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    const confirmDeletion = async (password: string) => {
+        try {
+          await apiClient.post('auth/delete', {
+            password
+            });
+          router.push('/');
+        } catch (error) {
+            throw error;
+        }
+      };
+
+    const isAuthenticated = computed(() => !!Object.keys(user).length);
+
+    loadUserFromLocalStorage();
+
     return {
         loading,
         errors,
@@ -87,5 +126,7 @@ export const useAuthStore = defineStore('auth', () => {
         logout,
         user,
         verifyAuth,
+        isAuthenticated,
+        confirmDeletion,
     };
 });

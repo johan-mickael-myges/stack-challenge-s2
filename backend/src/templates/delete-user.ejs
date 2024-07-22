@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layalin - Bienvenue</title>
+    <style>
+        * {
+            font-family: Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <header style="background: #1f232f; color: white; padding: 1rem 0; text-align: center">
+        <h1>Layalin</h1>
+    </header>
+    <div style="text-align: center; padding: 1rem 0; line-height: 2rem">
+        <h2 style="margin-bottom: 1rem">Bienvenue <%= user.firstname %> <% user.lastname %> 👋</h2>
+        <p>Nous sommes ravis de vous accueillir sur notre plateforme.</p>
+        <p style="margin-bottom: 1rem">Vous pouvez dès à présent vous connecter à votre compte en cliquant sur ce <a href="<%= loginUrl %>" class="text-blue-500 font-bold">lien</a></p>
+        <small>Si vous n'arrivez pas à cliquer sur le bouton, copiez-collez le lien suivant dans votre navigateur : <%= loginUrl %></small>
+    </div>
+    <footer style="background: #dedede; text-align: center; padding: 1rem 0">
+        <small>Si vous n'avez pas créé de compte, vous pouvez ignorer ce message.</small>
+        <br>
+        <small>© 2024 Layalin. Tous droits réservés.</small>
+    </footer>
+</body>
+</html>

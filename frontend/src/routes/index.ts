@@ -11,6 +11,7 @@ import adminSecurityRoutes from "@/routes/public/security/adminSecurityRoutes.ts
 import privacyPolicyRoutes from '@/routes/public/policy/privacyPolicyRoutes';
 import orderRoutes from '@/routes/user/orderRoutes.ts';
 import { useAuthStore } from "@/stores/auth.ts";
+import UserProfileRoutes from '@/routes/user/userRoutes';
 
 const routes: Array<RouteRecordRaw> = [
     ...adminSecurityRoutes,
@@ -23,6 +24,7 @@ const routes: Array<RouteRecordRaw> = [
     ...errorRoutes,
     ...privacyPolicyRoutes, 
     ...orderRoutes,
+    ...UserProfileRoutes,
 ]
 
 const router = createRouter({
