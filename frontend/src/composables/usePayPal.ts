@@ -37,7 +37,59 @@ export const usePayPal = () => {
     }
   };
 
-  const setupPayPalButton = (totalPrice: number, orderId: string) => {
+  // const setupPayPalButton = (totalPrice: number, orderId: string, recipientFirstName: string, recipientLastName: string, address: string, shippingMethod: string) => {
+  //   if (window.paypal) {
+  //     window.paypal.Buttons({
+  //       createOrder: async (data, actions) => {
+  //         try {
+  //           const response = await axios.post('http://localhost:8000/payment/create-order', { totalPrice }, {
+  //             withCredentials: true,
+  //           });
+  //           return response.data.orderID;
+  //         } catch (err) {
+  //           console.error('Failed to create PayPal order:', err);
+  //           throw err;
+  //         }
+  //       },
+  //       onApprove: async (data, actions) => {
+  //         try {
+  //           alert('Transaction approved!');
+  //           const response = await axios.post('http://localhost:8000/payment/capture-order', {
+  //             orderID: data.orderID,
+  //             localOrderId: orderId,
+  //           }, {
+  //             withCredentials: true,
+  //           });
+  //           // Send delivery information after payment approval
+  //           const fullName = `${recipientFirstName} ${recipientLastName}`;
+  //           console.log(data);
+  //           await axios.post('http://localhost:8000/orders/update-delivery', {
+  //             orderId,
+  //             shippingMethod,
+  //             address,
+  //             recipientName: fullName,
+  //           }, {
+  //             withCredentials: true,
+  //           });
+  //           alert('Transaction completed!');
+  //           // Clear the cart
+  //           await cartStore.clearCart();
+  //           // Redirect to order confirmation page
+  //           router.push({ name: 'OrderConfirmation' });
+  //         } catch (err) {
+  //           console.error('Failed to capture PayPal order:', err);
+  //           alert('Failed to complete transaction.');
+  //         }
+  //       },
+  //       onError: (err) => {
+  //         console.error('PayPal Button error:', err);
+  //         alert('An error occurred during the transaction.');
+  //       }
+  //     }).render('#paypal-button-container');
+  //   }
+  // };
+
+  const setupPayPalButton = (totalPrice: number, orderId: string, recipientFirstName: string, recipientLastName: string, address: string, shippingMethod: string) => {
     if (window.paypal) {
       window.paypal.Buttons({
         createOrder: async (data, actions) => {
@@ -53,9 +105,21 @@ export const usePayPal = () => {
         },
         onApprove: async (data, actions) => {
           try {
+            alert('Transaction approved!');
             const response = await axios.post('http://localhost:8000/payment/capture-order', {
               orderID: data.orderID,
               localOrderId: orderId,
+            }, {
+              withCredentials: true,
+            });
+            // Send delivery information after payment approval
+            const fullName = `${recipientFirstName} ${recipientLastName}`;
+            console.log(data);
+            await axios.post('http://localhost:8000/orders/update-delivery', {
+              orderId,
+              shippingMethod,
+              address,
+              recipientName: fullName,
             }, {
               withCredentials: true,
             });
