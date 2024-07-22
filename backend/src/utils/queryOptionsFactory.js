@@ -43,7 +43,16 @@ const buildMongooseQuery = (query, options = {}) => {
         const { terms, brands, categories, colors, materials, price, weight, logic = 'AND' } = options['q'];
         const conditions = [];
 
-        let termValue = Array.isArray(terms) ? terms.join(' ').trim() : terms.trim();
+        let termValue = '';
+
+        if (terms) {
+            if (Array.isArray(terms)) {
+                termValue = terms.join(' ');
+            } else {
+                termValue = terms;
+            }
+            termValue = termValue ? termValue.trim() : '';
+        }
 
         if (termValue) {
             console.log('termValue', termValue);
