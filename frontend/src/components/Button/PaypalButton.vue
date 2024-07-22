@@ -1,5 +1,7 @@
 <template>
-  <div id="paypal-button-container"></div>
+  <div class="w-full flex flex-row justify-center items-center">
+    <div id="paypal-button-container" class="w-full bg-red-400"></div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -43,34 +45,40 @@ export default defineComponent({
       document.body.appendChild(script);
     };
 
+    const createOrder = async (totalPrice: number, paymentMethod: string) => {
+      try {
+        return await paypalStore.createOrder(totalPrice, paymentMethod);
+      } catch (err) {
+        throw err;
+      }
+    };
+
+    const captureOrder = async (orderID: string, internalOrderId: string) => {
+      try {
+        await paypalStore.captureOrder(orderID, internalOrderId);
+        await cartStore.clearCart();
+        await router.push({name: 'OrderConfirmation'});
+      } catch (err) {
+        console.error('Failed to capture PayPal order:', err);
+      }
+    };
+
+    const onError = (err: any) => {
+      console.error('PayPal Button error:', err);
+    };
+
     const setupPayPalButton = () => {
       if (window.paypal) {
         window.paypal.Buttons({
-          createOrder: async (data: any, actions: any) => {
-            try {
-              return await paypalStore.createOrder(props.totalPrice, props.paymentMethod);
-            } catch (err) {
-              console.error('Failed to create PayPal order:', err);
-              throw err;
-            }
+          createOrder: (data: any, actions: any) => {
+            return createOrder(props.totalPrice, props.paymentMethod);
           },
-          onApprove: async (data: any, actions: any) => {
-            try {
-              const response = await paypalStore.captureOrder(data.orderID, props.internalOrderId);
-              alert('Transaction completed!');
-              // Clear the cart
-              await cartStore.clearCart();
-              // Redirect to order confirmation page
-              await router.push({name: 'OrderConfirmation'});
-            } catch (err) {
-              console.error('Failed to capture PayPal order:', err);
-              alert('Failed to complete transaction.');
-            }
+          onApprove: (data: any, actions: any) => {
+            return actions.order.capture().then((details: any) => {
+              captureOrder(data.orderID, props.internalOrderId);
+            });
           },
-          onError: (err: any) => {
-            console.error('PayPal Button error:', err);
-            alert('An error occurred during the transaction.');
-          }
+          onError: onError,
         }).render('#paypal-button-container');
       }
     };
@@ -84,3 +92,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.paypal-button-container {
+  width: 100%;
+}
+</style>

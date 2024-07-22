@@ -21,7 +21,8 @@
               <p><strong>Sous-total:</strong> {{ item.subtotal }} €</p>
             </div>
             <p class="font-bold">Total: {{ totalPrice.toFixed(2) }} €</p>
-            <PaypalButton :total-price="totalPrice" :internal-order-id="order.id" />
+            <SuggestAddressField class="mb-4" />
+            <PaypalButton :total-price="totalPrice" :internal-order-id="order.id + ''" />
           </div>
         </div>
       </v-col>
@@ -34,10 +35,11 @@ import { defineComponent, ref, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import useOrderDetails from '@/composables/useOrderDetails';
 import PaypalButton from "@/components/Button/PaypalButton.vue";
+import SuggestAddressField from "@/components/Form/SuggestAddressField.vue";
 
 export default defineComponent({
   name: 'OrderDetails',
-  components: {PaypalButton},
+  components: {SuggestAddressField, PaypalButton},
   setup() {
     const route = useRoute();
     const orderId = route.params.orderId as string;

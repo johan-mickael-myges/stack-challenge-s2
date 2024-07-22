@@ -1,6 +1,7 @@
 const paypal = require('@paypal/checkout-server-sdk');
 const paypalService = require('~services/paypalService');
 const eventEmitter = require('~services/eventEmitter');
+const PaypalError = require('~errors/PaypalError');
 
 const environment = new paypal.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_SECRET);
 const client = new paypal.core.PayPalHttpClient(environment);
@@ -10,14 +11,18 @@ exports.createOrder = async (req, res, next) => {
 
     try {
         const order = await paypalService.createOrder(totalPrice);
+        console.log('Order ID', order.result.id);
         res.status(order.statusCode).json(order.result.id);
-    } catch (error) {
-        next(error)
+    } catch (err) {
+        const error = new PaypalError(err.statusCode, err.message);
+        next(error);
     }
 };
 
 exports.captureOrder = async (req, res, next) => {
     const {orderID, internalOrderId} = req.body;
+
+    console.log('Capture orderID', orderID);
 
     try {
         const order = await paypalService.captureOrder(orderID);
@@ -29,6 +34,7 @@ exports.captureOrder = async (req, res, next) => {
 
         res.json(order.result);
     } catch (err) {
-        next(err);
+        const error = new PaypalError(err.statusCode, err.message);
+        next(error);
     }
 };

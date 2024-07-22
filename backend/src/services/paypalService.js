@@ -1,6 +1,6 @@
 const paypal = require('@paypal/checkout-server-sdk');
 const configService = require('./configService');
-const { BadRequestError } = require('~errors/BadRequestError');
+const BadRequestError = require('~errors/BadRequestError');
 
 const getEnvironment = async () => {
     const client = await configService.getConfig('paypal.client');
