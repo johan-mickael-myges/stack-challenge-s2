@@ -1,5 +1,5 @@
 <template>
-  <div v-for="(item) in facets">
+  <div v-for="(item) in facets" class="py-2 border-b-1">
     <div v-if="item.type === 'range'">
       <RangeFacets :item="item" @update-values="updateFacetValues(item.id, $event)" />
     </div>

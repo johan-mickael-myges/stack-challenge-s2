@@ -1,16 +1,19 @@
 <template>
   <div>
-    <span>{{ item.label }}</span>
+    <span class="font-bold text-xl text-gray-900">{{ item.label }}</span>
     <v-checkbox
         v-for="(option, index) in item.values"
         :key="index"
         :value="option._id"
         v-model="selectedValues"
-        :label="formatLabel(option)"
         density="compact"
         @change="emitSelectedValues"
         hide-details
-    ></v-checkbox>
+    >
+      <template v-slot:label>
+        <span :class="{ 'text-black': isSelected(option._id), 'text-gray-700': !isSelected(option._id) }">{{ formatLabel(option) }}</span>
+      </template>
+    </v-checkbox>
   </div>
 </template>
 
@@ -40,11 +43,16 @@ export default defineComponent({
       emit('update-values', selectedValues.value);
     };
 
+    const isSelected = (value: string) => {
+      return selectedValues.value.includes(value);
+    };
+
     return {
       props,
       selectedValues,
       formatLabel,
       emitSelectedValues,
+      isSelected,
     };
   },
 });

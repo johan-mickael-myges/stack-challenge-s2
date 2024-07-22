@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span>{{ item.label }}</span>
+    <span class="font-bold text-xl text-gray-900">{{ item.label }}</span>
     <v-range-slider
         v-model="rangeValues"
         :max="item.values.max"
