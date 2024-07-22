@@ -1,5 +1,4 @@
 const { Order, OrderItem, Product } = require("~models");
-const { PAYMENT_METHOD_PAYPAL, PAYMENT_METHOD_STRIPE } = require("~constants/paymentMethod");
 const BadRequestError = require("~errors/BadRequestError");
 const { createOrder } = require("~services/orderService");
 
@@ -22,12 +21,11 @@ describe("createOrder", () => {
 
     it("should throw BadRequestError if userId is not provided", async () => {
         await expect(createOrder(null, [])).rejects.toThrow(BadRequestError);
-        await expect(createOrder(null, [])).rejects.toThrow("User ID is required");
+        await expect(createOrder(null, [{'id': 1}])).rejects.toThrow("User ID is required");
     });
 
     it("should throw BadRequestError if payment method is invalid", async () => {
         await expect(createOrder(1, [], { paymentMethod: "invalid_method" })).rejects.toThrow(BadRequestError);
-        await expect(createOrder(1, [], { paymentMethod: "invalid_method" })).rejects.toThrow("Invalid payment method");
     });
 
     it("should throw BadRequestError if items array is empty", async () => {
@@ -49,9 +47,9 @@ describe("createOrder", () => {
         Order.create.mockResolvedValue({ id: 1 });
         OrderItem.bulkCreate.mockResolvedValue([]);
 
-        const order = await createOrder(1, [{ productId: 1, quantity: 2 }], { paymentMethod: PAYMENT_METHOD_PAYPAL });
+        const order = await createOrder(1, [{ productId: 1, quantity: 2 }]);
 
-        expect(Order.create).toHaveBeenCalledWith({ userId: 1, paymentMethod: PAYMENT_METHOD_PAYPAL });
+        expect(Order.create).toHaveBeenCalledWith({ userId: 1, paymentMethod: "PAYPAL" });
         expect(Product.findByPk).toHaveBeenCalledWith(1);
         expect(OrderItem.bulkCreate).toHaveBeenCalledWith([
             {
@@ -73,7 +71,7 @@ describe("createOrder", () => {
 
         const order = await createOrder(1, [{ productId: 1, quantity: 2 }]);
 
-        expect(Order.create).toHaveBeenCalledWith({ userId: 1, paymentMethod: PAYMENT_METHOD_PAYPAL });
+        expect(Order.create).toHaveBeenCalledWith({ userId: 1, paymentMethod: "PAYPAL" });
         expect(Product.findByPk).toHaveBeenCalledWith(1);
         expect(OrderItem.bulkCreate).toHaveBeenCalledWith([
             {

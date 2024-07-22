@@ -17,12 +17,10 @@ const buildOrderItem = async (item, orderId) => {
     };
 }
 
-const createOrder = async (userId, items = [], options = {}) => {
+const createOrder = async (userId, items = []) => {
     if (!userId) {
         throw new BadRequestError('User ID is required');
     }
-
-    const paymentMethod = 'PAYPAL';
 
     if (items.length === 0) {
         throw new BadRequestError('Order must have items');
@@ -30,7 +28,7 @@ const createOrder = async (userId, items = [], options = {}) => {
 
     const order = await Order.create({
         userId,
-        paymentMethod,
+        paymentMethod: 'PAYPAL',
     });
 
     const orderItems = await Promise.all(items.map(item => buildOrderItem(item, order.id)));
