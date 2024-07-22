@@ -35,18 +35,18 @@ const goToHome = () => router.push('/');
 </script>
 
 <template>
-  <v-app-bar id="navbar" elevation="1" height="80">
+  <v-app-bar id="navbar" elevation="1" height="80" class="px-8">
     <v-row class="align-center">
       <v-col>
-        <div v-if="isSmallScreen" class="d-flex justify-center">
+        <div v-if="isSmallScreen">
           <img src="@/assets/layalin_logo.png" alt="Logo_Layalin" class="h-10" @click="goToHome"> <!-- Make the logo clickable -->
         </div>
-        <v-app-bar-title v-else class="font-weight-bold d-flex justify-center" @click="goToHome"> <!-- Make the text clickable -->
+        <v-app-bar-title v-else class="font-weight-bold" @click="goToHome"> <!-- Make the text clickable -->
           LAYALIN
         </v-app-bar-title>
       </v-col>
 
-      <v-col class="pr-7 d-flex justify-end">
+      <v-col class="d-flex justify-end">
         <v-btn icon>
           <v-icon size="20px">mdi-heart-outline</v-icon>
         </v-btn>

@@ -8,7 +8,6 @@
     </v-col>
     <v-col cols="12" md="9">
       <div class="gap-4">
-        <h1 class="text-lg mb-4 font-semibold">Bijoux</h1>
         <div v-if="isLoading" class="text-center">
           <v-progress-circular
               color="black"
@@ -18,10 +17,10 @@
         <div v-else>
           <v-alert
               v-if="!products.length"
-              type="info"
               text="Aucun produit ne correspond à votre recherche."
               density="compact"
               variant="tonal"
+              color="grey"
           />
           <div v-else class="grid md:grid-cols-3 lg:grid-cols-4 gap-4 mt-7">
             <div v-for="product in products" :key="product.originalId">
