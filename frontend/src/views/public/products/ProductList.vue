@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" md="3" class="overflow-auto" :style="[
+    <v-col cols="12" md="3" class="overflow-auto border-r" :style="[
       {height: contentHeight},
       {maxHeight: contentHeight},
     ]">
@@ -65,7 +65,6 @@
                     <span>{{ product.price }} €</span>
                   </v-card-subtitle>
                 </div>
-                <v-icon size="25px" class="mt-4">mdi-heart-outline</v-icon>
               </div>
             </div>
           </div>

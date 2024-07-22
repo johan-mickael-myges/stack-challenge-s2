@@ -43,16 +43,10 @@ const buildMongooseQuery = (query, options = {}) => {
         const { terms, brands, categories, colors, materials, price, weight, logic = 'AND' } = options['q'];
         const conditions = [];
 
-        // Search by terms in name and description
-        if (terms) {
-            let termValue = '';
+        let termValue = Array.isArray(terms) ? terms.join(' ').trim() : terms.trim();
 
-            if(Array.isArray(terms) && terms.length > 1) {
-                termValue = terms.join(' ');
-            } else {
-                termValue = terms;
-            }
-            termValue = termValue.trim();
+        if (termValue) {
+            console.log('termValue', termValue);
             conditions.push({
                 $or: [
                     { name: { $regex: termValue, $options: 'i' } },
@@ -60,6 +54,7 @@ const buildMongooseQuery = (query, options = {}) => {
                 ]
             });
         }
+
 
         // Filter by brands, categories, colors, materials, price, and weight
         if (brands && brands.length > 0) {
@@ -87,10 +82,12 @@ const buildMongooseQuery = (query, options = {}) => {
         }
 
         // Combine conditions based on the logic
-        if (logic === 'OR') {
-            mongooseQuery = mongooseQuery.or(conditions);
-        } else {
-            mongooseQuery = mongooseQuery.and(conditions);
+        if (conditions.length > 0) {
+            if (logic === 'OR') {
+                mongooseQuery = mongooseQuery.or(conditions);
+            } else {
+                mongooseQuery = mongooseQuery.and(conditions);
+            }
         }
     }
 

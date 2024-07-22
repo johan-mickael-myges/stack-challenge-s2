@@ -1,6 +1,5 @@
 <template>
   <div>
-    <span class="font-bold text-xl text-gray-900">Rechercher</span>
     <v-text-field
         v-model="searchTerm"
         @input="emitSelectedValues"

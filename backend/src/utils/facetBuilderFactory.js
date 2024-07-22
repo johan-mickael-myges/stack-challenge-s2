@@ -73,25 +73,21 @@ const generate = async (termOptions, facetTypes, MongooseModel) => {
             }
         }
 
-        const matchStage = {
-            $match: {
-                $or: termOptions.attributes.map(attribute => {
-                    return {
-                        [attribute]: {
-                            $regex: termOptions.value,
-                            $options: 'i'
-                        },
-                    };
-                })
-            }
-        };
+        const conditions = termOptions.attributes && termOptions.attributes.length > 0 && termOptions.value
+                ? termOptions.attributes.map(attribute => ({
+                    [attribute]: {
+                        $regex: termOptions.value,
+                        $options: 'i'
+                    }
+                }))
+                : [];
 
-        const facets = await MongooseModel.aggregate([
-            matchStage,
-            {
-                $facet: facetAggregations
-            }
-        ]);
+
+        const matchStage = conditions.length > 0 ? { $match: { $or: conditions } } : {};
+
+        const aggregationPipeline = matchStage.$match ? [matchStage, { $facet: facetAggregations }] : [{ $facet: facetAggregations }];
+
+        const facets = await MongooseModel.aggregate(aggregationPipeline);
 
         const facetsWithTypes = Object.entries(facets[0]).map(([key, value]) => {
             const type = facetTypes[key].type;
