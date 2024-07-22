@@ -60,11 +60,14 @@ import { defineComponent, ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useCartStore } from "@/stores/cart.ts";
+import {useOrderStore} from "@/stores/order.ts";
 
 export default defineComponent({
   name: 'Cart',
   setup() {
     const store = useCartStore();
+    const orderStore = useOrderStore();
+
     const router = useRouter();
 
     const loading = computed(() => store.loading);
@@ -94,22 +97,11 @@ export default defineComponent({
 
     const proceedToCheckout = async () => {
       try {
-        // Create the order in the backend
-        const response = await axios.post('http://localhost:8000/orders', {
-          items: cart.value.CartItems.map(item => ({
-            productId: item.Product.id,
-            quantity: item.quantity,
-            price: item.Product.price,
-          })),
-          totalPrice: totalPrice.value,
-          paymentMethod: 'PAYPAL',
-        }, {
-          withCredentials: true
-        });
-
-        const orderId = response.data.id;
+        const order = await orderStore.createOrder(store.items, 'PAYPAL');
         // Redirect to the order details page
-        router.push({ name: 'OrderDetails', params: { orderId } });
+        router.push({ name: 'OrderDetails', params: {
+          orderId: order.data.id,
+        } });
       } catch (error) {
         console.error('Failed to create order:', error);
         alert('Failed to proceed to checkout.');
