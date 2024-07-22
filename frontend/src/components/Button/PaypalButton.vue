@@ -1,14 +1,14 @@
 <template>
-  <div class="w-full flex flex-row justify-center items-center">
-    <div id="paypal-button-container" class="w-full bg-red-400"></div>
+  <div class="w-full d-flex items-end">
+    <div id="paypal-button-container" class="w-full"></div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent, nextTick, onMounted, ref, PropType} from 'vue';
-import {usePayPalStore} from '@/stores/paypal';
-import {useCartStore} from '@/stores/cart';
-import {useRouter} from 'vue-router';
+import { defineComponent, nextTick, onMounted, ref, PropType } from 'vue';
+import { usePayPalStore } from '@/stores/paypal';
+import { useCartStore } from '@/stores/cart';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'PayPalButton',
@@ -45,56 +45,51 @@ export default defineComponent({
       document.body.appendChild(script);
     };
 
-    const createOrder = async (totalPrice: number, paymentMethod: string) => {
-      try {
-        return await paypalStore.createOrder(totalPrice, paymentMethod);
-      } catch (err) {
-        throw err;
-      }
-    };
-
-    const captureOrder = async (orderID: string, internalOrderId: string) => {
-      try {
-        await paypalStore.captureOrder(orderID, internalOrderId);
-        await cartStore.clearCart();
-        await router.push({name: 'OrderConfirmation'});
-      } catch (err) {
-        console.error('Failed to capture PayPal order:', err);
-      }
-    };
-
-    const onError = (err: any) => {
-      console.error('PayPal Button error:', err);
-    };
-
     const setupPayPalButton = () => {
       if (window.paypal) {
         window.paypal.Buttons({
-          createOrder: (data: any, actions: any) => {
-            return createOrder(props.totalPrice, props.paymentMethod);
+          style: {
+            layout: 'horizontal',
+            color: 'gold',
+            shape: 'rect',
+            label: 'paypal',
+            tagline: false,
           },
-          onApprove: (data: any, actions: any) => {
-            return actions.order.capture().then((details: any) => {
-              captureOrder(data.orderID, props.internalOrderId);
-            });
+          createOrder: async () => {
+            try {
+              const orderId = await paypalStore.createOrder(props.totalPrice);
+              return orderId;
+            } catch (err) {
+              console.error('Failed to create PayPal order:', err);
+              throw err;
+            }
           },
-          onError: onError,
+          onApprove: async (data: any) => {
+            try {
+              await paypalStore.captureOrder(data.orderID, props.internalOrderId);
+              await cartStore.clearCart();
+              await router.push({ name: 'OrderConfirmation' });
+            } catch (err) {
+              console.error('Failed to capture PayPal order:', err);
+            }
+          },
+          onError: (err: any) => {
+            console.error('PayPal Button error:', err);
+          },
         }).render('#paypal-button-container');
       }
     };
 
     onMounted(async () => {
       await paypalStore.fetchPayPalClientId();
-      await loadPayPalScript(paypalStore.paypalClientId);
+      if (paypalStore.paypalClientId) {
+        await loadPayPalScript(paypalStore.paypalClientId);
+      } else {
+        console.error('Failed to load PayPal client ID');
+      }
     });
 
     return {};
   },
 });
 </script>
-
-<style scoped>
-.paypal-button-container {
-  width: 100%;
-}
-</style>

@@ -15,6 +15,7 @@
         <v-list-item
             :title="item.adresse"
             density="compact"
+            @click="selectSuggestion(item)"
         >
         </v-list-item>
       </template>
