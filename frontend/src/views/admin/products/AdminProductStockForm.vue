@@ -5,7 +5,6 @@
         v-model="formState.data.quantity.value"
         label="Quantité"
         required
-        :rules="rules.quantity"
         :error-messages="formState.validationErrors?.quantity?.join(' | ')"
     >
     </v-number-input>
@@ -16,7 +15,6 @@
         item-value="value"
         label="Type"
         required
-        :rules="rules.type"
         :error-messages="formState.validationErrors?.type?.join(' | ')"
     />
     <v-btn type="submit" color="primary" :disabled="formState.isSubmitting">Enregistrer</v-btn>
@@ -36,7 +34,7 @@ const stockSchema = z.object({
   type: z.string()
 });
 
-import {computed, defineComponent, onMounted, ref} from 'vue';
+import { defineComponent } from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {useForm} from "@/composables/useForm.ts";
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
@@ -87,7 +85,7 @@ export default defineComponent({
       },
     };
 
-    const { formState, submitForm, cancelRequest, rules } = useForm(initialData, stockSchema);
+    const { formState, submitForm, cancelRequest } = useForm(initialData, stockSchema);
 
     const handleSubmit = () => {
       submitForm(async (data, signal) => {
@@ -100,7 +98,6 @@ export default defineComponent({
       formState,
       handleSubmit,
       cancelRequest,
-      rules: rules(),
       productId,
       typeData
     };

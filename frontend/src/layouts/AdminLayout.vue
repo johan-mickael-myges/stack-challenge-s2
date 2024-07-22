@@ -46,6 +46,14 @@ export default defineComponent({
             color: 'primary'
           }
         },
+        {
+          title: 'Marques',
+          props: {
+            to: {name: 'AdminBrandList'},
+            prependIcon: 'mdi-octagram-plus-outline',
+            color: 'primary'
+          }
+        },
       ],
     };
   },

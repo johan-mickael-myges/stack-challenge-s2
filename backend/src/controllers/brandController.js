@@ -1,6 +1,7 @@
 const { Brand } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 const BadRequestError = require('~errors/BadRequestError');
+const eventEmitter = require('~services/eventEmitter');
 
 const countBrands = async (req, res, next) => {
     try {
@@ -15,7 +16,7 @@ const getAllBrands = async (req, res, next) => {
     try {
         let options = buildQueryOptions(req.query);
 
-        options.attributes = {exclude: ['createdAt', 'updatedAt']};
+        options.attributes = {exclude: ['updatedAt']};
 
         const brands = await Brand.findAll(options);
         res.status(200).json(brands);
@@ -56,7 +57,9 @@ const updateBrand = async (req, res, next) => {
         if (!brand) {
             return res.sendStatus(404);
         }
+        const oldBrand = brand.name;
         await brand.update({ name });
+        eventEmitter.emit('brandUpdated', brand.name, oldBrand);
         res.json(brand);
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
@@ -73,6 +76,7 @@ const deleteBrand = async (req, res, next) => {
             return res.sendStatus(404);
         }
         await brand.destroy();
+        eventEmitter.emit('brandDeleted', brand.name);
         res.sendStatus(204);
     } catch (error) {
         next(error);

@@ -1,40 +1,40 @@
 <template>
   <div>
     <Heading tag="h1">{{ headingText }}</Heading>
-    <CategoryForm />
+    <BrandForm />
   </div>
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, ref} from 'vue';
-import CategoryForm from "@/components/modules/admin/categories/CategoryForm.vue";
+import BrandForm from "@/components/modules/admin/brands/BrandForm.vue";
 import {useRoute} from "vue-router";
 import Heading from "@/components/Typography/Heading.vue";
 
 export default defineComponent({
-  name: 'AdminProductForm',
+  name: 'AdminBrandForm',
   components: {
     Heading,
-    CategoryForm,
+    BrandForm,
   },
   setup() {
     const route = useRoute();
-    const categoryId = ref<number | null>(null);
+    const brandId = ref<number | null>(null);
     const isEdit = ref(false);
 
     onMounted(() => {
       if (route.params.id) {
-        categoryId.value = Number(route.params.id);
+        brandId.value = Number(route.params.id);
         isEdit.value = true;
       }
     });
 
     const headingText = computed(() => {
-      return isEdit.value ? 'Modifier la catégorie' : 'Créer une catégorie';
+      return isEdit.value ? 'Modifier la marque' : 'Créer une marque';
     });
 
     return {
-      categoryId,
+      brandId,
       isEdit,
       headingText,
     };

@@ -3,6 +3,7 @@ import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNorma
 import errorRoutes from "@/routes/error/errorRoutes.ts";
 import adminProductRoutes from './admin/productRoutes';
 import adminCategoryRoutes from './admin/categoryRoutes';
+import adminBrandRoutes from './admin/brandRoutes';
 import homeRoutes from "@/routes/public/homeRoutes.ts";
 import cartRoutes from "@/routes/user/cartRoutes.ts";
 import userSecurityRoutes from "@/routes/public/security/userSecurityRoutes.ts";
@@ -16,6 +17,7 @@ import UserProfileRoutes from '@/routes/user/userRoutes';
 const routes: Array<RouteRecordRaw> = [
     ...adminSecurityRoutes,
     ...adminProductRoutes,
+    ...adminBrandRoutes,
     ...adminCategoryRoutes,
     ...homeRoutes,
     ...cartRoutes,

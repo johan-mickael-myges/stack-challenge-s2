@@ -19,19 +19,19 @@ import { defineComponent, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useForm } from '@/composables/useForm.ts';
 import { z } from 'zod';
-import { useCategoryStore } from '@/stores/categories.ts';
+import { useBrandStore } from '@/stores/brands.ts';
 
-const categorySchema = z.object({
+const brandSchema = z.object({
   id: z.number().optional(),
   name: z.string(),
 });
 
 export default defineComponent({
-  name: 'CategoryForm',
+  name: 'BrandForm',
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const store = useCategoryStore();
+    const store = useBrandStore();
 
     const initialData = {
       id: {
@@ -42,23 +42,23 @@ export default defineComponent({
       },
     };
 
-    const { formState, submitForm, cancelRequest, initData } = useForm(initialData, categorySchema);
+    const { formState, submitForm, cancelRequest, initData } = useForm(initialData, brandSchema);
 
     const handleSubmit = () => {
       submitForm(async (data, signal) => {
         if (data.id) {
-          await store.updateCategory(data, signal);
+          await store.updateBrand(data, signal);
         } else {
-          await store.createCategory(data, signal);
+          await store.createBrand(data, signal);
         }
-        router.push('/admin/categories');
+        router.push('/admin/brands');
       });
     };
 
     onMounted(() => {
       if (route.params.id) {
-        store.fetchCategory(Number(route.params.id)).then(() => {
-          initData(store.category, initialData);
+        store.fetchBrand(Number(route.params.id)).then(() => {
+          initData(store.brand, initialData);
         });
       }
     });

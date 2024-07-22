@@ -2,12 +2,12 @@ import {defineStore} from 'pinia';
 import apiClient from '@/config/axios';
 import { z } from 'zod';
 
-const BrandsSchema = z.object({
+const brandsSchema = z.object({
     id: z.number().optional(),
     name: z.string(),
 });
 
-export type Brand = z.infer<typeof BrandsSchema>;
+export type Brand = z.infer<typeof brandsSchema>;
 
 export const useBrandStore = defineStore('brands', {
     state: () => ({
@@ -48,7 +48,7 @@ export const useBrandStore = defineStore('brands', {
         async fetchBrand(id: number) {
             try {
                 const response = await apiClient.get(`/brands/${id}`);
-                this.brand = BrandsSchema.parse(response.data);
+                this.brand = brandsSchema.parse(response.data);
             } catch (error) {
                 throw error;
             } finally {
@@ -57,7 +57,7 @@ export const useBrandStore = defineStore('brands', {
         },
         async createBrand(brand: Brand, signal?: AbortSignal) {
             try {
-                const response = await apiClient.post('/brands', BrandsSchema.parse(brand), { signal });
+                const response = await apiClient.post('/brands', brandsSchema.parse(brand), { signal });
                 this.brands.push(response.data);
             } catch (error) {
                 throw error;
@@ -67,8 +67,8 @@ export const useBrandStore = defineStore('brands', {
         },
         async updateBrand(brand: Brand, signal?: AbortSignal) {
             try {
-                await apiClient.put(`/brands/${brand.id}`, BrandsSchema.parse(brand), { signal });
-                await this.fetchBrands();
+                await apiClient.put(`/brands/${brand.id}`, brandsSchema.parse(brand), { signal });
+                await this.refreshList();
             } catch (error) {
                 throw error;
             } finally {
@@ -78,7 +78,7 @@ export const useBrandStore = defineStore('brands', {
         async deleteBrand(id: number, signal?: AbortSignal) {
             try {
                 await apiClient.delete(`/brands/${id}`, { signal });
-                await this.fetchBrands();
+                await this.refreshList();
             } catch (error) {
                 throw error;
             } finally {
