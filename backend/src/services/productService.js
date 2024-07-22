@@ -1,10 +1,10 @@
-const { Product, Color, Brand, Category, Material } = require('~models');
-const { uploadToS3, generateFileDestination } = require('~services/s3Service');
+const {Product, Color, Brand, Category, Material} = require('~models');
+const {uploadToS3, generateFileDestination} = require('~services/s3Service');
 const NotFoundError = require('~errors/NotFoundError');
 const BadRequestError = require('~errors/BadRequestError');
 const eventEmitter = require('~services/eventEmitter');
 const MongooseProduct = require('~models/mongoose/Product');
-const { buildMongooseQuery, getBoolValue } = require('~utils/queryOptionsFactory');
+const {buildMongooseQuery, getBoolValue} = require('~utils/queryOptionsFactory');
 const generateProductFacets = require('~utils/facetBuilderFactory');
 
 const countProducts = async (options = {}) => {
@@ -32,24 +32,24 @@ const getProductById = async (productId, options = {}) => {
     let product;
 
     if (getBoolValue(options['denormalize'])) {
-        product = MongooseProduct.findOne({ originalId: productId });
+        product = MongooseProduct.findOne({originalId: productId});
     } else {
         const sequelizeOptions = {
             include: [
                 {
                     association: 'categories',
                     attributes: ['id', 'name'],
-                    through: { attributes: [] },
+                    through: {attributes: []},
                 },
                 {
                     association: 'colors',
                     attributes: ['id', 'name'],
-                    through: { attributes: [] }
+                    through: {attributes: []}
                 },
                 {
                     association: 'materials',
                     attributes: ['id', 'name'],
-                    through: { attributes: [] }
+                    through: {attributes: []}
                 },
                 {
                     association: 'brand',
@@ -58,7 +58,7 @@ const getProductById = async (productId, options = {}) => {
             ],
         };
 
-        options = { ...options, ...sequelizeOptions };
+        options = {...options, ...sequelizeOptions};
 
         product = await Product.findByPk(productId, options);
     }
@@ -91,25 +91,25 @@ const createProduct = async (productData, files) => {
         }
     }
 
-    const { categories, colors, materials, brand, ...productDetails } = productData;
+    const {categories, colors, materials, brand, ...productDetails} = productData;
 
     const product = await Product.create(productDetails);
 
     const categoriesValues = categories ? categories.split(',').map(category => Number(category)) : [];
     if (categories) {
-        const categoriesInstances = await Category.findAll({ where: { id: categoriesValues } });
+        const categoriesInstances = await Category.findAll({where: {id: categoriesValues}});
         await product.setCategories(categoriesInstances);
     }
 
     const colorsValues = colors ? colors.split(',').map(color => Number(color)) : [];
     if (colors) {
-        const colorsInstances = await Color.findAll({ where: { id: colorsValues } });
+        const colorsInstances = await Color.findAll({where: {id: colorsValues}});
         await product.setColors(colorsInstances);
     }
 
     const materialsValues = materials ? materials.split(',').map(material => Number(material)) : [];
     if (materials) {
-        const materialsInstances = await Material.findAll({ where: { id: materialsValues } });
+        const materialsInstances = await Material.findAll({where: {id: materialsValues}});
         await product.setMaterials(materialsInstances);
     }
 
@@ -155,7 +155,7 @@ const updateProduct = async (productId, productData, files) => {
         })) : [];
     }
 
-    const { categories, colors, materials, brand, ...productDetails } = productData;
+    const {categories, colors, materials, brand, ...productDetails} = productData;
 
     productDetails.thumbnail = thumbnailDestination ? thumbnailDestination.url : product.thumbnail;
     productDetails.images = imagesDestinations ? imagesDestinations.map(image => image.url) : product.images;
@@ -164,19 +164,19 @@ const updateProduct = async (productId, productData, files) => {
 
     const categoriesValues = categories ? categories.split(',').map(category => Number(category)) : [];
     if (categories) {
-        const categoriesInstances = await Category.findAll({ where: { id: categoriesValues } });
+        const categoriesInstances = await Category.findAll({where: {id: categoriesValues}});
         await product.setCategories(categoriesInstances);
     }
 
     const colorsValues = colors ? colors.split(',').map(color => Number(color)) : [];
     if (colors) {
-        const colorsInstances = await Color.findAll({ where: { id: colorsValues } });
+        const colorsInstances = await Color.findAll({where: {id: colorsValues}});
         await product.setColors(colorsInstances);
     }
 
     const materialsValues = materials ? materials.split(',').map(material => Number(material)) : [];
     if (materials) {
-        const materialsInstances = await Material.findAll({ where: { id: materialsValues } });
+        const materialsInstances = await Material.findAll({where: {id: materialsValues}});
         await product.setMaterials(materialsInstances);
     }
 
@@ -215,7 +215,10 @@ const deleteProduct = async (productId) => {
     eventEmitter.emit('productDeleted', productId);
 };
 
-const generateFacets = async () => {
+const generateFacets = async (value = '', attributes = [
+    'name',
+    'description'
+]) => {
     try {
         const facetsType = {
             categories: {
@@ -250,7 +253,14 @@ const generateFacets = async () => {
             },
         };
 
-        return await generateProductFacets(facetsType, MongooseProduct);
+        return await generateProductFacets(
+                {
+                    value,
+                    attributes
+                },
+                facetsType,
+                MongooseProduct
+        );
     } catch (error) {
         console.error(error);
     }

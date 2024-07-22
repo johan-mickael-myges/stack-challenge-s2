@@ -1,4 +1,4 @@
-const generate = async (facetTypes, MongooseModel) => {
+const generate = async (termOptions, facetTypes, MongooseModel) => {
     try {
         const facetAggregations = {};
 
@@ -38,7 +38,21 @@ const generate = async (facetTypes, MongooseModel) => {
             }
         }
 
+        const matchStage = {
+            $match: {
+                $or: termOptions.attributes.map(attribute => {
+                    return {
+                        [attribute]: {
+                            $regex: termOptions.value,
+                            $options: 'i'
+                        },
+                    };
+                })
+            }
+        };
+
         const facets = await MongooseModel.aggregate([
+            matchStage,
             {
                 $facet: facetAggregations
             }

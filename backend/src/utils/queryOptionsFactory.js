@@ -40,29 +40,43 @@ const buildMongooseQuery = (query, options = {}) => {
     }
 
     if (options['q'] && Object.keys(options['q']).length > 0) {
-        const { brands, categories, colors, materials, price, weight, logic = 'AND' } = options['q'];
+        const { terms, brands, categories, colors, materials, price, weight, logic = 'AND' } = options['q'];
         const conditions = [];
 
+        // Search by terms in name and description
+        if (terms) {
+            let termValue = '';
+
+            if(Array.isArray(terms) && terms.length > 1) {
+                termValue = terms.join(' ');
+            } else {
+                termValue = terms;
+            }
+            termValue = termValue.trim();
+            conditions.push({
+                $or: [
+                    { name: { $regex: termValue, $options: 'i' } },
+                    { description: { $regex: termValue, $options: 'i' } }
+                ]
+            });
+        }
+
+        // Filter by brands, categories, colors, materials, price, and weight
         if (brands && brands.length > 0) {
             conditions.push({ brand: { $in: brands } });
         }
-
         if (categories && categories.length > 0) {
             conditions.push({ categories: { $in: categories } });
         }
-
         if (colors && colors.length > 0) {
             conditions.push({ colors: { $in: colors } });
         }
-
         if (materials && materials.length > 0) {
             conditions.push({ materials: { $in: materials } });
         }
-
         if (price) {
             conditions.push({ price: { $gte: price[0], $lte: price[1] } });
         }
-
         if (weight) {
             conditions.push({
                 weight: {
@@ -72,6 +86,7 @@ const buildMongooseQuery = (query, options = {}) => {
             });
         }
 
+        // Combine conditions based on the logic
         if (logic === 'OR') {
             mongooseQuery = mongooseQuery.or(conditions);
         } else {

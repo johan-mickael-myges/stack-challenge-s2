@@ -60,7 +60,8 @@ exports.deleteProduct = async (req, res, next) => {
 
 exports.getFacets = async (req, res, next) => {
     try {
-        const facets = await productService.generateFacets();
+        const { terms } = req.query;
+        const facets = await productService.generateFacets(terms);
         res.status(200).json(facets);
     } catch (error) {
         next(error);
