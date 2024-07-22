@@ -13,16 +13,16 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
       cost: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
       },
-      estimatedDeliveryTime: {
-        type: Sequelize.STRING,
+      minEstimatedDeliveryTime: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      maxEstimatedDeliveryTime: {
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       createdAt: {
