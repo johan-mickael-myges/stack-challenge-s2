@@ -17,9 +17,7 @@ const cors = require('cors');
 const routes = require('./routes');
 const errorHandler = require('~middlewares/errorHandler');
 const { frontendUrl } = require('~config/config');
-
-const productListener = require('~listeners/productListeners');
-productListener;
+const subscribeToAppEvents = require('~listeners');
 
 const app = express();
 
@@ -36,5 +34,7 @@ app.use(cookieParser());
 app.use('/', routes);
 
 app.use(errorHandler);
+
+subscribeToAppEvents();
 
 module.exports = app;

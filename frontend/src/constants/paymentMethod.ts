@@ -1,0 +1,2 @@
+export const PAYMENT_METHOD_PAYPAL = 'PAYPAL';
+export const PAYMENT_METHOD_STRIPE = 'STRIPE';

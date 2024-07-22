@@ -1,12 +1,18 @@
-import { ref, nextTick } from 'vue';
+import {ref, nextTick, onMounted} from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useCartStore } from '@/stores/cart.ts';
+import {usePayPalStore} from "@/stores/paypal.ts";
 
 export const usePayPal = () => {
   const paypalLoaded = ref(false);
   const router = useRouter();
   const cartStore = useCartStore();
+  const paypalStore = usePayPalStore();
+
+  onMounted(async () => {
+    await paypalStore.fetchPayPalClientId();
+  });
 
   const loadPayPalScript = async (setupPayPalButton: Function) => {
     if (document.getElementById('paypal-sdk')) {
@@ -16,11 +22,7 @@ export const usePayPal = () => {
     }
 
     try {
-      const response = await axios.get('http://localhost:8000/config/paypal-client-id');
-      if (response.status !== 200 || !response.data.clientId) {
-        throw new Error('Failed to fetch PayPal client ID');
-      }
-      const PAYPAL_CLIENT_ID = response.data.clientId;
+      const PAYPAL_CLIENT_ID = paypalStore.paypalClientId;
 
       const script = document.createElement('script');
       script.id = 'paypal-sdk';
@@ -33,39 +35,28 @@ export const usePayPal = () => {
       };
       document.body.appendChild(script);
     } catch (error) {
-      console.error('Failed to load PayPal script:', error);
+      throw error;
     }
   };
 
-  const setupPayPalButton = (totalPrice: number, orderId: string) => {
+  const setupPayPalButton = (totalPrice: number, internalOrderId: string) => {
     if (window.paypal) {
       window.paypal.Buttons({
-        createOrder: async (data, actions) => {
+        createOrder: async () => {
           try {
-            const response = await axios.post('http://localhost:8000/payment/create-order', { totalPrice }, {
-              withCredentials: true,
-            });
-            return response.data.orderID;
+            const response = await paypalStore.createOrder(totalPrice);
+            return response.data;
           } catch (err) {
-            console.error('Failed to create PayPal order:', err);
             throw err;
           }
         },
-        onApprove: async (data, actions) => {
+        onApprove: async (data) => {
           try {
-            const response = await axios.post('http://localhost:8000/payment/capture-order', {
-              orderID: data.orderID,
-              localOrderId: orderId,
-            }, {
-              withCredentials: true,
-            });
+            const response = await paypalStore.capturePayPalOrder(data.orderID, internalOrderId);
             alert('Transaction completed!');
-            // Clear the cart
             await cartStore.clearCart();
-            // Redirect to order confirmation page
             router.push({ name: 'OrderConfirmation' });
           } catch (err) {
-            console.error('Failed to capture PayPal order:', err);
             alert('Failed to complete transaction.');
           }
         },

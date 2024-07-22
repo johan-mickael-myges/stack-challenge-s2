@@ -42,6 +42,11 @@ const cartSchema = z.object({
     CartItems: z.array(cartItemSchema),
 });
 
+const OrderItemSchema = z.object({
+    productId: z.number(),
+    quantity: z.number().min(1),
+});
+
 export type CartItem = z.infer<typeof cartItemSchema>;
 export type Cart = z.infer<typeof cartSchema>;
 
@@ -125,5 +130,11 @@ export const useCartStore = defineStore('carts', {
             }
             return this.cart.CartItems.reduce((total, item) => total + item.Product.price * item.quantity, 0);
         },
+        items(): { productId: number; quantity: number }[] {
+            return this.cart?.CartItems.map((item: z.infer<typeof OrderItemSchema>) => ({
+                productId: item.productId,
+                quantity: item.quantity,
+            })) ?? [];
+        }
     }
 });

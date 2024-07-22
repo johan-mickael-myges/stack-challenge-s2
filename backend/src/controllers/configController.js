@@ -1,8 +1,10 @@
-exports.getPayPalClientId = (req, res) => {
-    const clientId = process.env.PAYPAL_CLIENT_ID;
+const configService = require('~services/configService');
 
-    if (!clientId) {
-        return res.status(500).json({ error: 'PayPal client ID not configured' });
+exports.getPayPalClient = async (req, res, next) => {
+    try {
+        const config = await configService.getConfig('paypal.client');
+        res.status(200).send(config.value);
+    } catch (error) {
+        next(error);
     }
-    res.json({ clientId });
 };

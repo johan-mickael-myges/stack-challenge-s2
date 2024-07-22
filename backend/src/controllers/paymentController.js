@@ -1,61 +1,34 @@
 const paypal = require('@paypal/checkout-server-sdk');
-const { Payment } = require('../models'); 
+const paypalService = require('~services/paypalService');
+const eventEmitter = require('~services/eventEmitter');
 
 const environment = new paypal.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_SECRET);
 const client = new paypal.core.PayPalHttpClient(environment);
 
-exports.createOrder = async (req, res) => {
-  const { totalPrice } = req.body;
-  const request = new paypal.orders.OrdersCreateRequest();
-  request.prefer("return=representation");
-  request.requestBody({
-    intent: 'CAPTURE',
-    purchase_units: [{
-      amount: {
-        currency_code: 'EUR',
-        value: totalPrice.toFixed(2)
-      }
-    }]
-  });
+exports.createOrder = async (req, res, next) => {
+    const {totalPrice} = req.body;
 
-  try {
-    const order = await client.execute(request);
-    res.json({ orderID: order.result.id });
-  } catch (err) {
-    console.error('Error creating PayPal order:', err);
-    res.status(500).send(err.message);
-  }
+    try {
+        const order = await paypalService.createOrder(totalPrice);
+        res.status(order.statusCode).json(order.result.id);
+    } catch (error) {
+        next(error)
+    }
 };
 
-exports.captureOrder = async (req, res) => {
-  const { orderID, localOrderId } = req.body; 
-  const request = new paypal.orders.OrdersCaptureRequest(orderID);
-  request.requestBody({});
+exports.captureOrder = async (req, res, next) => {
+    const {orderID, internalOrderId} = req.body;
 
-  try {
-    const capture = await client.execute(request);
-    const { id, status, purchase_units, payer } = capture.result;
-    const { amount } = purchase_units[0].payments.captures[0];
+    try {
+        const order = await paypalService.captureOrder(orderID);
 
-    if (!amount || !payer) {
-      throw new Error('Invalid data received from PayPal capture');
+        eventEmitter.emit('paypalOrderCaptured', {
+            internalOrderId,
+            order: order.result
+        });
+
+        res.json(order.result);
+    } catch (err) {
+        next(err);
     }
-
-    // Create payment record in database
-    await Payment.create({
-      orderId: localOrderId,
-      transactionId: id,
-      paymentMethod: 'PAYPAL',
-      status,
-      amount: parseFloat(amount.value), 
-      currency: amount.currency_code,
-      payerEmail: payer.email_address,
-      payerId: payer.payer_id
-    });
-
-    res.json(capture.result);
-  } catch (err) {
-    console.error('Error capturing PayPal order:', err);
-    res.status(500).send(err.message);
-  }
 };

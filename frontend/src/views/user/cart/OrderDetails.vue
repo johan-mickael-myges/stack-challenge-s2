@@ -21,7 +21,7 @@
               <p><strong>Sous-total:</strong> {{ item.subtotal }} €</p>
             </div>
             <p class="font-bold">Total: {{ totalPrice.toFixed(2) }} €</p>
-            <div id="paypal-button-container"></div>
+            <PaypalButton :total-price="totalPrice" :internal-order-id="order.id" />
           </div>
         </div>
       </v-col>
@@ -31,25 +31,20 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, nextTick } from 'vue';
-import axios from 'axios';
 import { useRoute } from 'vue-router';
-import { usePayPal } from '@/composables/usePayPal';
 import useOrderDetails from '@/composables/useOrderDetails';
+import PaypalButton from "@/components/Button/PaypalButton.vue";
 
 export default defineComponent({
   name: 'OrderDetails',
+  components: {PaypalButton},
   setup() {
     const route = useRoute();
     const orderId = route.params.orderId as string;
     const { order, loading, error, totalPrice, fetchOrderDetails } = useOrderDetails(orderId);
 
-    const { loadPayPalScript, setupPayPalButton } = usePayPal();
-
     onMounted(async () => {
       await fetchOrderDetails();
-      nextTick(() => {
-        loadPayPalScript(() => setupPayPalButton(totalPrice.value, orderId));
-      });
     });
 
     return {
