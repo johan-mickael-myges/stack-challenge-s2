@@ -45,7 +45,14 @@ describe('facetBuilderFactory', () => {
                 },
             ];
 
-            const result = await generateProductFacets(facetTypes, MongooseProduct);
+            const result = await generateProductFacets(
+                    {
+                        value: '',
+                        attributes: [],
+                    },
+                    facetTypes,
+                    MongooseProduct
+            );
 
             expect(result).toEqual(expectedFacets);
         });

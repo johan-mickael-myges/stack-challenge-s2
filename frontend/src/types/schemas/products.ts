@@ -1,9 +1,18 @@
 import {z} from "zod";
 
-export const FacetValueCheckboxSchema = z.object({
+const FacetValueItemSchema = z.object({
     _id: z.string(),
     count: z.number(),
 });
+
+const FacetOtherItemSchema = z.object({
+    _id: z.literal('Autres'),
+    count: z.number(),
+    items: z.array(FacetValueItemSchema),
+    other: z.literal(true),
+});
+
+export const FacetValueCheckboxSchema = z.union([FacetValueItemSchema, FacetOtherItemSchema]);
 
 export const FacetValueRangeSchema = z.object({
     min: z.number(),

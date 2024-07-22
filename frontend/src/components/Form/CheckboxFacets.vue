@@ -2,9 +2,9 @@
   <div>
     <span class="font-bold text-xl text-gray-900">{{ item.label }}</span>
     <v-checkbox
-        v-for="(option, index) in item.values"
+        v-for="(option, index) in item.values[0].items"
         :key="index"
-        :value="option._id"
+        :value="option.other ? option.items : option._id"
         v-model="selectedValues"
         density="compact"
         @change="emitSelectedValues"
@@ -36,11 +36,24 @@ export default defineComponent({
     const selectedValues = ref<string[]>([]);
 
     const formatLabel = (itemValues: z.infer<typeof FacetValueCheckboxSchema>) => {
+      if (itemValues.other === true) {
+        return `Autre (${itemValues.count})`;
+      }
+
       return `${itemValues._id} (${itemValues.count})`;
     };
 
     const emitSelectedValues = () => {
-      emit('update-values', selectedValues.value);
+      const flattenedValues: string[] = selectedValues.value.flatMap((value: any) => {
+        if (Array.isArray(value)) {
+          return value.map((v: { _id: string }) => v._id);
+        } else if (typeof value === 'object' && value._id) {
+          return value._id;
+        }
+        return value;
+      });
+
+      emit('update-values', flattenedValues);
     };
 
     const isSelected = (value: string) => {

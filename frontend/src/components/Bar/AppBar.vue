@@ -37,19 +37,6 @@ const goToHome = () => router.push('/');
 <template>
   <v-app-bar id="navbar" elevation="1" height="80">
     <v-row class="align-center">
-
-      <v-col>
-        <v-row class="align-center">
-          <v-btn class="pl-9">
-            <v-icon size="20px">mdi-filter-outline</v-icon>
-            <span class="text-lowercase">filtrer</span>
-          </v-btn>
-          <div v-if="!isLargerScreen" class="pt-6 pl-2 w-[20vw]">
-            <CustomAutocomplete :items="items" :rounded="true" />
-          </div>
-        </v-row>
-      </v-col>
-
       <v-col>
         <div v-if="isSmallScreen" class="d-flex justify-center">
           <img src="@/assets/layalin_logo.png" alt="Logo_Layalin" class="h-10" @click="goToHome"> <!-- Make the logo clickable -->
@@ -59,7 +46,7 @@ const goToHome = () => router.push('/');
         </v-app-bar-title>
       </v-col>
 
-      <v-col class=" pr-7 d-flex justify-end">
+      <v-col class="pr-7 d-flex justify-end">
         <v-btn icon>
           <v-icon size="20px">mdi-heart-outline</v-icon>
         </v-btn>
@@ -73,12 +60,6 @@ const goToHome = () => router.push('/');
         </v-btn>
       </v-col>
     </v-row>
-  </v-app-bar>
-
-  <v-app-bar elevation="0" height="60" v-if="isLargerScreen">
-    <div :class="[{'pt-[2.5vh]': !isMediumScreen, ['pt-[1vh]']: isMediumScreen}, 'w-full']">
-      <CustomAutocomplete :items="items" />
-    </div>
   </v-app-bar>
 </template>
 

@@ -8,13 +8,48 @@ const generate = async (termOptions, facetTypes, MongooseModel) => {
 
             if (type === 'checkbox') {
                 facetAggregations[key] = [
-                    {
-                        $unwind: `$${attribute}`
-                    },
+                    { $unwind: `$${attribute}` },
                     {
                         $group: {
                             _id: `$${attribute}`,
                             count: { $sum: 1 }
+                        }
+                    },
+                    { $sort: { count: -1 } },
+                    {
+                        $group: {
+                            _id: null,
+                            items: { $push: { _id: '$_id', count: '$count' } },
+                            totalCount: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $project: {
+                            items: {
+                                $cond: {
+                                    if: { $lte: ['$totalCount', 5] },
+                                    then: '$items',
+                                    else: {
+                                        $concatArrays: [
+                                            { $slice: ['$items', 5] },
+                                            [{
+                                                _id: 'Others',
+                                                count: {
+                                                    $sum: {
+                                                        $map: {
+                                                            input: { $slice: ['$items', 5, { $subtract: ['$totalCount', 5] }] },
+                                                            as: 'item',
+                                                            in: '$$item.count'
+                                                        }
+                                                    }
+                                                },
+                                                items: { $slice: ['$items', 5, { $subtract: ['$totalCount', 5] }] },
+                                                other: true
+                                            }]
+                                        ]
+                                    }
+                                }
+                            }
                         }
                     }
                 ];
