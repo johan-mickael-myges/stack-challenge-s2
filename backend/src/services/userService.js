@@ -23,6 +23,7 @@ exports.deleteUser = async (userId, password) => {
 
     // Anonymiser les informations de l'utilisateur
     existingUser.email = `anonyme${existingUser.id}@layaline.com`;
+    existingUser.username = `Anonyme${existingUser.id}`;
     existingUser.firstname = 'Anonyme';
     existingUser.lastname = 'Utilisateur';
     const newPassword = generatePassword(12); 
