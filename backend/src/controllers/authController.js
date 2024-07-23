@@ -11,6 +11,7 @@ exports.registerUser = async (req, res, next) => {
     try {
         const newUser = await userService.registerUser(req.body);
         res.status(201).json(newUser);
+        
     } catch (error) {
         next(error);
     }
