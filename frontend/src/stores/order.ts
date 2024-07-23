@@ -56,7 +56,7 @@ export type Items = z.infer<typeof ItemsSchema>;
 export const useOrderStore = defineStore('orders', {
     state: () => ({
         loading: false,
-        delivery: null as DeliveryEntity | null
+        delivery: null as DeliveryEntity | null,
         paidOrders: [] as CreatedOrders,
         error: null as string | null,
     }),
