@@ -26,9 +26,7 @@ exports.deleteUser = async (userId, password) => {
     existingUser.firstname = 'Anonyme';
     existingUser.lastname = 'Utilisateur';
     const newPassword = generatePassword(12); 
-    console.log('Generated Password:', newPassword);
 
-    console.log(existingUser);
     await existingUser.save();
 
     return existingUser;

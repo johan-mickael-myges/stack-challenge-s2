@@ -96,7 +96,6 @@ export const useOrderStore = defineStore('orders', {
                 const response = await apiClient.get('/orders/history', {
                     withCredentials: true,
                 });
-                console.log('Fetched paid orders:', response.data);
                 this.paidOrders = CreatedOrdersSchema.parse(response.data);
             } catch (error) {
                 this.error = 'Failed to fetch paid orders';

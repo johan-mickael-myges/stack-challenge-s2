@@ -140,7 +140,6 @@ export const useCartStore = defineStore('carts', {
             return this.cart?.CartItems ?? [];
         },
         countCartItem(): number {
-            console.log(this.cart);
             if (!this.cart) {
                 return 0;
             }
