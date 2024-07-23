@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const config = {
     env: process.env.NODE_ENV || 'development',
-    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+    frontendUrl: process.env.FRONTEND_URL || 'http://localhost',
     postgres: {
         username: process.env.POSTGRES_USER || '',
         password: process.env.POSTGRES_PASSWORD || '',
