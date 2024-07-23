@@ -10,6 +10,7 @@ export default defineConfig({
   },
   plugins: [vue()],
   server: {
+    host: '0.0.0.0',
     proxy: {
       '/laposte': {
         target: 'https://api.laposte.fr',
