@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const userService = require('~services/userService');
 const { env } = require("~config/config");
+const { User } = require('~models');
 
 exports.check = (req, res, next) => {
     res.status(200).json(req.user);
@@ -66,3 +67,40 @@ exports.logoutUser = async (req, res, next) => {
     res.clearCookie('token');
     res.sendStatus(200);
 }
+
+
+exports.getCookiePreference = async (req, res, next) => {
+    try {
+      const userId = req.user.userId;
+      const user = await User.findByPk(userId, {
+        attributes: ['cookiesAccepted']
+      });
+      if (user) {
+        res.status(200).json({ cookiesAccepted: user.cookiesAccepted });
+      } else {
+        res.status(404).json({ message: 'User not found.' });
+      }
+    } catch (error) {
+      console.error('Error fetching cookie preference:', error);
+      next(error);
+    }
+};
+
+exports.updateCookiePreference = async (req, res, next) => {
+    try {
+      const userId = req.user.userId;
+      const { cookiesAccepted } = req.body;
+    
+      const user = await User.findByPk(userId);
+      if (user) {
+        user.cookiesAccepted = cookiesAccepted;
+        await user.save();
+        res.status(200).json({ message: 'Cookie preference updated successfully' });
+      } else {
+        res.status(404).json({ message: 'User not found.' });
+      }
+    } catch (error) {
+      console.error('Error updating cookie preference:', error);
+      next(error);
+    }
+  };

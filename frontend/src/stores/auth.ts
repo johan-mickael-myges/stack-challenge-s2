@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import {reactive, ref, computed} from 'vue';
-import {ExpressError, LoginData, RegisterData} from '@/types';
+import { reactive, ref, computed } from 'vue';
+import { ExpressError, LoginData, RegisterData } from '@/types';
 import apiClient from "@/config/axios.ts";
 import { useRouter } from 'vue-router';
 
@@ -30,15 +30,13 @@ export const useAuthStore = defineStore('auth', () => {
 
     const deleteUser = async () => {
         const userData = localStorage.getItem('user');
-        if (userData){
+        if (userData) {
             try {
                 await apiClient.post('/auth/delete');
-            }
-            catch{
+            } catch {
                 console.log('erreur1');
             }
-        };
-        
+        }
     }
 
     const register = async (data: RegisterData) => {
@@ -67,6 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             const response = await apiClient.post('/auth/login', data);
             Object.assign(user, response.data.user);
+            saveUserToLocalStorage();
         } catch (err: any) {
             hasError.value = true;
             throw err;
@@ -79,6 +78,7 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             const response = await apiClient.get('/auth/check');
             Object.assign(user, response.data);
+            saveUserToLocalStorage();
         } catch (err: any) {
             Object.keys(user).forEach(key => delete user[key]);
             throw err;
@@ -104,33 +104,27 @@ export const useAuthStore = defineStore('auth', () => {
 
     const confirmDeletion = async (password: string) => {
         try {
-          await apiClient.post('auth/delete', {
-            password
+            await apiClient.post('auth/delete', {
+                password
             });
-          router.push('/');
+            router.push('/');
         } catch (error) {
             throw error;
         }
-      };
+    };
 
-
-      const changePassword = async (currentPassword: string, newPassword: string, confirmNewPassword: string) => {
+    const changePassword = async (currentPassword: string, newPassword: string, confirmNewPassword: string) => {
         try {
-          await apiClient.post('auth/change-password', {
-            currentPassword,
-            newPassword, 
-            confirmNewPassword
-          });
-          router.push('/');
+            await apiClient.post('auth/change-password', {
+                currentPassword,
+                newPassword,
+                confirmNewPassword
+            });
+            router.push('/');
         } catch (error) {
-          throw error;
+            throw error;
         }
-      };
-      
-
-       
-      
-    
+    };
 
     const isAuthenticated = computed(() => !!Object.keys(user).length);
 

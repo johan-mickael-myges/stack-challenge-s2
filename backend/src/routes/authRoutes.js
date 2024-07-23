@@ -13,24 +13,10 @@ router.post('/logout', authController.logoutUser);
 router.post('/delete', checkToken, authController.deleteUser);
 router.post('/change-password', checkToken, authController.changePassword);
 
-router.patch('/:userId/cookies', async (req, res) => { 
-    const { userId } = req.params;
-    const { cookiesAccepted } = req.body;
+router.get('/cookies', checkToken, authController.getCookiePreference);
+router.patch('/cookies', checkToken, authController.updateCookiePreference);
 
-    try {
-        console.log(`Updating cookies for user: ${userId} with value: ${cookiesAccepted}`);
-        const user = await User.findByPk(userId);
-        if (user) {
-            user.cookiesAccepted = cookiesAccepted;
-            await user.save();
-            res.status(200).json({ message: 'Cookie preference updated successfully.' });
-        } else {
-            res.status(404).json({ message: 'User not found.' });
-        }
-    } catch (error) {
-        console.error('Error updating cookie preference:', error);
-        res.status(500).json({ message: 'Error updating cookie preference.', error });
-    }
-});
+
+
 
 module.exports = router;
