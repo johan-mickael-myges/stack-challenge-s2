@@ -49,40 +49,36 @@
         <span v-if="brand" class="text-xs text-gray-600">{{ brand }}</span>
         <span class="text-[0.855rem] mt-[0.2rem]">{{ product.price }} €</span>
         <p class="text-sm my-2">{{ product.description }}</p>
-        <button class="bg-black text-white py-4 px-6 rounded-full text-sm font-medium cursor-pointer my-4" @click="addProductToCart">Place in Cart</button>        <p class="text-xs text-gray-600 text-center mt-4">Complimentary Carbon Efficient Delivery or Collect-in-Store.</p>
+        <button class="bg-black text-white py-4 px-6 rounded-full text-sm font-medium cursor-pointer my-4" @click="addProductToCart">Ajouter au panier</button>
       </div>
     </div>
   </div>
 </template>
 
+
 <script lang="ts">
 import { computed, onUnmounted, defineComponent, onMounted, ref } from 'vue';
 import { useProductStore } from '@/stores/products';
 import { useBrandStore } from '@/stores/brands';
-import Heading from "@/components/Typography/Heading.vue";
-import { useRoute } from "vue-router";
+import { useRoute } from 'vue-router';
 import notFoundImage from '@/assets/not-found-image.png';
-import axios from 'axios';
-import {useCartStore} from "@/stores/cart.ts";
+import { useCartStore } from '@/stores/cart.ts';
 
 export default defineComponent({
   name: 'Product',
-  components: {
-    Heading,
-  },
   setup() {
     const route = useRoute();
     const store = useProductStore();
     const cartStore = useCartStore();
-    const brandStore = useBrandStore()
-    const isMdOrLarger = ref(window.innerWidth >= 768)
+    const brandStore = useBrandStore();
+    const isMdOrLarger = ref(window.innerWidth >= 768);
     const currentImageIndex = ref(0);
 
     onMounted(() => {
       if (route.params.id) {
         store.fetchProduct(Number(route.params.id));
-        
-        if(store.product?.brandId){
+
+        if (store.product?.brandId) {
           brandStore.fetchBrand(store.product.brandId);
         }
       }
@@ -95,7 +91,7 @@ export default defineComponent({
 
     const product = computed(() => store.product);
     const brand = computed(() => brandStore.brand?.name);
-    
+
     const updateWindowSize = () => {
       isMdOrLarger.value = window.innerWidth >= 768;
     };
@@ -114,7 +110,9 @@ export default defineComponent({
     };
 
     const addProductToCart = async () => {
-      await cartStore.addToCart(product.value.id);
+      if (product.value) {
+        await cartStore.addToCart(product.value.id);
+      }
     };
 
     return {
@@ -124,13 +122,13 @@ export default defineComponent({
       nextImage,
       prevImage,
       isMdOrLarger,
-      addProductToCart
+      addProductToCart,
     };
   },
   data() {
-      return {
-        notFoundImage,
-      }
-    },
+    return {
+      notFoundImage,
+    };
+  },
 });
 </script>
