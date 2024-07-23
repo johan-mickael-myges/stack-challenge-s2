@@ -1,5 +1,52 @@
 const {Delivery, Order} = require("~models");
 const BadRequestError = require("~errors/BadRequestError");
+const NotFoundError = require("~errors/NotFoundError");
+const orderService = require('~services/orderService');
+
+const getById = async (deliveryId) => {
+    if (!deliveryId){
+        throw new BadRequestError('Delivery ID is required');
+    }
+
+    const foundDelivery = Delivery.findByPk(deliveryId, {
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        }
+    });
+
+    if (!foundDelivery) {
+        throw new NotFoundError('Delivery not found.');
+    }
+
+    return foundDelivery;
+}
+
+const getByOrderId = async (orderId) => {
+    if (!orderId){
+        throw new BadRequestError('Order ID is required');
+    }
+
+    const foundOrder = await orderService.getById(orderId);
+
+    if (!foundOrder) {
+        throw new NotFoundError('Order not found.');
+    }
+
+    const foundDelivery = await Delivery.findOne({
+        where: {
+            orderId
+        },
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        }
+    });
+
+    if (!foundDelivery) {
+        throw new NotFoundError('Delivery not found.');
+    }
+
+    return foundDelivery;
+}
 
 const addDelivery = async (
     orderId,
@@ -31,7 +78,7 @@ const addDelivery = async (
 
     const foundOrder = await Order.findByPk(orderId);
     if (!foundOrder) {
-        throw new BadRequestError('Order not found');
+        throw new NotFoundError('Order not found');
     }
 
     const existingOrderDelivery = await Delivery.findOne({
@@ -56,4 +103,6 @@ const addDelivery = async (
 
 module.exports = {
     addDelivery,
+    getById,
+    getByOrderId,
 };

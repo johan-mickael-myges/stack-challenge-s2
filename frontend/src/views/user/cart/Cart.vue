@@ -61,8 +61,6 @@
   </v-container>
 </template>
 
-
-
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -139,7 +137,7 @@ export default defineComponent({
 }
 .cart-item {
   margin-bottom: 20px;
-  position: relative;  
+  position: relative;
 }
 .cart-item-image {
   width: 100%;
@@ -169,7 +167,7 @@ export default defineComponent({
 .sticky-top {
   position: sticky;
   top: 20px;
-  min-height: 300px; 
+  min-height: 300px;
   padding: 20px;
 }
 .order-summary-title {
@@ -199,4 +197,3 @@ export default defineComponent({
   }
 }
 </style>
-

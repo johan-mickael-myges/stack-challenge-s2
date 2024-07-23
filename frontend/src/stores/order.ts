@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import apiClient from '@/config/axios';
 import { z } from 'zod';
+import {DeliveryEntity, DeliveryEntitySchema} from "@/stores/delivery.ts";
 
 const ProductSchema = z.object({
     price: z.number(),
@@ -55,10 +56,23 @@ export type Items = z.infer<typeof ItemsSchema>;
 export const useOrderStore = defineStore('orders', {
     state: () => ({
         loading: false,
-        paidOrders: [] as CreatedOrders, 
+        delivery: null as DeliveryEntity | null
+        paidOrders: [] as CreatedOrders,
         error: null as string | null,
     }),
     actions: {
+        async fetchDelivery(orderId: number) {
+            this.loading = true;
+            try {
+                const response = await apiClient.get(`/orders/${orderId}/delivery`);
+                DeliveryEntitySchema.parse(response.data);
+                this.delivery = response.data;
+            } catch(error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
         async createOrder(
             items: z.infer<typeof ItemsSchema>,
         ): Promise<CreatedOrder> {
@@ -82,7 +96,7 @@ export const useOrderStore = defineStore('orders', {
                 const response = await apiClient.get('/orders/history', {
                     withCredentials: true,
                 });
-                console.log('Fetched paid orders:', response.data); 
+                console.log('Fetched paid orders:', response.data);
                 this.paidOrders = CreatedOrdersSchema.parse(response.data);
             } catch (error) {
                 this.error = 'Failed to fetch paid orders';

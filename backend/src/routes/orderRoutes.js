@@ -6,5 +6,6 @@ const { checkToken } = require('~middlewares/authMiddleware');
 router.post('/', checkToken, orderController.createOrder);
 router.get('/history', checkToken, orderController.getPaidOrders); 
 router.get('/:orderId', checkToken, orderController.getOrderDetails);
+router.get('/:orderId/delivery', checkToken, orderController.getDelivery);
 
 module.exports = router;

@@ -1,5 +1,25 @@
 const {Order, OrderItem, Product} = require("~models");
 const BadRequestError = require("~errors/BadRequestError");
+const NotFoundError = require("~errors/NotFoundError");
+
+const getById = async (orderId) => {
+    if (!orderId){
+        throw new BadRequestError('Delivery ID is required');
+    }
+
+    const order = Order.findByPk(orderId, {
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        }
+    });
+
+    if (!order) {
+        throw new NotFoundError('Order not found.');
+    }
+
+    return order;
+}
+
 
 const buildOrderItem = async (item, orderId) => {
     const product = await Product.findByPk(item.productId);
@@ -39,4 +59,5 @@ const createOrder = async (userId, items = []) => {
 
 module.exports = {
     createOrder,
+    getById
 };
