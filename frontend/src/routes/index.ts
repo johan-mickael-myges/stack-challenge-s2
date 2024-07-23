@@ -4,6 +4,8 @@ import errorRoutes from "@/routes/error/errorRoutes.ts";
 import adminProductRoutes from './admin/productRoutes';
 import adminCategoryRoutes from './admin/categoryRoutes';
 import adminBrandRoutes from './admin/brandRoutes';
+import adminColorRoutes from './admin/colorRoutes';
+import adminMaterialRoutes from './admin/materialRoutes';
 import homeRoutes from "@/routes/public/homeRoutes.ts";
 import cartRoutes from "@/routes/user/cartRoutes.ts";
 import userSecurityRoutes from "@/routes/public/security/userSecurityRoutes.ts";
@@ -19,6 +21,8 @@ const routes: Array<RouteRecordRaw> = [
     ...adminProductRoutes,
     ...adminBrandRoutes,
     ...adminCategoryRoutes,
+    ...adminColorRoutes,
+    ...adminMaterialRoutes,
     ...homeRoutes,
     ...cartRoutes,
     ...userSecurityRoutes,
