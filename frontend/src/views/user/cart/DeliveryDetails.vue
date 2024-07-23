@@ -45,6 +45,7 @@ export default defineComponent({
     const router = useRouter();
     const shippingMethodsStore = useShippingMethodStore();
     const deliveryStore = useDeliveryStore();
+
     const orderId = route.params.orderId as string;
     const shippingMethodId = ref(0);
     const errors = ref('');

@@ -3,6 +3,7 @@ const app = require('../../app');
 const { Category } = require('~models');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
+const eventEmitter = require('~services/eventEmitter');
 
 jest.mock('jsonwebtoken');
 
@@ -25,6 +26,11 @@ jest.mock('express-validator', () => {
         validationResult: jest.fn(),
     };
 });
+
+jest.mock('~services/eventEmitter', () => ({
+    emit: jest.fn(),
+    on: jest.fn(),
+}));
 
 describe('Category Controller', () => {
     beforeAll(() => { });

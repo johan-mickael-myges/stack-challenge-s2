@@ -9,9 +9,24 @@ const routes: Array<RouteRecordRaw> = [
         path: '/order/:orderId',
         component: UserLayout,
         children: [
-            { path: 'delivery', name: 'OrderDeliveryDetails', component: DeliveryDetails },
-            { path: '', name: 'OrderDetails', component: OrderDetails, meta: { requiresAuth: true } },
-            { path: 'order-confirmation', name: 'OrderConfirmation', component: OrderConfirmation },
+            {
+                path: 'delivery',
+                name: 'OrderDeliveryDetails',
+                component: DeliveryDetails,
+                meta: { requiresAuth: true }
+            },
+            {
+                path: '',
+                name: 'OrderDetails',
+                component: OrderDetails,
+                meta: { requiresAuth: true }
+            },
+            {
+                path: 'order-confirmation',
+                name: 'OrderConfirmation',
+                component: OrderConfirmation,
+                meta: { requiresAuth: true }
+            },
         ],
     }
 ];
