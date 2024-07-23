@@ -4,7 +4,7 @@ const router = express.Router();
 const { checkToken, checkOrderOwnership } = require('~middlewares/authMiddleware');
 
 router.post('/', checkToken, orderController.createOrder);
-router.get('/history', checkToken, orderController.getPaidOrders);
+router.get('/history', checkToken, orderController.getPaidOrders); 
 router.get('/:orderId', checkToken, checkOrderOwnership, orderController.getOrderDetails);
 router.get('/:orderId/delivery', checkToken, orderController.getDelivery);
 
