@@ -26,7 +26,7 @@ const makeCaptureRequestInstance = (orderID) => {
     return new paypal.orders.OrdersCaptureRequest(orderID);
 }
 
-const createOrder = async (totalPrice) => {
+const createOrder = async (totalPrice, shippingOptions) => {
     const client = await getClient();
     const request = makeOrderRequestInstance();
 
@@ -37,6 +37,9 @@ const createOrder = async (totalPrice) => {
             amount: {
                 currency_code: 'EUR',
                 value: totalPrice
+            },
+            shipping: {
+                options: shippingOptions,
             }
         }]
     });

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full d-flex items-end">
+  <div class="w-full p-5 bg-gray-100">
     <div id="paypal-button-container" class="w-full"></div>
   </div>
 </template>
@@ -9,6 +9,7 @@ import { defineComponent, nextTick, onMounted, ref, PropType } from 'vue';
 import { usePayPalStore } from '@/stores/paypal';
 import { useCartStore } from '@/stores/cart';
 import { useRouter } from 'vue-router';
+import {useShippingMethodStore} from "@/stores/shippingMethods.ts";
 
 export default defineComponent({
   name: 'PayPalButton',
@@ -29,7 +30,18 @@ export default defineComponent({
   setup(props) {
     const paypalStore = usePayPalStore();
     const cartStore = useCartStore();
+    const shippingMethodsStore = useShippingMethodStore();
     const router = useRouter();
+
+    onMounted(async () => {
+      await paypalStore.fetchPayPalClientId();
+      await shippingMethodsStore.fetchShippingMethods();
+      if (paypalStore.paypalClientId) {
+        await loadPayPalScript(paypalStore.paypalClientId);
+      } else {
+        console.error('Failed to load PayPal client ID');
+      }
+    });
 
     const loadPayPalScript = async (clientId: string) => {
       if (document.getElementById('paypal-sdk')) {
@@ -48,13 +60,6 @@ export default defineComponent({
     const setupPayPalButton = () => {
       if (window.paypal) {
         window.paypal.Buttons({
-          style: {
-            layout: 'horizontal',
-            color: 'gold',
-            shape: 'rect',
-            label: 'paypal',
-            tagline: false,
-          },
           createOrder: async () => {
             try {
               const orderId = await paypalStore.createOrder(props.totalPrice);
@@ -79,15 +84,6 @@ export default defineComponent({
         }).render('#paypal-button-container');
       }
     };
-
-    onMounted(async () => {
-      await paypalStore.fetchPayPalClientId();
-      if (paypalStore.paypalClientId) {
-        await loadPayPalScript(paypalStore.paypalClientId);
-      } else {
-        console.error('Failed to load PayPal client ID');
-      }
-    });
 
     return {};
   },

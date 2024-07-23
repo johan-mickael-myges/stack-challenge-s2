@@ -12,6 +12,8 @@ const paymentRoutes = require('./paymentRoutes');
 const orderRoutes = require('./orderRoutes');
 const colorRoutes = require('./colorRoutes');
 const materialRoutes = require('./materialRoutes');
+const shippingMethodRoutes = require('./shippingMethodsRoutes');
+const deliveryRoutes = require('./deliveryRoutes');
 
 router.use('/auth', authRoutes);
 router.use('/products', productRoutes);
@@ -23,6 +25,8 @@ router.use('/payments', paymentRoutes);
 router.use('/orders', orderRoutes);
 router.use('/colors', colorRoutes);
 router.use('/materials', materialRoutes);
+router.use('/shipping-methods', shippingMethodRoutes);
+router.use('/deliveries', deliveryRoutes);
 router.use(errorHandler);
 
 module.exports = router;

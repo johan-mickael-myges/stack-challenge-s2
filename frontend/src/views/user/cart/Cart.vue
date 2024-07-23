@@ -97,13 +97,12 @@ export default defineComponent({
 
     const proceedToCheckout = async () => {
       try {
-        const order = await orderStore.createOrder(store.items, 'PAYPAL');
-        // Redirect to the order details page
-        router.push({ name: 'OrderDetails', params: {
+        const order = await orderStore.createOrder(store.items);
+        router.push({ name: 'OrderDeliveryDetails', params: {
           orderId: order.data.id,
         } });
       } catch (error) {
-        console.error('Failed to create order:', error);
+        console.error('Failed to proceed to checkout:', error);
         alert('Failed to proceed to checkout.');
       }
     };

@@ -1,22 +1,26 @@
 <template>
   <div>
     <v-text-field
-        label="Adresse"
+        label="Cherchez une adresse"
         v-model="address"
-        :error-messages="addressError"
+        :error-messages="getErrors()"
         :loading="addressLoading"
-    />
+        max-errors="5"
+    >
+    </v-text-field>
     <v-virtual-scroll
         v-if="addressSuggestions.length > 0"
         :items="addressSuggestions"
-        height="150"
+        :height="height"
     >
       <template v-slot:default="{ item }">
         <v-list-item
-            :title="item.adresse"
             density="compact"
             @click="selectSuggestion(item)"
         >
+          <v-list-item-title>
+            <p class="text-sm">{{ item.adresse }}</p>
+          </v-list-item-title>
         </v-list-item>
       </template>
     </v-virtual-scroll>
@@ -24,14 +28,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import {defineComponent, computed, watch} from 'vue';
 import { SuggestionSchema, useAddressStore } from '@/stores/address.ts';
 import { z } from 'zod';
 import debounce from 'lodash/debounce';
+import {useFieldValidator} from "@/composables/useFieldValidator.ts";
+import {AddressFieldSchema} from "@/types/schemas/address.ts";
 
 export default defineComponent({
   name: 'SuggestAddressField',
-  setup() {
+  props: {
+    height: {
+      type: Number,
+      required: false,
+      default: 200,
+    },
+  },
+  emits: ['update-value'],
+  setup(props, { emit }) {
     const addressStore = useAddressStore();
 
     const address = computed({
@@ -41,6 +55,9 @@ export default defineComponent({
         debouncedVerifyAddress(value);
       },
     });
+
+
+    const { setValue, isValid, getErrors, validate } = useFieldValidator(AddressFieldSchema);
 
     const addressError = computed(() => addressStore.addressError);
     const addressLoading = computed(() => addressStore.addressLoading);
@@ -54,7 +71,14 @@ export default defineComponent({
 
     const selectSuggestion = (suggestion: z.infer<typeof SuggestionSchema>) => {
       addressStore.selectSuggestion(suggestion);
+      emit('update-value', suggestion.adresse);
     };
+
+    watch(address, (value) => {
+      setValue(address.value);
+      validate();
+      emit('update-value', value);
+    });
 
     return {
       address,
@@ -62,6 +86,9 @@ export default defineComponent({
       addressLoading,
       addressSuggestions,
       selectSuggestion,
+      getErrors,
+      validate,
+      isValid
     };
   },
 });

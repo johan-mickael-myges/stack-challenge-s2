@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import apiClient from '@/config/axios';
 import { z } from 'zod';
-import { PAYMENT_METHOD_PAYPAL, PAYMENT_METHOD_STRIPE } from '@/constants/paymentMethod';
 
 const CreatedOrderSchema = z.object({
     id: z.number(),
@@ -11,6 +10,8 @@ const CreatedOrderSchema = z.object({
     createdAt: z.string(),
 });
 
+const CreatedOrdersSchema = z.array(CreatedOrderSchema);
+
 const ItemSchema = z.object({
     productId: z.number(),
     quantity: z.number().min(1),
@@ -18,15 +19,10 @@ const ItemSchema = z.object({
 
 const ItemsSchema = z.array(ItemSchema);
 
-const PaymentMethodSchema = z.union([
-    z.literal(PAYMENT_METHOD_PAYPAL),
-    z.literal(PAYMENT_METHOD_STRIPE),
-]);
-
-export const CreateOrderSchema = z.object({
-    items: z.array(ItemSchema),
-    paymentMethod: PaymentMethodSchema,
-});
+export type CreatedOrder = z.infer<typeof CreatedOrderSchema>;
+export type CreatedOrders = z.infer<typeof CreatedOrdersSchema>;
+export type Item = z.infer<typeof ItemSchema>;
+export type Items = z.infer<typeof ItemsSchema>;
 
 export const useOrderStore = defineStore('orders', {
     state: () => ({
@@ -35,15 +31,13 @@ export const useOrderStore = defineStore('orders', {
     actions: {
         async createOrder(
             items: z.infer<typeof ItemsSchema>,
-            paymentMethod: z.infer<typeof PaymentMethodSchema>
-        ): Promise<z.infer<typeof CreatedOrderSchema>> {
+        ): Promise<CreatedOrder> {
             try {
-                CreateOrderSchema.parse({ items, paymentMethod });
+                ItemsSchema.parse(items);
 
                 this.loading = true;
                 return await apiClient.post('/orders', {
                     items,
-                    paymentMethod,
                 });
             } catch (error) {
                 throw error;
