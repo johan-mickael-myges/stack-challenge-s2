@@ -1,5 +1,6 @@
 const { Order, OrderItem, Product, Delivery, ShippingMethod } = require('~models');
 const { createOrder } = require('~services/orderService');
+const deliveryService = require('~services/deliveryService');
 
 exports.createOrder = async (req, res, next) => {
   try {
@@ -63,7 +64,7 @@ exports.updateDeliveryDetails = async (req, res, next) => {
 
 exports.getPaidOrders = async (req, res, next) => {
   try {
-      const userId = req.user.userId; 
+      const userId = req.user.userId;
       const paidOrders = await Order.findAll({
           where: {
               userId: userId,
@@ -81,3 +82,14 @@ exports.getPaidOrders = async (req, res, next) => {
       next(error);
   }
 };
+
+
+exports.getDelivery = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const delivery = await deliveryService.getByOrderId(orderId);
+    res.status(200).send(delivery);
+  } catch (err) {
+    next(err);
+  }
+}

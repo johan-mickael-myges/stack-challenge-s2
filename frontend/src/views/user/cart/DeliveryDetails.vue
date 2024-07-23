@@ -36,6 +36,7 @@ import DeliveryInformationsForm from "@/components/Form/DeliveryInformationsForm
 import {DeliveryInformation, useDeliveryStore} from "@/stores/delivery.ts";
 import {useRoute, useRouter} from "vue-router";
 import {ZodError} from "zod";
+import {useOrderStore} from "@/stores/order.ts";
 
 export default defineComponent({
   name: 'DeliveryDetails',
@@ -45,10 +46,13 @@ export default defineComponent({
     const router = useRouter();
     const shippingMethodsStore = useShippingMethodStore();
     const deliveryStore = useDeliveryStore();
+    const orderStore = useOrderStore();
 
     const orderId = route.params.orderId as string;
     const shippingMethodId = ref(0);
     const errors = ref('');
+
+    const existingDelivery = computed(() => orderStore.delivery);
     const deliveryInformation = ref<DeliveryInformation>({
       firstName: '',
       lastName: '',
@@ -58,6 +62,7 @@ export default defineComponent({
 
     onMounted(async () => {
       await shippingMethodsStore.fetchShippingMethods();
+      await orderStore.fetchDelivery(Number(orderId));
     });
 
     const shippingMethods = computed(() => shippingMethodsStore.shippingMethods);
@@ -104,7 +109,8 @@ export default defineComponent({
       onDeliveryInformationsChange,
       createDelivery,
       deliveryInformationsErrors,
-      errors
+      errors,
+      existingDelivery,
     };
   },
 });

@@ -2,6 +2,19 @@ import { defineStore } from 'pinia';
 import {z} from 'zod';
 import apiClient from '@/config/axios';
 
+export const DeliveryEntitySchema = z.object({
+    id: z.number(),
+    firstName: z.string(),
+    lastName: z.string(),
+    address: z.string(),
+    phoneNumber: z.string(),
+    status: z.string(),
+    shippingMethod: z.number(),
+    orderId: z.number(),
+})
+
+export type DeliveryEntity = z.infer<typeof DeliveryEntitySchema>;
+
 const DeliveryToCreateSchema = z.object({
     orderId: z.union([
         z.string().min(1, "L'identifiant de la commande est requise"),
@@ -40,10 +53,23 @@ export type DeliveryInformation = z.infer<typeof DeliveryInformationsSchema>;
 export const useDeliveryStore = defineStore('deliveries', {
     state: () => ({
         loading: false,
+        delivery: null as DeliveryEntity | null,
         deliveryInformation: null as DeliveryInformation | null,
         errors: [] as string[],
     }),
     actions: {
+        async getDelivery(deliveryId: number) {
+            this.loading = true;
+            try {
+                const response = await apiClient.get(`/deliveries/${deliveryId}`);
+                DeliveryEntitySchema.parse(response.data);
+                this.delivery = response.data;
+            } catch(error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
         async createDelivery(
             delivery: DeliveryToCreate
         ) {
