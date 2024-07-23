@@ -1,13 +1,12 @@
 const eventEmitter = require('~services/eventEmitter');
-const {Payment} = require('~models');
+const { Payment, Order } = require('~models');
 
 eventEmitter.on('paypalOrderCaptured', async (data) => {
-    const {internalOrderId, order} = data;
-    const {amount} = order.purchase_units[0].payments.captures[0];
+    const { internalOrderId, order } = data;
+    const { amount } = order.purchase_units[0].payments.captures[0];
 
     console.log('Order captured:', amount);
 
-    // Create payment record in database
     try {
         await Payment.create({
             orderId: internalOrderId,
@@ -19,8 +18,15 @@ eventEmitter.on('paypalOrderCaptured', async (data) => {
             payerEmail: order.payer.email_address,
             payerId: order.payer.payer_id
         });
+
+        console.log(`Payment record created for order ${internalOrderId}`);
+
+        const [updatedRows] = await Order.update(
+            { paymentStatus: 'paid' },
+            { where: { id: internalOrderId } }
+        );
     } catch (error) {
-        console.error(error);
+        console.error('Error processing PayPal order captured event:', error);
     }
 });
 
