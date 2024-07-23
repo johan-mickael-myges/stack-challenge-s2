@@ -66,9 +66,10 @@ const goToHome = () => router.push('/');
         </v-btn>
 
         <v-btn icon @click="goToCart">
-          <v-badge color="error" :content="countCartItem">
+          <v-badge v-if="countCartItem > 0" color="error" :content="countCartItem">
             <v-icon>mdi-cart-outline</v-icon>
           </v-badge>
+          <v-icon v-else>mdi-cart-outline</v-icon>
         </v-btn>
       </v-col>
     </v-row>

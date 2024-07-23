@@ -66,9 +66,13 @@
                   </v-card-subtitle>
                 </div>
                 <div>
-                  <v-btn color="white" variant="flat" block @click.stop="addProductToCart(product.originalId)">
-                    <v-icon>mdi mdi-cart-plus</v-icon>
-                  </v-btn>
+                  <v-tooltip text="Ajouter au panier">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-bind="props" color="white" variant="flat" block @click.stop="addProductToCart(product.originalId)">
+                        <v-icon>mdi mdi-cart-plus</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-tooltip>
                 </div>
               </div>
             </div>
