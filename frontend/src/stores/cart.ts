@@ -138,6 +138,16 @@ export const useCartStore = defineStore('carts', {
         },
         getItemsWithAllDetails(): CartItem[] {
             return this.cart?.CartItems ?? [];
+        },
+        countCartItem(): number {
+            console.log(this.cart);
+            if (!this.cart) {
+                return 0;
+            }
+
+            return this.cart.CartItems.reduce((count, item) => {
+                return count + item.quantity
+            }, 0);
         }
     }
 });

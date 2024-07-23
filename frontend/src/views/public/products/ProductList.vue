@@ -56,7 +56,7 @@
 
                 </v-img>
               </v-card>
-              <div class="flex flex-row  justify-between ml-1 mr-1">
+              <div class="flex flex-row justify-between items-center ml-1 mr-1">
                 <div>
                   <v-card-text class="pa-0 mt-3">
                     <span class=" ">{{ product.name }}</span>
@@ -66,9 +66,13 @@
                   </v-card-subtitle>
                 </div>
                 <div>
-                  <v-btn color="white" block @click.stop="addProductToCart(product.originalId)">
-                    <v-icon>mdi mdi-cart-plus</v-icon>
-                  </v-btn>
+                  <v-tooltip text="Ajouter au panier">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-bind="props" color="white" variant="flat" block @click.stop="addProductToCart(product.originalId)">
+                        <v-icon>mdi mdi-cart-plus</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-tooltip>
                 </div>
               </div>
             </div>
