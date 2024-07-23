@@ -1,23 +1,5 @@
 require('dotenv').config();
 
-if (process.env.NODE_ENV === 'production') {
-    require('dotenv').config({
-        path: '.env.production',
-    });
-}
-
-if (process.env.NODE_ENV === 'development') {
-    require('dotenv').config({
-        path: '.env.local',
-    });
-}
-
-if (process.env.NODE_ENV === 'test') {
-    require('dotenv').config({
-        path: '.env.test',
-    });
-}
-
 const config = {
     env: process.env.NODE_ENV || 'development',
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
