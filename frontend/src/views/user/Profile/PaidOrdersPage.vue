@@ -7,7 +7,7 @@
         <v-progress-circular v-if="loading" indeterminate color="primary"></v-progress-circular>
         <div v-if="!loading && !error">
           <div v-if="paidOrders.length === 0">
-            <p class="text-center text-lg">Vous n'avez passé aucune commande encore.</p>
+            <p class="text-center text-lg">Vous n'avez pas encore effectué de commande.</p>
           </div>
           <div v-else>
             <v-card
