@@ -3,11 +3,13 @@ import Profile from '@/views/user/Profile/Profile.vue';
 import UserOrders from '@/views/user/cart/OrderDetails.vue';
 import UserInfo from '@/views/user/Profile/userInfo.vue';
 import confirmationDelete from '@/views/user/Profile/confirmationDelete.vue';
+import modifPassword from '@/views/user/Profile/passwordModif.vue';
+import UserLayout from '@/layouts/UserLayout.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/profile',
-    component: Profile,
+    component: UserLayout,
     meta: { requiresAuth: true },
     children: [
       {
@@ -26,6 +28,12 @@ const routes: Array<RouteRecordRaw> = [
         path: 'confirm-delete',
         name: 'confirmationDelete',
         component: confirmationDelete,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'modif-password',
+        name: 'modifPassword',
+        component: modifPassword,
         meta: { requiresAuth: true },
       }
     ],

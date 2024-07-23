@@ -29,6 +29,9 @@
             <v-card-actions>
               <v-btn @click="initiateAccountDeletion" color="red">Supprimer Mon Compte</v-btn>
             </v-card-actions>
+            <v-card-actions>
+              <v-btn @click="initiatePasswordModification" color="red">Modifier mon mot de passe</v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
@@ -36,7 +39,7 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, computed } from 'vue';
+  import { computed } from 'vue';
   import { useAuthStore } from '@/stores/auth';
   import { useRouter } from 'vue-router';
   
@@ -47,36 +50,19 @@
     
   const initiateAccountDeletion = () => {
   if (authStore.isAuthenticated) {
-    router.push({ path: '/profile/confirm-delete' }); // Par défaut, affichez les commandes
+    router.push({ path: '/profile/confirm-delete' });
   } else {
     console.log('erreur de redirection');
     }
 };
 
-//   const initiateAccountDeletion = async () => {
-//     if (confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) {
-//       try {
-//         console.log('en couuurs');
-//         const response = await axios.post('http://localhost:8000/auth/delete', {
-//           userId: user.value.id,
-//           email: user.value.email
-//         });
-//         alert(response.data);
-//       } catch (error) {
-//         if (axios.isAxiosError(error)) {
-//           console.error('Erreur lors de la demande de suppression:', {
-//             message: error.message,
-//             response: error.response?.data,
-//             status: error.response?.status
-//           });
-//         } else {
-//           console.error('Erreur inconnue lors de la demande de suppression:', error);
-//         }
-//       }
-//     }
-//   };
-  
-  
+  const initiatePasswordModification = () => {
+    if (authStore.isAuthenticated){
+      router.push({ path: '/profile/modif-password' }); 
+    }else{
+      console.log('erreur de redirection');
+    }
+  }
     
   </script>
   

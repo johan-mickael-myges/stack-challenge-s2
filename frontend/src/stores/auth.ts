@@ -113,6 +113,25 @@ export const useAuthStore = defineStore('auth', () => {
         }
       };
 
+
+      const changePassword = async (currentPassword: string, newPassword: string, confirmNewPassword: string) => {
+        try {
+          await apiClient.post('auth/change-password', {
+            currentPassword,
+            newPassword, 
+            confirmNewPassword
+          });
+          router.push('/');
+        } catch (error) {
+          throw error;
+        }
+      };
+      
+
+       
+      
+    
+
     const isAuthenticated = computed(() => !!Object.keys(user).length);
 
     loadUserFromLocalStorage();
@@ -126,6 +145,7 @@ export const useAuthStore = defineStore('auth', () => {
         logout,
         user,
         verifyAuth,
+        changePassword,
         isAuthenticated,
         confirmDeletion,
     };

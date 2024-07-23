@@ -36,11 +36,19 @@ onBeforeUnmount(() => {
 
 const goToProfile = () => {
   if (authStore.isAuthenticated) {
-    router.push({ path: '/profile/info' }); // Par défaut, affichez les commandes
+    router.push({ path: '/profile/info' }); 
   } else {
     goToByName('login');
   }
 };
+
+const goToOrder = () => {
+  if (authStore.isAuthenticated){
+    router.push({ path: '/profile/orders' });
+  }else{
+    goToByName('login');
+  }
+}
 
 const router = useRouter();
 const goToCart = () => router.push({ name: 'UserCart' });
@@ -65,12 +73,20 @@ const goToHome = () => router.push('/');
           <v-icon>mdi-account-outline</v-icon>
         </v-btn>
 
+        
+        <v-btn icon @click="goToOrder">
+          <v-icon>mdi-package-variant</v-icon>
+        </v-btn>
+
+
         <v-btn icon @click="goToCart">
           <v-badge v-if="countCartItem > 0" color="error" :content="countCartItem">
             <v-icon>mdi-cart-outline</v-icon>
           </v-badge>
           <v-icon v-else>mdi-cart-outline</v-icon>
         </v-btn>
+
+        
       </v-col>
     </v-row>
   </v-app-bar>
