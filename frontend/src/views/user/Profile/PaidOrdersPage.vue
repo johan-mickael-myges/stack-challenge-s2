@@ -2,6 +2,20 @@
   <v-container>
     <v-row>
       <v-col cols="12">
+        <v-alert type="info" class="mb-4">
+          Pour toute demande de remboursement, veuillez contacter le service client à l'adresse suivante : 
+          <a href="mailto:service-client@layalin.com" class="underline">service-client@layalin.com</a>.
+          <br>
+          Merci de préciser dans votre email les informations suivantes :
+          <ul class="list-disc pl-5 mt-2">
+            <li>Nom et prénom</li>
+            <li>Adresse e-mail du compte qui a passé la commande</li>
+            <li>Numéro de téléphone</li>
+            <li>Référence de la commande</li>
+            <li>Article à retourner</li>
+            <li>Raison du retour</li>
+          </ul>
+        </v-alert>
         <h1 class="text-2xl font-bold mb-4">Votre historique de commandes :</h1>
         <v-alert v-if="error" type="error">{{ error }}</v-alert>
         <v-progress-circular v-if="loading" indeterminate color="primary"></v-progress-circular>
@@ -44,6 +58,7 @@
   </v-container>
 </template>
 
+
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { useOrderStore } from '@/stores/order';
@@ -73,4 +88,17 @@ const calculateTotal = (items) => {
 .text-lg {
   font-size: 1.25rem;
 }
+.list-disc {
+  list-style-type: disc;
+}
+.pl-5 {
+  padding-left: 1.25rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.underline {
+  text-decoration: underline;
+}
 </style>
+
