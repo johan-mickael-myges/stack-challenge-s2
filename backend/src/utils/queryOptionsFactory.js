@@ -55,7 +55,6 @@ const buildMongooseQuery = (query, options = {}) => {
         }
 
         if (termValue) {
-            console.log('termValue', termValue);
             conditions.push({
                 $or: [
                     { name: { $regex: termValue, $options: 'i' } },

@@ -7,7 +7,6 @@ eventEmitter.on('colorUpdated', async (newColor, oldColor) => {
             { colors: oldColor },
             { $set: { "colors.$": newColor } }
         );
-         console.log(`Successfully updated ${result.modifiedCount} products from color ${oldColor} to ${newColor}`);
     }catch (error) {
         console.error('Error updating products:', error);
     }
@@ -19,7 +18,6 @@ eventEmitter.on('colorDeleted', async (color) => {
             { colors: color },
             { $pull: { colors: color } }
         );
-        console.log(`Successfully deleted color ${color} from ${result.modifiedCount} products`);
     } catch (error) {
         console.error('Error deleting color from products:', error);
     }

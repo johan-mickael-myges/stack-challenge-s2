@@ -5,7 +5,6 @@ eventEmitter.on('paypalOrderCaptured', async (data) => {
     const { internalOrderId, order } = data;
     const { amount } = order.purchase_units[0].payments.captures[0];
 
-    console.log('Order captured:', amount);
 
     try {
         await Payment.create({
@@ -19,7 +18,6 @@ eventEmitter.on('paypalOrderCaptured', async (data) => {
             payerId: order.payer.payer_id
         });
 
-        console.log(`Payment record created for order ${internalOrderId}`);
 
         const [updatedRows] = await Order.update(
             { paymentStatus: 'paid' },

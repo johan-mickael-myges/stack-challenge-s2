@@ -14,7 +14,6 @@ const migrateData = async () => {
         }
     }
 
-    console.log('Data migration completed.');
 };
 
 migrateData()
