@@ -135,6 +135,9 @@ export const useCartStore = defineStore('carts', {
                 productId: item.productId,
                 quantity: item.quantity,
             })) ?? [];
+        },
+        getItemsWithAllDetails(): CartItem[] {
+            return this.cart?.CartItems ?? [];
         }
     }
 });

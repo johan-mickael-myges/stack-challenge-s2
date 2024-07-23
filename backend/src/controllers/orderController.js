@@ -4,11 +4,9 @@ const { createOrder } = require('~services/orderService');
 
 exports.createOrder = async (req, res, next) => {
   try {
-    const { items, paymentMethod } = req.body;
+    const { items } = req.body;
 
-    const order = await createOrder(req.user.userId, items, {
-        paymentMethod,
-    });
+    const order = await createOrder(req.user.userId, items);
 
     res.status(201).json(order);
   } catch (error) {

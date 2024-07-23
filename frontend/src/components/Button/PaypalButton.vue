@@ -9,6 +9,7 @@ import { defineComponent, nextTick, onMounted, ref, PropType } from 'vue';
 import { usePayPalStore } from '@/stores/paypal';
 import { useCartStore } from '@/stores/cart';
 import { useRouter } from 'vue-router';
+import {useShippingMethodStore} from "@/stores/shippingMethods.ts";
 
 export default defineComponent({
   name: 'PayPalButton',
@@ -29,7 +30,18 @@ export default defineComponent({
   setup(props) {
     const paypalStore = usePayPalStore();
     const cartStore = useCartStore();
+    const shippingMethodsStore = useShippingMethodStore();
     const router = useRouter();
+
+    onMounted(async () => {
+      await paypalStore.fetchPayPalClientId();
+      await shippingMethodsStore.fetchShippingMethods();
+      if (paypalStore.paypalClientId) {
+        await loadPayPalScript(paypalStore.paypalClientId);
+      } else {
+        console.error('Failed to load PayPal client ID');
+      }
+    });
 
     const loadPayPalScript = async (clientId: string) => {
       if (document.getElementById('paypal-sdk')) {
@@ -79,15 +91,6 @@ export default defineComponent({
         }).render('#paypal-button-container');
       }
     };
-
-    onMounted(async () => {
-      await paypalStore.fetchPayPalClientId();
-      if (paypalStore.paypalClientId) {
-        await loadPayPalScript(paypalStore.paypalClientId);
-      } else {
-        console.error('Failed to load PayPal client ID');
-      }
-    });
 
     return {};
   },

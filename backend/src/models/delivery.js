@@ -1,4 +1,4 @@
-const {DataTypes, Model} = require('sequelize');
+const { DataTypes, Model } = require('sequelize');
 
 class Delivery extends Model {
     static associate(models) {
@@ -20,7 +20,20 @@ module.exports = (sequelize) => {
                     autoIncrement: true,
                     primaryKey: true,
                 },
-                recipientName: {
+                firstName: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                    validate: {
+                        notEmpty: {
+                            msg: 'Le prénom du destinataire est requis',
+                        },
+                        len: {
+                            args: [1, 255],
+                            msg: 'Le prénom du destinataire doit comporter entre 1 et 255 caractères',
+                        },
+                    },
+                },
+                lastName: {
                     type: DataTypes.STRING,
                     allowNull: false,
                     validate: {
@@ -42,6 +55,19 @@ module.exports = (sequelize) => {
                         },
                     },
                 },
+                phoneNumber: {
+                    type: DataTypes.STRING,
+                    allowNull: true,
+                    validate: {
+                        len: {
+                            args: [10, 15],
+                            msg: 'Le numéro de téléphone doit comporter entre 10 et 15 caractères',
+                        },
+                        isNumeric: {
+                            msg: 'Le numéro de téléphone doit contenir uniquement des chiffres',
+                        },
+                    },
+                },
                 status: {
                     type: DataTypes.ENUM('PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED'),
                     allowNull: false,
@@ -59,6 +85,7 @@ module.exports = (sequelize) => {
                         model: 'shipping_methods',
                         key: 'id'
                     },
+                    allowNull: true, // Allow null values
                     onDelete: 'SET NULL',
                     onUpdate: 'CASCADE'
                 },

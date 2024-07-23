@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 import axios from 'axios';
-import {z} from 'zod';
+import { z } from 'zod';
 
 export const SuggestionSchema = z.object({
     adresse: z.string(),
@@ -10,50 +9,60 @@ export const SuggestionSchema = z.object({
 
 const SuggestionsSchema = z.array(SuggestionSchema);
 
-export const useAddressStore = defineStore('address', () => {
-    const address = ref('');
-    const addressError = ref('');
-    const addressLoading = ref(false);
-    const addressSuggestions = ref([] as z.infer<typeof SuggestionsSchema>);
+export const useAddressStore = defineStore('address', {
+    state: () => ({
+        address: '',
+        addressError: '',
+        addressLoading: false,
+        addressSuggestions: [] as z.infer<typeof SuggestionsSchema>,
+    }),
 
-    const verifyAddress = async (query: string) => {
-        if (query.length < 3) {
-            addressSuggestions.value = [];
-            return;
-        }
+    actions: {
+        async verifyAddress(query: string) {
+            if (query.length < 3) {
+                this.addressSuggestions = [];
+                return;
+            }
 
-        addressLoading.value = true;
+            this.addressLoading = true;
 
-        try {
-            const response = await axios.get('/laposte/controladresse/v2/adresses', {
-                headers: {
-                    'X-Okapi-Key': 'LsyWFj+2oA21v5F/vVVZCpQD91H6ffLfROlO+/eAjuZCFOAyB+8ehoBPOPwtncLl',
-                },
-                params: {
-                    q: query,
-                },
-            });
+            try {
+                const response = await axios.get('/laposte/controladresse/v2/adresses', {
+                    headers: {
+                        'X-Okapi-Key': 'LsyWFj+2oA21v5F/vVVZCpQD91H6ffLfROlO+/eAjuZCFOAyB+8ehoBPOPwtncLl',
+                    },
+                    params: {
+                        q: query,
+                    },
+                });
 
-            addressSuggestions.value = response.data;
-            addressError.value = '';
-        } catch (error) {
-            addressError.value = 'Failed to load address suggestions';
-        } finally {
-            addressLoading.value = false;
-        }
-    };
+                this.addressSuggestions = response.data;
+                this.addressError = '';
+            } catch (error) {
+                this.addressError = 'Failed to load address suggestions';
+            } finally {
+                this.addressLoading = false;
+            }
+        },
 
-    const selectSuggestion = (suggestion: z.infer<typeof SuggestionSchema>) => {
-        address.value = suggestion.adresse;
-        addressSuggestions.value = [];
-    };
+        selectSuggestion(suggestion: z.infer<typeof SuggestionSchema>) {
+            this.address = suggestion.adresse;
+            this.addressSuggestions = [];
+        },
+    },
 
-    return {
-        address,
-        addressError,
-        addressLoading,
-        addressSuggestions,
-        verifyAddress,
-        selectSuggestion,
-    };
+    getters: {
+        getAddress(state) {
+            return state.address;
+        },
+        getAddressError(state) {
+            return state.addressError;
+        },
+        getAddressLoading(state) {
+            return state.addressLoading;
+        },
+        getAddressSuggestions(state) {
+            return state.addressSuggestions;
+        },
+    },
 });

@@ -21,7 +21,6 @@
               <p><strong>Sous-total:</strong> {{ item.subtotal }} €</p>
             </div>
             <p class="font-bold">Total: {{ totalPrice.toFixed(2) }} €</p>
-            <SuggestAddressField class="mb-4" />
             <PaypalButton :total-price="totalPrice" :internal-order-id="order.id + ''" />
           </div>
         </div>

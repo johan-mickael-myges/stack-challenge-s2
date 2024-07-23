@@ -1,22 +1,30 @@
 <template>
   <div>
     <v-text-field
-        label="Adresse"
+        label="Cherchez une adresse"
         v-model="address"
         :error-messages="addressError"
         :loading="addressLoading"
+        :rules="[
+          (v) => !!v || 'Veuillez saisir une adresse',
+          (v) => v.length > 2 || 'L\'adresse doit contenir au moins 3 caractères',
+          (v) => v.length < 256 || 'L\'adresse doit contenir moins de 256 caractères',
+          () => !errorMessage || errorMessage,
+        ]"
     />
     <v-virtual-scroll
         v-if="addressSuggestions.length > 0"
         :items="addressSuggestions"
-        height="150"
+        :height="height"
     >
       <template v-slot:default="{ item }">
         <v-list-item
-            :title="item.adresse"
             density="compact"
             @click="selectSuggestion(item)"
         >
+          <v-list-item-title>
+            <p class="text-sm">{{ item.adresse }}</p>
+          </v-list-item-title>
         </v-list-item>
       </template>
     </v-virtual-scroll>
@@ -24,14 +32,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import {defineComponent, computed, watch} from 'vue';
 import { SuggestionSchema, useAddressStore } from '@/stores/address.ts';
 import { z } from 'zod';
 import debounce from 'lodash/debounce';
 
 export default defineComponent({
   name: 'SuggestAddressField',
-  setup() {
+  props: {
+    height: {
+      type: Number,
+      required: false,
+      default: 200,
+    },
+    errorMessage : {
+      type: String,
+      required: false,
+      default: '',
+    },
+  },
+  emits: ['update-value'],
+  setup(props, { emit }) {
     const addressStore = useAddressStore();
 
     const address = computed({
@@ -54,7 +75,12 @@ export default defineComponent({
 
     const selectSuggestion = (suggestion: z.infer<typeof SuggestionSchema>) => {
       addressStore.selectSuggestion(suggestion);
+      emit('update-value', suggestion.adresse);
     };
+
+    watch(address, (value) => {
+      emit('update-value', value);
+    });
 
     return {
       address,
