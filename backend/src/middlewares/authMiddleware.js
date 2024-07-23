@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const ForbiddenError = require('~errors/ForbiddenError');
 const UnauthorizedError = require('~errors/UnauthorizedError');
+const { Order } = require('~models');
 const config = require('~config/config');
 
 const checkToken = (req, res, next) => {
@@ -34,7 +35,26 @@ const authorizeRoles = (requiredRoles = []) => {
     };
 };
 
+const checkOrderOwnership = async (req, res, next) => {
+    try {
+        const orderId = req.params.orderId;
+        const order = await Order.findByPk(orderId);
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        if (order.userId !== req.user.userId) {
+            return next(new ForbiddenError());
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     checkToken,
-    authorizeRoles
+    authorizeRoles,
+    checkOrderOwnership,
 };

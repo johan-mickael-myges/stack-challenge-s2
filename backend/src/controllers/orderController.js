@@ -1,5 +1,4 @@
-const { Order, OrderItem, Product } = require('~models');
-const { Delivery, ShippingMethod } = require('~models');
+const { Order, OrderItem, Product, Delivery, ShippingMethod } = require('~models');
 const { createOrder } = require('~services/orderService');
 const deliveryService = require('~services/deliveryService');
 
@@ -17,7 +16,6 @@ exports.getOrderDetails = async (req, res, next) => {
   try {
     const { orderId } = req.params;
 
-    // Find the order by ID
     const order = await Order.findByPk(orderId, {
       include: [
         {
@@ -29,6 +27,10 @@ exports.getOrderDetails = async (req, res, next) => {
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.userId !== req.user.userId) {
+      return res.status(403).json({ message: 'Forbidden' });
     }
 
     res.status(200).json(order);
