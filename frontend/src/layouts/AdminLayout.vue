@@ -58,7 +58,7 @@ export default defineComponent({
           title: 'Couleurs',
           props: {
             to: {name: 'AdminColorList'},
-            prependIcon: 'mdi-octagram-plus-outline',
+            prependIcon: 'mdi-format-color-fill',
             color: 'primary'
           }
         },
@@ -66,7 +66,7 @@ export default defineComponent({
           title: 'Matériaux',
           props: {
             to: {name: 'AdminMaterialList'},
-            prependIcon: 'mdi-octagram-plus-outline',
+            prependIcon: 'mdi-gold',
             color: 'primary'
           }
         },
