@@ -27,6 +27,18 @@ exports.deleteUser = async (req, res, next) => {
     }
 };
 
+exports.changePassword = async (req, res, next) => {
+    const { userId } = req.user;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+  
+    try {
+      const user = await userService.changePassword(userId, currentPassword, newPassword, confirmNewPassword);
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+};
+
 
 exports.loginUser = async (req, res, next) => {
     const errors = validationResult(req);

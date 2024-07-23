@@ -154,4 +154,37 @@ describe('Auth Controller', () => {
             expect(response.headers['set-cookie'][0]).toMatch(/token=;/);
         });
     });
+
+    // describe('DELETE /auth/delete', () => {
+    //     it('should delete a user and respond with 204', async () => {
+    //         const mockUserId = 1;
+    //         const mockPassword = 'password';
+            
+    //         userService.deleteUser.mockResolvedValue({ message: 'User deleted' });
+    
+    //         const response = await request(app)
+    //                 .delete('/auth/delete')
+    //                 .set('Cookie', 'token=valid-token')
+    //                 .send({ password: mockPassword });
+    
+    //         expect(response.statusCode).toBe(204);
+    //         expect(userService.deleteUser).toHaveBeenCalledWith(mockUserId, mockPassword);
+    //     });
+    
+    //     it('should respond with 500 if there is an error during deletion', async () => {
+    //         const mockUserId = 1;
+    //         const mockPassword = 'password';
+            
+    //         userService.deleteUser.mockRejectedValue(new Error('Deletion error'));
+    
+    //         const response = await request(app)
+    //                 .delete('/auth/delete')
+    //                 .set('Cookie', 'token=valid-token')
+    //                 .send({ password: mockPassword });
+    
+    //         expect(response.statusCode).toBe(500);
+    //         expect(response.error.text).toBe('Deletion error');
+    //     });
+    // });
+    
 });

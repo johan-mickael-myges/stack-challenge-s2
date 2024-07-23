@@ -11,6 +11,7 @@ router.post('/register', validateRegistration, authController.registerUser);
 router.post('/login', authController.loginUser);
 router.post('/logout', authController.logoutUser);
 router.post('/delete', checkToken, authController.deleteUser);
+router.post('/change-password', checkToken, authController.changePassword);
 
 router.patch('/:userId/cookies', async (req, res) => { 
     const { userId } = req.params;

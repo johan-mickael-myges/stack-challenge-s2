@@ -21,7 +21,6 @@ exports.deleteUser = async (userId, password) => {
         throw new UnauthorizedError('Mot de passe invalide');
     }
 
-    // Anonymiser les informations de l'utilisateur
     existingUser.email = `anonyme${existingUser.id}@layaline.com`;
     existingUser.username = `Anonyme${existingUser.id}`;
     existingUser.firstname = 'Anonyme';
@@ -34,6 +33,30 @@ exports.deleteUser = async (userId, password) => {
 
     return existingUser;
 };
+
+exports.changePassword = async (userId, currentPassword, newPassword, confirmNewPassword ) => {
+    const existingUser = await User.findByPk(userId);
+    
+    if (!existingUser) {
+      throw new BadRequestError('L\'utilisateur n\'existe pas');
+    }
+  
+    const isPasswordValid = await bcrypt.compare(currentPassword, existingUser.password);
+    
+    if (!isPasswordValid) {
+      throw new BadRequestError('Mot de passe actuel invalide');
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      throw new BadRequestError('Le nouveau mot de passe et la confirmation du nouveau mot de passe ne correspondent pas');
+    }
+
+    existingUser.password = newPassword;
+  
+    await existingUser.save();
+  
+    return existingUser;
+  };
 
 function generatePassword(length = 12) {
     if (length < 8) {
