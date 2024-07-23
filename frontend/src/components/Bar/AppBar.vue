@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { useGoToUrl } from "@/composables/useGoToUrl.ts";
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import {ref, onMounted, onBeforeUnmount, computed} from 'vue';
 import CustomAutocomplete from "./CustomAutocomplete.vue";
 import { useRouter } from 'vue-router';
 import { useAuthStore } from "@/stores/auth.ts";
+import {useCartStore} from "@/stores/cart.ts";
 
 const { goToByName } = useGoToUrl();
 const login = () => goToByName('login');
 const authStore = useAuthStore();
-
+const cartStore = useCartStore();
+const countCartItem = computed(() => cartStore.countCartItem);
 
 const isSmallScreen = ref(false);
 const isMediumScreen = ref(false);
@@ -22,9 +24,10 @@ const handleResize = () => {
   isSmallScreen.value = window.innerWidth < 628;
 };
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('resize', handleResize);
   handleResize();
+  await cartStore.fetchCart();
 });
 
 onBeforeUnmount(() => {
@@ -58,25 +61,16 @@ const goToHome = () => router.push('/');
       </v-col>
 
       <v-col class="d-flex justify-end">
-        <v-btn icon>
-          <v-icon size="20px">mdi-heart-outline</v-icon>
-        </v-btn>
-
         <v-btn icon @click="goToProfile">
-          <v-icon size="20px">mdi-account-outline</v-icon>
+          <v-icon>mdi-account-outline</v-icon>
         </v-btn>
 
         <v-btn icon @click="goToCart">
-          <v-icon size="20px">mdi-cart-outline</v-icon>
+          <v-badge color="error" :content="countCartItem">
+            <v-icon>mdi-cart-outline</v-icon>
+          </v-badge>
         </v-btn>
       </v-col>
     </v-row>
   </v-app-bar>
 </template>
-
-<style scoped>
-.v-app-bar-title {
-  letter-spacing: 3px;
-  cursor: pointer; 
-}
-</style>
