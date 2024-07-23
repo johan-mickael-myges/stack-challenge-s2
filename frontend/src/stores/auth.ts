@@ -43,6 +43,8 @@ export const useAuthStore = defineStore('auth', () => {
         resetState();
         try {
             await apiClient.post('/auth/register', data);
+            window.location.href = '/login';
+            alert('Votre compte a été créé avec succès.');
         } catch (err: any) {
             hasError.value = true;
             if (err.response && err.response.data) {
