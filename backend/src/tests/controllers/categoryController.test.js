@@ -234,6 +234,7 @@ describe('Category Controller', () => {
 
             expect(response.statusCode).toBe(200);
             expect(response.body).toEqual(updatedCategory);
+            expect(eventEmitter.emit).toHaveBeenCalledWith('categoryUpdated', updatedCategory.name, updatedCategory.name);
         });
     });
 
@@ -272,6 +273,7 @@ describe('Category Controller', () => {
                     .set('Cookie', ['token=valid-token']);
 
             expect(response.statusCode).toBe(204);
+            expect(eventEmitter.emit).toHaveBeenCalledWith('categoryDeleted', category.name);
         });
     });
 });
