@@ -44,7 +44,7 @@ const goToProfile = () => {
 
 const goToOrder = () => {
   if (authStore.isAuthenticated){
-    router.push({ path: '/profile/orders' });
+    router.push({ path: '/paid-orders' });
   }else{
     goToByName('login');
   }

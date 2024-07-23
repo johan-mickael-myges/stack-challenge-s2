@@ -55,8 +55,8 @@ export type Items = z.infer<typeof ItemsSchema>;
 export const useOrderStore = defineStore('orders', {
     state: () => ({
         loading: false,
-        paidOrders: [] as CreatedOrders, // Add state for paid orders
-        error: null as string | null, // Add state for error handling
+        paidOrders: [] as CreatedOrders, 
+        error: null as string | null,
     }),
     actions: {
         async createOrder(
@@ -75,20 +75,20 @@ export const useOrderStore = defineStore('orders', {
                 this.loading = false;
             }
         },
-        async fetchPaidOrders() { // Add action to fetch paid orders
+        async fetchPaidOrders() {
             try {
                 this.loading = true;
                 this.error = null;
                 const response = await apiClient.get('/orders/history', {
                     withCredentials: true,
                 });
-                console.log('Fetched paid orders:', response.data); // Log the response data
+                console.log('Fetched paid orders:', response.data); 
                 this.paidOrders = CreatedOrdersSchema.parse(response.data);
             } catch (error) {
                 this.error = 'Failed to fetch paid orders';
                 console.error('Error fetching paid orders:', error);
                 if (error.response) {
-                    console.error('Response data:', error.response.data); // Log the response data on error
+                    console.error('Response data:', error.response.data);
                 }
             } finally {
                 this.loading = false;
