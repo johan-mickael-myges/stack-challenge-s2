@@ -3,15 +3,11 @@
     <v-text-field
         label="Cherchez une adresse"
         v-model="address"
-        :error-messages="addressError"
+        :error-messages="getErrors()"
         :loading="addressLoading"
-        :rules="[
-          (v) => !!v || 'Veuillez saisir une adresse',
-          (v) => v.length > 2 || 'L\'adresse doit contenir au moins 3 caractères',
-          (v) => v.length < 256 || 'L\'adresse doit contenir moins de 256 caractères',
-          () => !errorMessage || errorMessage,
-        ]"
-    />
+        max-errors="5"
+    >
+    </v-text-field>
     <v-virtual-scroll
         v-if="addressSuggestions.length > 0"
         :items="addressSuggestions"
@@ -36,6 +32,8 @@ import {defineComponent, computed, watch} from 'vue';
 import { SuggestionSchema, useAddressStore } from '@/stores/address.ts';
 import { z } from 'zod';
 import debounce from 'lodash/debounce';
+import {useFieldValidator} from "@/composables/useFieldValidator.ts";
+import {AddressFieldSchema} from "@/types/schemas/address.ts";
 
 export default defineComponent({
   name: 'SuggestAddressField',
@@ -44,11 +42,6 @@ export default defineComponent({
       type: Number,
       required: false,
       default: 200,
-    },
-    errorMessage : {
-      type: String,
-      required: false,
-      default: '',
     },
   },
   emits: ['update-value'],
@@ -62,6 +55,9 @@ export default defineComponent({
         debouncedVerifyAddress(value);
       },
     });
+
+
+    const { setValue, isValid, getErrors, validate } = useFieldValidator(AddressFieldSchema);
 
     const addressError = computed(() => addressStore.addressError);
     const addressLoading = computed(() => addressStore.addressLoading);
@@ -79,6 +75,8 @@ export default defineComponent({
     };
 
     watch(address, (value) => {
+      setValue(address.value);
+      validate();
       emit('update-value', value);
     });
 
@@ -88,6 +86,9 @@ export default defineComponent({
       addressLoading,
       addressSuggestions,
       selectSuggestion,
+      getErrors,
+      validate,
+      isValid
     };
   },
 });

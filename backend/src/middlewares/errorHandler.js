@@ -4,7 +4,6 @@ const errorHandler = (err, req, res, next) => {
         res.status(code).send(err.message);
     } else {
         res.status(500).send(err.message);
-        console.log(err);
     }
 };
 

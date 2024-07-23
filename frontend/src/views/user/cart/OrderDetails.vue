@@ -2,7 +2,6 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h1>Détails de la commande</h1>
         <div v-if="loading">
           <v-progress-circular indeterminate></v-progress-circular>
         </div>
@@ -11,16 +10,18 @@
             <p>Erreur lors de la récupération des détails de la commande.</p>
           </div>
           <div v-else>
-            <p><strong>Numéro de commande:</strong> {{ order.id }}</p>
-            <p><strong>Mode de paiement:</strong> {{ order.paymentMethod }}</p>
-            <p><strong>Date:</strong> {{ order.createdAt }}</p>
-            <div v-for="item in order.OrderItems" :key="item.id">
-              <p><strong>Produit:</strong> {{ item.Product.name }}</p>
-              <p><strong>Quantité:</strong> {{ item.quantity }}</p>
-              <p><strong>Prix unitaire:</strong> {{ item.unitPrice }} €</p>
-              <p><strong>Sous-total:</strong> {{ item.subtotal }} €</p>
+            <h2 class="text-2xl font-bold mb-4">Vos commandes</h2>
+            <div v-if="cartItems.length === 0">
+              <p>Votre panier est vide</p>
             </div>
-            <p class="font-bold">Total: {{ totalPrice.toFixed(2) }} €</p>
+            <div v-else>
+              <ProductToPay :items="cartItems"/>
+            </div>
+            <OrderTotalRecap
+              :total-products-price="totalProductsPrice"
+              :total-shipping-cost="totalShippingCost"
+              :total-to-pay="totalToPay"
+            />
             <PaypalButton :total-price="totalPrice" :internal-order-id="order.id + ''" />
           </div>
         </div>
@@ -30,21 +31,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, nextTick } from 'vue';
+import {defineComponent, ref, onMounted, computed} from 'vue';
 import { useRoute } from 'vue-router';
 import useOrderDetails from '@/composables/useOrderDetails';
 import PaypalButton from "@/components/Button/PaypalButton.vue";
-import SuggestAddressField from "@/components/Form/SuggestAddressField.vue";
+import OrderTotalRecap from '@/components/modules/admin/products/OrderTotalRecap.vue';
+import ProductToPay from '@/components/modules/admin/products/ProductToPay.vue';
+import {useCartStore} from "@/stores/cart.ts";
 
 export default defineComponent({
   name: 'OrderDetails',
-  components: {SuggestAddressField, PaypalButton},
+  components: {PaypalButton, OrderTotalRecap, ProductToPay},
   setup() {
     const route = useRoute();
     const orderId = route.params.orderId as string;
     const { order, loading, error, totalPrice, fetchOrderDetails } = useOrderDetails(orderId);
 
+    const cartStore = useCartStore();
+    const cartItems = computed(() => cartStore.getItemsWithAllDetails);
+
+    const totalProductsPrice = computed(() => cartStore.cartTotal);
+    const totalShippingCost = ref(0);
+    const totalToPay = computed(() => totalProductsPrice.value + totalShippingCost.value);
+
     onMounted(async () => {
+      await cartStore.fetchCart();
       await fetchOrderDetails();
     });
 
@@ -53,6 +64,10 @@ export default defineComponent({
       loading,
       error,
       totalPrice,
+      cartItems,
+      totalProductsPrice,
+      totalShippingCost,
+      totalToPay
     };
   },
 });

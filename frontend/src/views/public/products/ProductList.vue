@@ -65,6 +65,11 @@
                     <span>{{ product.price }} €</span>
                   </v-card-subtitle>
                 </div>
+                <div>
+                  <v-btn color="white" block @click.stop="addProductToCart(product.originalId)">
+                    <v-icon>mdi mdi-cart-plus</v-icon>
+                  </v-btn>
+                </div>
               </div>
             </div>
           </div>

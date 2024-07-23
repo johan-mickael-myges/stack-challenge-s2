@@ -13,18 +13,6 @@
         <DeliveryInformationsForm :errors="deliveryInformationsErrors" @update-values="onDeliveryInformationsChange"/>
       </div>
 
-<!--      <h2 class="text-2xl font-bold mb-4">Vos commandes</h2>-->
-<!--      <div v-if="cartItems.length === 0">-->
-<!--        <p>Votre panier est vide</p>-->
-<!--      </div>-->
-<!--      <div v-else>-->
-<!--        <ProductToPay :items="cartItems"/>-->
-<!--      </div>-->
-<!--      <OrderTotalRecap-->
-<!--        :total-products-price="totalProductsPrice"-->
-<!--        :total-shipping-cost="totalShippingCost"-->
-<!--        :total-to-pay="totalToPay"-->
-<!--      />-->
       <v-btn
           class="mx-auto my-4 px-4 py-2 bg-blue-500 text-white"
           color="primary"
@@ -42,23 +30,19 @@
 <script lang="ts">
 
 import {computed, defineComponent, onMounted, ref} from "vue";
-import SuggestAddressField from "@/components/Form/SuggestAddressField.vue";
 import {ShippingMethod, useShippingMethodStore} from "@/stores/shippingMethods.ts";
 import ShippingOptionsForm from "@/components/Form/ShippingOptionsForm.vue";
 import DeliveryInformationsForm from "@/components/Form/DeliveryInformationsForm.vue";
 import {DeliveryInformation, useDeliveryStore} from "@/stores/delivery.ts";
-import {useCartStore} from "@/stores/cart.ts";
-import ProductToPay from "@/components/modules/admin/products/ProductToPay.vue";
-import OrderTotalRecap from "@/components/modules/admin/products/OrderTotalRecap.vue";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {ZodError} from "zod";
 
 export default defineComponent({
   name: 'DeliveryDetails',
-  components: {OrderTotalRecap, ProductToPay, DeliveryInformationsForm, ShippingOptionsForm, SuggestAddressField},
+  components: {DeliveryInformationsForm, ShippingOptionsForm},
   setup() {
     const route = useRoute();
-    const cartStore = useCartStore();
+    const router = useRouter();
     const shippingMethodsStore = useShippingMethodStore();
     const deliveryStore = useDeliveryStore();
     const orderId = route.params.orderId as string;
@@ -71,22 +55,13 @@ export default defineComponent({
       phoneNumber: '',
     });
 
-    const cartItems = computed(() => cartStore.getItemsWithAllDetails);
-
     onMounted(async () => {
-      await cartStore.fetchCart();
       await shippingMethodsStore.fetchShippingMethods();
     });
 
     const shippingMethods = computed(() => shippingMethodsStore.shippingMethods);
 
-    // const totalProductsPrice = computed(() => cartStore.cartTotal);
-    // const totalShippingCost = ref(0);
-    // const totalToPay = computed(() => totalProductsPrice.value + totalShippingCost.value);
-
     const onShippinOptionChange = (shippingMethod: ShippingMethod) => {
-      // totalShippingCost.value = Number(shippingMethod.cost);
-      // shippingMethodsStore.setSelectedShippingMethod(shippingMethod);
       shippingMethodId.value = shippingMethod.id;
     };
 
@@ -104,10 +79,17 @@ export default defineComponent({
           address: deliveryInformation.value.address,
           phoneNumber: deliveryInformation.value.phoneNumber,
         });
+        router.push({
+          name: 'OrderDetails',
+          params: {
+            orderId: orderId
+          }
+        });
       } catch (e) {
         if (e instanceof ZodError) {
           errors.value = e.errors.map((error) => error.message).join(' | ');
         } else {
+          console.error(e)
           errors.value = e.message;
         }
       }
@@ -119,7 +101,6 @@ export default defineComponent({
       shippingMethods,
       onShippinOptionChange,
       onDeliveryInformationsChange,
-      cartItems,
       createDelivery,
       deliveryInformationsErrors,
       errors

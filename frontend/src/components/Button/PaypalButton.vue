@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full d-flex items-end">
+  <div class="w-full p-5 bg-gray-100">
     <div id="paypal-button-container" class="w-full"></div>
   </div>
 </template>
@@ -60,13 +60,6 @@ export default defineComponent({
     const setupPayPalButton = () => {
       if (window.paypal) {
         window.paypal.Buttons({
-          style: {
-            layout: 'horizontal',
-            color: 'gold',
-            shape: 'rect',
-            label: 'paypal',
-            tagline: false,
-          },
           createOrder: async () => {
             try {
               const orderId = await paypalStore.createOrder(props.totalPrice);

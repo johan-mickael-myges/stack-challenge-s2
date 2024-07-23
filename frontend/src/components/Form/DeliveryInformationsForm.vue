@@ -59,15 +59,14 @@
 
 <script lang="ts">
 import {defineComponent, ref, watch} from 'vue';
-import {ShippingMethod, useShippingMethodStore} from "@/stores/shippingMethods.ts";
-import SuggestAddressField from "@/components/Form/SuggestAddressField.vue";
-import {useDeliveryStore} from "@/stores/delivery.ts";
-import {useAddressStore} from "@/stores/address.ts";
+import SuggestAddressField from '@/components/Form/SuggestAddressField.vue';
 
 export default defineComponent({
   name: 'DeliveryInformationsForm',
-  components: {SuggestAddressField},
   emits: ['update-values'],
+  components: {
+    SuggestAddressField,
+  },
   setup(props, {emit}) {
 
     const firstName = ref('');
