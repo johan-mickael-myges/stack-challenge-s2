@@ -18,6 +18,7 @@ const routes = require('./routes');
 const errorHandler = require('~middlewares/errorHandler');
 const { frontendUrl } = require('~config/config');
 const subscribeToAppEvents = require('~listeners');
+const path = require('path');
 
 const app = express();
 
@@ -31,7 +32,10 @@ app.use(cors({
 
 app.use(cookieParser());
 
+app.use('/.well-known/acme-challenge', express.static(path.join(__dirname, '.well-known/acme-challenge')));
 app.use('/', routes);
+
+console.log(__dirname);
 
 app.use(errorHandler);
 
