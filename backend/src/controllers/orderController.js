@@ -5,9 +5,7 @@ const { createOrder } = require('~services/orderService');
 exports.createOrder = async (req, res, next) => {
   try {
     const { items } = req.body;
-
     const order = await createOrder(req.user.userId, items);
-
     res.status(201).json(order);
   } catch (error) {
     next(error);
@@ -15,27 +13,27 @@ exports.createOrder = async (req, res, next) => {
 };
 
 exports.getOrderDetails = async (req, res, next) => {
-    try {
-      const { orderId } = req.params;
-  
-      // Find the order by ID
-      const order = await Order.findByPk(orderId, {
-        include: [
-          {
-            model: OrderItem,
-            include: [Product],
-          },
-        ],
-      });
-  
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-  
-      res.status(200).json(order);
-    } catch (error) {
-      next(error);
+  try {
+    const { orderId } = req.params;
+
+    // Find the order by ID
+    const order = await Order.findByPk(orderId, {
+      include: [
+        {
+          model: OrderItem,
+          include: [Product],
+        },
+      ],
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
     }
+
+    res.status(200).json(order);
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.updateDeliveryDetails = async (req, res, next) => {
@@ -67,5 +65,26 @@ exports.updateDeliveryDetails = async (req, res, next) => {
     res.status(200).json({ message: 'Delivery details updated successfully', delivery });
   } catch (error) {
     next(error);
+  }
+};
+
+exports.getPaidOrders = async (req, res, next) => {
+  try {
+      const userId = req.user.userId; 
+      const paidOrders = await Order.findAll({
+          where: {
+              userId: userId,
+              paymentStatus: 'paid'
+          },
+          include: [
+              {
+                  model: OrderItem,
+                  include: [Product],
+              },
+          ],
+      });
+      res.status(200).json(paidOrders);
+  } catch (error) {
+      next(error);
   }
 };

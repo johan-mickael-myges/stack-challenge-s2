@@ -2,7 +2,8 @@ import { RouteRecordRaw } from 'vue-router';
 import OrderDetails from '@/views/user/cart/OrderDetails.vue';
 import OrderConfirmation from '@/views/user/cart/OrderConfirmation.vue';
 import UserLayout from '@/layouts/UserLayout.vue';
-import DeliveryDetails from "@/views/user/cart/DeliveryDetails.vue";
+import DeliveryDetails from '@/views/user/cart/DeliveryDetails.vue';
+import PaidOrdersPage from '@/views/user/Profile/PaidOrdersPage.vue'; 
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -27,6 +28,18 @@ const routes: Array<RouteRecordRaw> = [
                 component: OrderConfirmation,
                 meta: { requiresAuth: true }
             },
+        ],
+    },
+    {
+        path: '/paid-orders',
+        component: UserLayout,
+        children: [
+            {
+                path: '',
+                name: 'PaidOrders',
+                component: PaidOrdersPage,
+                meta: { requiresAuth: true }
+            }
         ],
     }
 ];
