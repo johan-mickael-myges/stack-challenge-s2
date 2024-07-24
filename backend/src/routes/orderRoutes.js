@@ -7,5 +7,5 @@ router.post('/', checkToken, orderController.createOrder);
 router.get('/history', checkToken, orderController.getPaidOrders); 
 router.get('/:orderId', checkToken, checkOrderOwnership, orderController.getOrderDetails);
 router.get('/:orderId/delivery', checkToken, orderController.getDelivery);
-
+router.get('/:orderId/invoice', checkToken, orderController.getInvoice);
 module.exports = router;
