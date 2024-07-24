@@ -5,7 +5,7 @@ module.exports = {
     await queryInterface.bulkInsert('shipping_methods', [
       {
         name: 'Livraison Standard',
-        cost: 5.99,
+        cost: 3.99,
         minEstimatedDeliveryTime: 3,
         maxEstimatedDeliveryTime: 7,
         createdAt: new Date(),
@@ -13,15 +13,15 @@ module.exports = {
       },
       {
         name: 'Livraison Express',
-        cost: 15.99,
+        cost: 8.99,
         minEstimatedDeliveryTime: 1,
         maxEstimatedDeliveryTime: 3,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        name: 'Livraison Gratuite',
-        cost: 0.00,
+        name: 'Livraison En Point Relais',
+        cost: 2.99,
         minEstimatedDeliveryTime: 5,
         maxEstimatedDeliveryTime: 10,
         createdAt: new Date(),
