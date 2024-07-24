@@ -104,8 +104,6 @@ exports.getDelivery = async (req, res, next) => {
 exports.getInvoice = async (req, res, next) => {
   try {
     const { orderId } = req.params;
-
-    // Find the order by ID
     const order = await Order.findByPk(orderId, {
       include: [
         {
@@ -127,15 +125,19 @@ exports.getInvoice = async (req, res, next) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    // Logic to generate PDF
     const doc = new PDFDocument();
     let filename = `invoice_${order.id}.pdf`;
 
-    // Stream the PDF as an attachment
     res.setHeader('Content-disposition', `attachment; filename=${filename}`);
     res.setHeader('Content-type', 'application/pdf');
-
     doc.fontSize(18).text('Facture', { align: 'center' });
+    doc.fontSize(22).text('Layalin');
+    doc.fontSize(12).text('242 Rue du Faubourg Saint-Antoine, 75012 Paris');
+    doc.fontSize(12).text('Email: service-client@layalin.com');
+    doc.fontSize(12).text('Téléphone: 01 56 06 90 41');
+    doc.moveDown();
+
+    
     doc.moveDown();
 
     doc.fontSize(12).text(`Commande ref: ${order.id}`);

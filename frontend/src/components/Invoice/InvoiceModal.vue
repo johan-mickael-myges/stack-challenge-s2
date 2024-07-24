@@ -3,6 +3,13 @@
       <v-card>
         <v-card-title class="headline">Facture</v-card-title>
         <v-card-text>
+          <div>
+            <p>Layalin</p>
+            <p>242 Rue du Faubourg Saint-Antoine, 75012 Paris</p>
+            <p>Email: <a href="mailto:service-client@layalin.com">service-client@layalin.com</a></p>
+            <p>Téléphone: 01 56 06 90 41</p>
+          </div>
+          <v-divider class="my-4"></v-divider>
           <div v-if="loading" class="text-center">
             <v-progress-circular indeterminate color="primary"></v-progress-circular>
           </div>
@@ -57,7 +64,6 @@
     if (props.orderId) {
       await orderStore.fetchInvoiceDetails(props.orderId);
       invoice.value = orderStore.invoice;
-      console.log('Invoice data in modal:', invoice.value); // Debug log
     }
   };
   

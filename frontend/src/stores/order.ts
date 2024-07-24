@@ -48,7 +48,7 @@ const CreatedOrderSchema = z.object({
   updatedAt: z.string(),
   createdAt: z.string(),
   OrderItems: z.array(OrderItemSchema),
-  Delivery: DeliverySchema.nullable().optional(), // Adjust as needed
+  Delivery: DeliverySchema.nullable().optional(),
 });
 
 const CreatedOrdersSchema = z.array(CreatedOrderSchema);
@@ -102,14 +102,10 @@ export const useOrderStore = defineStore('orders', {
         this.loading = true;
         this.error = null;
         const response = await apiClient.get('/orders/history', { withCredentials: true });
-        console.log('Fetched paid orders:', response.data); // Log the fetched data
         this.paidOrders = CreatedOrdersSchema.parse(response.data);
       } catch (error) {
         this.error = 'Failed to fetch paid orders';
         console.error('Error fetching paid orders:', error);
-        if (error.response) {
-          console.error('Response data:', error.response.data);
-        }
       } finally {
         this.loading = false;
       }
@@ -119,15 +115,10 @@ export const useOrderStore = defineStore('orders', {
         this.loading = true;
         this.error = null;
         const response = await apiClient.get(`/orders/${orderId}`);
-        console.log('Fetched invoice details:', response.data); // Debug log
         this.invoice = CreatedOrderSchema.parse(response.data);
-        console.log('Parsed invoice:', this.invoice); // Debug log
       } catch (error) {
         this.error = 'Failed to fetch invoice details';
         console.error('Error fetching invoice details:', error);
-        if (error.response) {
-          console.error('Response data:', error.response.data);
-        }
       } finally {
         this.loading = false;
       }
@@ -145,9 +136,6 @@ export const useOrderStore = defineStore('orders', {
       } catch (error) {
         this.error = 'Failed to fetch invoice';
         console.error('Error fetching invoice:', error);
-        if (error.response) {
-          console.error('Response data:', error.response.data);
-        }
       } finally {
         this.loading = false;
       }
