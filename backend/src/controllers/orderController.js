@@ -1,6 +1,8 @@
 const { Order, OrderItem, Product, Delivery, ShippingMethod } = require('~models');
 const { createOrder } = require('~services/orderService');
 const deliveryService = require('~services/deliveryService');
+const ForbiddenError = require('~errors/ForbiddenError');
+const NotFoundError = require('~errors/NotFoundError');
 const PDFDocument = require('pdfkit');
 const { Op } = require('sequelize');
 
@@ -32,11 +34,11 @@ exports.getOrderDetails = async (req, res, next) => {
     });
 
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      throw new NotFoundError('Order not found');
     }
 
     if (order.userId !== req.user.userId) {
-      return res.status(403).json({ message: 'Forbidden' });
+      throw new ForbiddenError();
     }
 
     res.status(200).json(order);
@@ -52,7 +54,7 @@ exports.updateDeliveryDetails = async (req, res, next) => {
 
     const shippingMethodRecord = await ShippingMethod.findOne({ where: { name: shippingMethod } });
     if (!shippingMethodRecord) {
-      return res.status(404).json({ message: 'Shipping method not found' });
+      throw new NotFoundError('Shipping method not found');
     }
 
     const delivery = await Delivery.create({
@@ -63,7 +65,7 @@ exports.updateDeliveryDetails = async (req, res, next) => {
       status: 'PENDING',
     });
 
-    res.status(200).json({ message: 'Delivery details updated successfully', delivery });
+    res.status(200).json(delivery);
   } catch (error) {
     next(error);
   }
@@ -118,11 +120,11 @@ exports.getInvoice = async (req, res, next) => {
     });
 
     if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
+      throw new NotFoundError('Order not found');
     }
 
     if (order.userId !== req.user.userId) {
-      return res.status(403).json({ message: 'Forbidden' });
+      throw new ForbiddenError();
     }
 
     const doc = new PDFDocument();
