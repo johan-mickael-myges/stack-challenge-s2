@@ -5,10 +5,10 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from "@/stores/auth.ts";
 import {useCartStore} from "@/stores/cart.ts";
 import LogoutButton from "@/components/Button/LogoutButton.vue";
+import LoginButton from "@/components/Button/LoginButton.vue";
 
 const { goToByName } = useGoToUrl();
 const authStore = useAuthStore();
-const apiUser = computed(() => authStore.user);
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 const cartStore = useCartStore();
@@ -28,7 +28,9 @@ onMounted(async () => {
   window.addEventListener('resize', handleResize);
   handleResize();
 
-  if (authStore.isAuthenticated) {
+  await authStore.verifyAuth();
+
+  if (isAuthenticated) {
     await cartStore.fetchCart();
   }
 });
@@ -74,26 +76,39 @@ const goToHome = () => router.push('/');
       </v-col>
 
       <v-col class="d-flex justify-end">
-        <v-btn icon @click="goToProfile">
+        <v-btn v-if="isAuthenticated" icon @click="goToProfile">
           <v-icon>mdi-account-outline</v-icon>
         </v-btn>
 
-        <v-btn icon @click="goToOrder">
+        <v-btn v-if="isAuthenticated" icon @click="goToOrder">
           <v-icon>mdi-package-variant</v-icon>
         </v-btn>
 
-        <v-btn icon @click="goToCart">
+        <v-btn v-if="isAuthenticated"icon @click="goToCart">
           <v-badge v-if="countCartItem > 0" color="error" :content="countCartItem">
             <v-icon>mdi-cart-outline</v-icon>
           </v-badge>
           <v-icon v-else>mdi-cart-outline</v-icon>
         </v-btn>
 
-        <LogoutButton v-if="isAuthenticated">
-          <v-btn icon>
-            <v-icon>mdi-power</v-icon>
-          </v-btn>
-        </LogoutButton>
+        <v-tooltip v-if="isAuthenticated" bottom text="Déconnexion">
+          <template v-slot:activator="{ props }">
+            <LogoutButton v-bind="props" >
+              <v-btn icon>
+                <v-icon>mdi-power</v-icon>
+              </v-btn>
+            </LogoutButton>
+          </template>
+        </v-tooltip>
+        <v-tooltip  v-else bottom text="Connexion">
+          <template v-slot:activator="{ props }">
+            <LoginButton v-bind="props">
+              <v-btn icon>
+                <v-icon>mdi-login</v-icon>
+              </v-btn>
+            </LoginButton>
+          </template>
+        </v-tooltip>
       </v-col>
     </v-row>
   </v-app-bar>

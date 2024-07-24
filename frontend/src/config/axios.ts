@@ -1,4 +1,4 @@
-import axios, {InternalAxiosRequestConfig} from 'axios';
+import axios from 'axios';
 import { API_BASE_URL } from './api';
 import router from '@/routes';
 
@@ -14,9 +14,7 @@ apiClient.interceptors.response.use(
     async (error) => {
         if (error.response) {
             const status = error.response.status;
-            if (status === 401) {
-                await router.push({ name: 'Unauthorized' });
-            } else if (status === 403) {
+            if (status === 403) {
                 await router.push({ name: 'Forbidden' });
             }
         }

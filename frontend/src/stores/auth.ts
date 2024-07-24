@@ -74,6 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
         resetState();
         try {
             await apiClient.post('/auth/login', data);
+            isAuthenticated.value = true;
         } catch (err: any) {
             hasError.value = true;
             throw err;
@@ -82,19 +83,14 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    const verifyAuth = async (admin = false) => {
+    const verifyAuth = async () => {
         try {
-            const response = await apiClient.get('/auth/check', {
-                params: {
-                    admin
-                }
-            });
+            const response = await apiClient.get('/auth/check');
             user.value = ApiUserSchema.parse(response.data);
             isAuthenticated.value = true;
             httpCode.value = response.status;
         } catch (err: any) {
             user.value = null;
-            isAuthenticated.value = false;
             httpCode.value = err.response.status;
         }
     };
