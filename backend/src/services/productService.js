@@ -275,6 +275,28 @@ const generateFacets = async (value = '', attributes = [
     }
 }
 
+const getCategoryIdsByProduct = async (productId) => {
+    if (!productId) {
+        throw new BadRequestError('Product ID is required');
+    }
+
+    const product = await Product.findByPk(productId, {
+        include: [
+            {
+                association: 'categories',
+                attributes: ['id'],
+                through: {attributes: []},
+            }
+        ],
+    });
+
+    if (!product) {
+        throw new NotFoundError('Product not found');
+    }
+
+    return await product.categories.map(category => category.id);
+}
+
 module.exports = {
     countProducts,
     countMatchingProducts,
@@ -283,5 +305,6 @@ module.exports = {
     createProduct,
     updateProduct,
     deleteProduct,
-    generateFacets
+    generateFacets,
+    getCategoryIdsByProduct
 };
