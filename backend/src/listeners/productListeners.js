@@ -34,7 +34,7 @@ eventEmitter.on('productUpdated', async (data) => {
             return;
         }
 
-        console.info('Product updated successfully in MongoDB', updatedProduct);
+        console.info('Product updated successfully in MongoDB', updatedProduct._id);
     } catch (error) {
         console.error('Error transforming and saving product', {
             error,

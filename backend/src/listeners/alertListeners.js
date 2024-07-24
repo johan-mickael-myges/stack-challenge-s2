@@ -20,4 +20,30 @@ eventEmitter.on('alert:restock', async (productId) => {
     }
 });
 
+eventEmitter.on('alert:productPriceChanged', async (data) => {
+    try {
+        console.log('data', data);
+        const recipients = await newsletterService.sendEmailToUsersThatShouldReceivedProductPriceChangesAlert(data.productId, data.oldPrice);
+        console.info('Emails sent to :', recipients);
+    } catch (error) {
+        console.error('Error triggering alert:productPriceChanged', error);
+    }
+});
+
+eventEmitter.on('alert:newsletter:subscribed', async (userId) => {
+    try {
+        await newsletterService.sendEmailForUserForNewsletterSubscription(userId);
+    } catch (error) {
+        console.error('Error triggering alert:newsletter:subscribed', error);
+    }
+});
+
+eventEmitter.on('alert:newsletter:unsubscribed', async (userId) => {
+    try {
+        await newsletterService.sendEmailForUserForNewsletterUnsubscription(userId);
+    } catch (error) {
+        console.error('Error triggering alert:newsletter:unsubscribed', error);
+    }
+});
+
 module.exports = eventEmitter;

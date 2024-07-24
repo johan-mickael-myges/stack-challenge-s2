@@ -151,9 +151,12 @@ const updateProduct = async (productId, productData, files) => {
     let thumbnailFile, imagesFiles, thumbnailDestination, imagesDestinations;
 
     const product = await Product.findByPk(productId);
+
     if (!product) {
         throw new Error('Product not found');
     }
+
+    const oldPrice = product.price;
 
     if (files) {
         thumbnailFile = files['thumbnail'] ? files['thumbnail'][0] : null;
@@ -170,7 +173,7 @@ const updateProduct = async (productId, productData, files) => {
     productDetails.thumbnail = thumbnailDestination ? thumbnailDestination.url : product.thumbnail;
     productDetails.images = imagesDestinations ? imagesDestinations.map(image => image.url) : product.images;
 
-    await product.update(productDetails);
+    const updatedProduct = await product.update(productDetails);
 
     const categoriesValues = categories ? categories.split(',').map(category => Number(category)) : [];
     if (categories) {
@@ -212,8 +215,21 @@ const updateProduct = async (productId, productData, files) => {
         product,
     });
 
+    await handlePriceChange(oldPrice, updatedProduct);
+
     return product;
 };
+
+const handlePriceChange = async (oldPrice, newProduct) => {
+    if (oldPrice !== newProduct.price) {
+        eventEmitter.emit('alert:productPriceChanged', {
+            productId: newProduct.dataValues.id,
+            oldPrice: oldPrice,
+        });
+    }
+
+    return newProduct;
+}
 
 const deleteProduct = async (productId) => {
     const product = await Product.findByPk(productId);

@@ -166,7 +166,7 @@ exports.loginUser = async (email, password) => {
     return { user, token };
 };
 
-exports.getUsersThatShouldReceivedAlertForSubscribedItems = async (itemIds, alertID) => {
+exports.getUsersThatShouldReceiveAlertForSubscribedItems = async (itemIds, alertID) => {
     if (!itemIds) {
         return [];
     }
