@@ -2,6 +2,7 @@ const { Stock, Product } = require('~models');
 const BadRequestError = require('~errors/BadRequestError');
 const NotFoundError = require('~errors/NotFoundError');
 const { STOCK_TYPE_IN, STOCK_TYPE_OUT } = require('~constants/stock');
+const eventEmitter = require('~services/eventEmitter');
 
 const getAllForProduct = async (productId) => {
     if (!productId) {
@@ -74,11 +75,17 @@ const addProductStock = async (productId, quantity, type) => {
         throw new BadRequestError('Not enough stock');
     }
 
-    return await Stock.create({
+    const stock = await Stock.create({
         productId,
         quantity,
         type
     });
+
+    if (type === STOCK_TYPE_IN) {
+        eventEmitter.emit('alert:restock', productId);
+    }
+
+    return stock;
 }
 
 module.exports = {

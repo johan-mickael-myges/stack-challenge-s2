@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const config = require('~config/config');
 const {ROLE_USER } = require('~constants/roles');
-const { User, PasswordResetToken } = require('~models');
+const { User, PasswordResetToken, NewsletterSubscription, UserAlertPreference, UserAlertItemPreference } = require('~models');
 const { Role } = require('~models');
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('~errors/UnauthorizedError');
@@ -164,4 +164,52 @@ exports.loginUser = async (email, password) => {
     );
 
     return { user, token };
+};
+
+exports.getUsersThatShouldReceivedAlertForSubscribedItems = async (itemIds, alertID) => {
+    if (!itemIds) {
+        return [];
+    }
+
+    if (!Array.isArray(itemIds)) {
+        itemIds = [itemIds];
+    }
+
+    return await User.findAll({
+        attributes:{
+            exclude: ['createdAt', 'updatedAt', 'number']
+        },
+        include: [
+            {
+                model: UserAlertPreference,
+                as: 'alertPreferences',
+                attributes: [],
+                where: {
+                    alertId: alertID,
+                    enabled: true,
+                },
+                required: true,
+                include: [
+                    {
+                        model: UserAlertItemPreference,
+                        as: 'alertItemPreferences',
+                        attributes: [],
+                        where: {
+                            itemId: itemIds,
+                        },
+                        required: true,
+                    },
+                ],
+            },
+            {
+                model: NewsletterSubscription,
+                as: 'newsletterSubscription',
+                attributes: [],
+                where: {
+                    subscribed: true,
+                },
+                required: true,
+            },
+        ],
+    });
 };

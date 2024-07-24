@@ -1,9 +1,10 @@
 const { NewsletterSubscription, UserAlertPreference, UserAlertItemPreference, Alert, AlertTrigger, User } = require('~models');
 const BadRequestError = require("~errors/BadRequestError");
 const {getBoolValue} = require('~utils/queryOptionsFactory');
-const {NEW_PRODUCT} = require("../constants/alerts");
+const {NEW_PRODUCT, RESTOCK} = require("../constants/alerts");
 const sendMail = require('~services/mailerService');
 const productService = require("~services/productService");
+const userService = require("~services/userService");
 
 const subscribe = async (userId, subscribed) => {
     if (!userId) {
@@ -122,64 +123,14 @@ const saveItemsPreferences = async (userId, items, userAlertPreferenceId) => {
 }
 
 const getUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async (categoryIds) => {
-    if (!categoryIds) {
-        throw new Error("Category ID is required");
-    }
-
-    let itemIds = categoryIds;
-
-    if (!Array.isArray(categoryIds)) {
-        itemIds = [categoryIds];
-    }
-
-    return await User.findAll({
-        attributes:{
-            exclude: ['createdAt', 'updatedAt', 'number']
-        },
-        include: [
-            {
-                model: UserAlertPreference,
-                as: 'alertPreferences',
-                attributes: [],
-                where: {
-                    alertId: NEW_PRODUCT,
-                    enabled: true,
-                },
-                required: true,
-                include: [
-                    {
-                        model: UserAlertItemPreference,
-                        as: 'alertItemPreferences',
-                        attributes: [],
-                        where: {
-                            itemId: itemIds,
-                        },
-                        required: true,
-                    },
-                ],
-            },
-            {
-                model: NewsletterSubscription,
-                as: 'newsletterSubscription',
-                attributes: [],
-                where: {
-                    subscribed: true,
-                },
-                required: true,
-            },
-        ],
-    });
+    return await userService.getUsersThatShouldReceivedAlertForSubscribedItems(categoryIds, NEW_PRODUCT);
 };
 
-const sendEmailToUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async (product) => {
-    const categoryIds = await productService.getCategoryIdsByProduct(product.originalId);
+const getUsersThatShouldReceivedProductHasBeenAddedOnStockAlert = async (productId) => {
+    return await userService.getUsersThatShouldReceivedAlertForSubscribedItems([productId], RESTOCK);
+}
 
-    if (!categoryIds) {
-        return [];
-    }
-
-    const users = await getUsersThatShouldReceivedNewProductAddedOnCategoryAlert(categoryIds);
-
+const sendAlertToUsers = async (users, subject, templateName, data) => {
     if (!users || users.length === 0) {
         return [];
     }
@@ -190,16 +141,48 @@ const sendEmailToUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async (
         recipients.push(user.email);
     });
 
-    const subject = "Des produits ont été ajoutés dans une catégorie que vous suivez";
-    const templateName = "new-product-added-on-category";
-    const data = {
-        product,
-        productUrl: productService.generateProductURL(product.originalId),
-    };
-
     await sendMail(recipients, subject, templateName, data);
 
     return recipients;
+}
+
+
+const sendEmailToUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async (product) => {
+    const categoryIds = await productService.getCategoryIdsByProduct(product.originalId);
+
+    const users = await getUsersThatShouldReceivedNewProductAddedOnCategoryAlert(categoryIds);
+
+    return await sendAlertToUsers(
+        users,
+        "Des produits ont été ajoutés dans une catégorie que vous suive",
+        "new-product-added-on-category",
+        {
+            product,
+            productUrl: productService.generateProductURL(product.originalId),
+        }
+    );
+}
+
+const sendEmailToUsersWhenProductHasBeenAddedOnStock = async (productId) => {
+    const product = await productService.getProductById(productId, {
+        denormalize: true,
+    });
+
+    if (!product) {
+        return [];
+    }
+
+    const users = await getUsersThatShouldReceivedProductHasBeenAddedOnStockAlert(product.originalId);
+
+    return await sendAlertToUsers(
+        users,
+        "Un produit est de nouveau en stock",
+        "product-added-on-stock",
+        {
+            product,
+            productUrl: productService.generateProductURL(product.originalId),
+        }
+    );
 }
 
 module.exports = {
@@ -208,4 +191,5 @@ module.exports = {
     saveItemsPreferences,
     getUsersThatShouldReceivedNewProductAddedOnCategoryAlert,
     sendEmailToUsersThatShouldReceivedNewProductAddedOnCategoryAlert,
+    sendEmailToUsersWhenProductHasBeenAddedOnStock,
 };
