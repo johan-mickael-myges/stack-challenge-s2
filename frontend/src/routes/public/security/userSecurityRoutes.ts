@@ -19,11 +19,13 @@ const routes: Array<RouteRecordRaw> = [
         name: 'EmailResetPassword',
         path: '/EmailResetPassword',
         component: EmailResetPassword,
+        meta: { requiresAuth: true }
     },
     {
         name: 'resetPassword',
         path: '/resetPassword',
         component: ResetPassword,
+        meta: { requiresAuth: true }
     }
 ];
 

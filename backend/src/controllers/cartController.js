@@ -38,13 +38,13 @@ exports.getCartItems = async (req, res, next) => {
 
         const user = await User.findByPk(userId);
         if (!user) {
-            return res.sendStatus(404);
+            return res.sendStatus(401);
         }
 
         const cart = await Cart.findOne({ where: { userId }, include: [{ model: CartItem, include: [Product] }] });
 
         if (!cart) {
-            return res.sendStatus(404);
+            return res.status(200).json([]);
         }
 
         return res.status(200).json(cart);

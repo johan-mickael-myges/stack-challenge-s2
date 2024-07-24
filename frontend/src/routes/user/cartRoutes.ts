@@ -9,6 +9,7 @@ const routes: Array<RouteRecordRaw> = [
         children: [
             { path: '', name: 'UserCart', component: Cart },
         ],
+        meta: { requiresAuth: true },
     }
 ];
 

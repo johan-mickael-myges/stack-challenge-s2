@@ -3,30 +3,29 @@ import { reactive, ref, computed } from 'vue';
 import { ExpressError, LoginData, RegisterData } from '@/types';
 import apiClient from "@/config/axios.ts";
 import { useRouter } from 'vue-router';
+import {z} from 'zod';
+
+const ApiUserSchema = z.object({
+    userId: z.number(),
+    roles: z.array(z.string())
+});
+
+export type ApiUser = z.infer<typeof ApiUserSchema>;
 
 export const useAuthStore = defineStore('auth', () => {
     const loading = ref(false);
     const hasError = ref(false);
     const errors = ref<Record<string, ExpressError[]>>({});
     const router = useRouter();
-    let user = reactive<{ [key: string]: any }>({});
+    const isAuthenticated = ref(false);
+    const user = ref<ApiUser | null>(null);
+    const httpCode = ref(200);
 
     const resetState = () => {
         loading.value = false;
         hasError.value = false;
         errors.value = {};
     }
-
-    const saveUserToLocalStorage = () => {
-        localStorage.setItem('user', JSON.stringify(user));
-    };
-
-    const loadUserFromLocalStorage = () => {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            Object.assign(user, JSON.parse(userData));
-        }
-    };
 
     const deleteUser = async () => {
         const userData = localStorage.getItem('user');
@@ -74,9 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
     const login = async (data: LoginData) => {
         resetState();
         try {
-            const response = await apiClient.post('/auth/login', data);
-            Object.assign(user, response.data.user);
-            saveUserToLocalStorage();
+            await apiClient.post('/auth/login', data);
         } catch (err: any) {
             hasError.value = true;
             throw err;
@@ -85,22 +82,40 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    const verifyAuth = async () => {
+    const verifyAuth = async (admin = false) => {
         try {
-            const response = await apiClient.get('/auth/check');
-            Object.assign(user, response.data);
-            saveUserToLocalStorage();
+            const response = await apiClient.get('/auth/check', {
+                params: {
+                    admin
+                }
+            });
+            user.value = ApiUserSchema.parse(response.data);
+            isAuthenticated.value = true;
+            httpCode.value = response.status;
         } catch (err: any) {
-            Object.keys(user).forEach(key => delete user[key]);
-            throw err;
+            user.value = null;
+            isAuthenticated.value = false;
+            httpCode.value = err.response.status;
+        }
+    };
+
+    const checkAdmin = async() => {
+        try {
+            const response = await apiClient.get('/auth/check-admin');
+            isAuthenticated.value = true;
+            httpCode.value = response.status;
+        } catch (err: any) {
+            user.value = null;
+            isAuthenticated.value = false;
+            httpCode.value = err.response.status;
         }
     };
 
     const logout = async () => {
         resetState();
         try {
-            Object.keys(user).forEach(key => delete user[key]);
             await apiClient.post('/auth/logout');
+            isAuthenticated.value = false;
             window.location.href = '/login';
         } catch (err: any) {
             hasError.value = true;
@@ -179,10 +194,6 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
-    const isAuthenticated = computed(() => !!Object.keys(user).length);
-
-    loadUserFromLocalStorage();
-
     return {
         loading,
         errors,
@@ -199,5 +210,6 @@ export const useAuthStore = defineStore('auth', () => {
         confirmDeletion,
         sendEmailResetPassword,
         infoUser,
+        checkAdmin,
     };
 });

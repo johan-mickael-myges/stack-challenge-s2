@@ -37,6 +37,7 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/paid-orders',
         component: UserLayout,
+        meta: { requireAuth: true },
         children: [
             {
                 path: '',

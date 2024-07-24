@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import { useGoToUrl } from "@/composables/useGoToUrl.ts";
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
-import CustomAutocomplete from "./CustomAutocomplete.vue";
 import { useRouter } from 'vue-router';
 import { useAuthStore } from "@/stores/auth.ts";
-import { useCartStore } from "@/stores/cart.ts";
+import {useCartStore} from "@/stores/cart.ts";
+import LogoutButton from "@/components/Button/LogoutButton.vue";
 
 const { goToByName } = useGoToUrl();
 const authStore = useAuthStore();
+const apiUser = computed(() => authStore.user);
+const isAuthenticated = computed(() => authStore.isAuthenticated);
+
 const cartStore = useCartStore();
 const countCartItem = computed(() => cartStore.countCartItem);
 
 const isSmallScreen = ref(false);
 const isMediumScreen = ref(false);
 const isLargerScreen = ref(false);
-
-const items = ref(['item1', 'item2', 'item3']);
 
 const handleResize = () => {
   isLargerScreen.value = window.innerWidth < 882;
@@ -26,7 +27,10 @@ const handleResize = () => {
 onMounted(async () => {
   window.addEventListener('resize', handleResize);
   handleResize();
-  await cartStore.fetchCart();
+
+  if (authStore.isAuthenticated) {
+    await cartStore.fetchCart();
+  }
 });
 
 onBeforeUnmount(() => {
@@ -53,16 +57,8 @@ const goToOrder = () => {
 
 const goToCart = () => router.push({ name: 'UserCart' });
 
-const goToHome = () => router.push('/'); 
+const goToHome = () => router.push('/');
 
-const logout = async () => {
-  try {
-    await authStore.logout(); 
-    router.push('/login'); 
-  } catch (error) {
-    console.error('Erreur lors de la déconnexion:', error);
-  }
-};
 </script>
 
 <template>
@@ -93,9 +89,11 @@ const logout = async () => {
           <v-icon v-else>mdi-cart-outline</v-icon>
         </v-btn>
 
-        <v-btn icon @click="logout">
-          <v-icon>mdi-logout</v-icon>
-        </v-btn>
+        <LogoutButton v-if="isAuthenticated">
+          <v-btn icon>
+            <v-icon>mdi-power</v-icon>
+          </v-btn>
+        </LogoutButton>
       </v-col>
     </v-row>
   </v-app-bar>

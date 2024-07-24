@@ -4,7 +4,15 @@ const { env } = require("~config/config");
 const { User } = require('~models');
 
 exports.check = (req, res, next) => {
-    res.status(200).json(req.user);
+    const {userId, roles} = req.user;
+    res.status(200).json({
+        userId,
+        roles
+    });
+}
+
+exports.checkAdmin = (req, res, next) => {
+    res.sendStatus(200);
 }
 
 exports.getInfoUser = async (req, res, next) => {

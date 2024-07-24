@@ -3,7 +3,6 @@ const {
     UserAlertPreference,
     UserAlertItemPreference,
     Alert,
-    AlertTrigger,
     User
 } = require('~models');
 const BadRequestError = require("~errors/BadRequestError");
