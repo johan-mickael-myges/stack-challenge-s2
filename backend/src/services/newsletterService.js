@@ -1,8 +1,9 @@
 const { NewsletterSubscription, UserAlertPreference, UserAlertItemPreference, Alert, AlertTrigger, User } = require('~models');
 const BadRequestError = require("~errors/BadRequestError");
 const {getBoolValue} = require('~utils/queryOptionsFactory');
-const productService = require('~services/productService');
 const {NEW_PRODUCT} = require("../constants/alerts");
+const sendMail = require('~services/mailerService');
+const productService = require("~services/productService");
 
 const subscribe = async (userId, subscribed) => {
     if (!userId) {
@@ -120,17 +121,17 @@ const saveItemsPreferences = async (userId, items, userAlertPreferenceId) => {
     return await UserAlertItemPreference.bulkCreate(itemsPreferences);
 }
 
-const addProductAddedWithCategoriesAlertTrigger = async (productId) => {
-    const categoryIds = await productService.getCategoryIdsByProduct(productId);
-
-    if (!categoryIds || categoryIds.length === 0) {
-        throw new Error("Product has no categories");
+const getUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async (categoryIds) => {
+    if (!categoryIds) {
+        throw new Error("Category ID is required");
     }
 
-    return await addAlertTrigger(NEW_PRODUCT, categoryIds);
-}
+    let itemIds = categoryIds;
 
-const getUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async () => {
+    if (!Array.isArray(categoryIds)) {
+        itemIds = [categoryIds];
+    }
+
     return await User.findAll({
         attributes:{
             exclude: ['createdAt', 'updatedAt', 'number']
@@ -141,7 +142,7 @@ const getUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async () => {
                 as: 'alertPreferences',
                 attributes: [],
                 where: {
-                    alertId: 1, // Example alertId
+                    alertId: NEW_PRODUCT,
                     enabled: true,
                 },
                 required: true,
@@ -150,6 +151,9 @@ const getUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async () => {
                         model: UserAlertItemPreference,
                         as: 'alertItemPreferences',
                         attributes: [],
+                        where: {
+                            itemId: itemIds,
+                        },
                         required: true,
                     },
                 ],
@@ -167,10 +171,41 @@ const getUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async () => {
     });
 };
 
+const sendEmailToUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async (product) => {
+    const categoryIds = await productService.getCategoryIdsByProduct(product.originalId);
+
+    if (!categoryIds) {
+        return [];
+    }
+
+    const users = await getUsersThatShouldReceivedNewProductAddedOnCategoryAlert(categoryIds);
+
+    if (!users || users.length === 0) {
+        return [];
+    }
+
+    let recipients = [];
+
+    users.forEach((user) => {
+        recipients.push(user.email);
+    });
+
+    const subject = "Des produits ont été ajoutés dans une catégorie que vous suivez";
+    const templateName = "new-product-added-on-category";
+    const data = {
+        product,
+        productUrl: productService.generateProductURL(product.originalId),
+    };
+
+    await sendMail(recipients, subject, templateName, data);
+
+    return recipients;
+}
+
 module.exports = {
     subscribe,
     savePreferences,
     saveItemsPreferences,
-    addProductAddedWithCategoriesAlertTrigger,
     getUsersThatShouldReceivedNewProductAddedOnCategoryAlert,
+    sendEmailToUsersThatShouldReceivedNewProductAddedOnCategoryAlert,
 };

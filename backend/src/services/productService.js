@@ -6,6 +6,7 @@ const eventEmitter = require('~services/eventEmitter');
 const MongooseProduct = require('~models/mongoose/Product');
 const {buildMongooseQuery, getBoolValue} = require('~utils/queryOptionsFactory');
 const generateProductFacets = require('~utils/facetBuilderFactory');
+const config = require('~config/config');
 
 const countProducts = async (options = {}) => {
     if (getBoolValue(options['denormalize'])) {
@@ -297,6 +298,10 @@ const getCategoryIdsByProduct = async (productId) => {
     return await product.categories.map(category => category.id);
 }
 
+const generateProductURL = (productId) => {
+    return `${config.frontendUrl}/products/${productId}`;
+}
+
 module.exports = {
     countProducts,
     countMatchingProducts,
@@ -306,5 +311,6 @@ module.exports = {
     updateProduct,
     deleteProduct,
     generateFacets,
-    getCategoryIdsByProduct
+    getCategoryIdsByProduct,
+    generateProductURL,
 };

@@ -8,7 +8,7 @@ eventEmitter.on('productCreated', async (product) => {
         const mongooseProduct = new MongooseProduct(productData);
         await mongooseProduct.save();
         console.info('Product saved successfully in MongoDB', mongooseProduct);
-        eventEmitter.emit('alert:productAdded', product);
+        eventEmitter.emit('alert:productAdded', mongooseProduct);
     } catch (error) {
         console.error('Error transforming and saving product', {
             error,
