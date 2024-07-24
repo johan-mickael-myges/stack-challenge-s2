@@ -10,7 +10,6 @@ module.exports = {
       { productId: 5, materialId: 3 },
       { productId: 6, materialId: 2 },
       { productId: 7, materialId: 2 },
-      { productId: 8, materialId: 2 },
       { productId: 9, materialId: 2 },
       { productId: 10, materialId: 2 },
       { productId: 11, materialId: 2 },
@@ -84,6 +83,7 @@ module.exports = {
       { productId: 79, materialId: 5 },
       { productId: 80, materialId: 5 },
       { productId: 81, materialId: 5 },
+      { productId: 82, materialId: 5 },
     ];
 
     await queryInterface.bulkDelete('product_materials', null, {});

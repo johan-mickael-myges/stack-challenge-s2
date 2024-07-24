@@ -10,7 +10,6 @@ module.exports = {
       { productId: 5, colorId: 2 },
       { productId: 6, colorId: 2 },
       { productId: 7, colorId: 2 },
-      { productId: 8, colorId: 2 },
       { productId: 9, colorId: 2 },
       { productId: 10, colorId: 2 },
       { productId: 11, colorId: 2 },

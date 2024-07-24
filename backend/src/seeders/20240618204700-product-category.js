@@ -5,12 +5,11 @@ module.exports = {
     const productCategories = [
       { productId: 1, categoryId: 3 },
       { productId: 2, categoryId: 3 },
-      { productId: 3, categoryId: 3 },
+      { productId: 3, categoryId: 2 },
       { productId: 4, categoryId: 3 },
       { productId: 5, categoryId: 3 },
       { productId: 6, categoryId: 3 },
       { productId: 7, categoryId: 3 },
-      { productId: 8, categoryId: 1 },
       { productId: 9, categoryId: 3 },
       { productId: 10, categoryId: 3 },
       { productId: 11, categoryId: 3 },
@@ -20,7 +19,7 @@ module.exports = {
       { productId: 15, categoryId: 1 },
       { productId: 16, categoryId: 5 },
       { productId: 17, categoryId: 4 },
-      { productId: 18, categoryId: 1 },
+      { productId: 18, categoryId: 2 },
       { productId: 19, categoryId: 1 },
       { productId: 20, categoryId: 1 },
       { productId: 21, categoryId: 5 },
@@ -32,7 +31,7 @@ module.exports = {
       { productId: 27, categoryId: 5 },
       { productId: 28, categoryId: 1 },
       { productId: 29, categoryId: 4 },
-      { productId: 30, categoryId: 1 },
+      { productId: 30, categoryId: 2 },
       { productId: 31, categoryId: 2 },
       { productId: 32, categoryId: 2 },
       { productId: 33, categoryId: 1 },
@@ -45,7 +44,7 @@ module.exports = {
       { productId: 40, categoryId: 3 },
       { productId: 41, categoryId: 2 },
       { productId: 42, categoryId: 1 },
-      { productId: 43, categoryId: 2 },
+      { productId: 43, categoryId: 3 },
       { productId: 44, categoryId: 2 },
       { productId: 45, categoryId: 3 },
       { productId: 46, categoryId: 1 },
@@ -84,6 +83,7 @@ module.exports = {
       { productId: 79, categoryId: 4 },
       { productId: 80, categoryId: 1 },
       { productId: 81, categoryId: 3 },
+      { productId: 82, categoryId: 2 },
     ];
 
     await queryInterface.bulkDelete('product_categories', null, {});
