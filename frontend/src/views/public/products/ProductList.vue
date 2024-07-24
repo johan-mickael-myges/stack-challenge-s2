@@ -9,7 +9,7 @@
           <v-progress-circular color="black" indeterminate></v-progress-circular>
         </div>
         <div v-else>
-          <v-alert v-if="!products.length" text="Aucun produit ne correspond à votre recherche." density="compact" variant="tonal" color="grey" />
+          <v-alert v-if="!products.length" text="Nous n'avons pas trouvé de résultat correspondant à votre recherche." variant="tonal" color="grey" />
           <div v-else class="grid md:grid-cols-3 lg:grid-cols-4 gap-4 mt-7">
             <div v-for="product in products" :key="product.originalId">
               <v-card variant="elevated" @mouseover="handleMouseOver(product.originalId)" @mouseleave="handleMouseLeave()" @click="$router.push(`/products/${product.originalId}`)">
@@ -121,7 +121,6 @@ export default defineComponent({
 
     const handleFacetValuesUpdate = debounce(async (values: Record<string, string[]>) => {
       currentPage.value = 1;
-      console.log(values);
       productFacetsStore.setSelectedFacets(values);
 
       const facetQuery = useFacetQuery(values);
@@ -129,6 +128,14 @@ export default defineComponent({
       await store.fetchProducts({}, facetQuery);
       await store.countProducts({ limit: '', ...facetQuery });
     }, 100);
+
+    watch([currentPage, itemsPerPage], async ([page]) => {
+      const facetValues = computed(() => productFacetsStore.selectedFacets);
+      const facetQuery = useFacetQuery(facetValues.value);
+      await store.fetchProducts({
+        page,
+      }, facetQuery);
+    });
 
     const parseQueryParams = (query: Record<string, any>) => {
       const selectedFacets: Record<string, string[]> = {};
@@ -146,6 +153,14 @@ export default defineComponent({
       productFacetsStore.setSelectedFacets(selectedFacets);
     };
 
+    const handlePageChange = async (page: number) => {
+      currentPage.value = page;
+      const facetValues = computed(() => productFacetsStore.selectedFacets);
+      console.log(facetValues.value);
+      const facetQuery = useFacetQuery(facetValues.value);
+      await store.fetchProducts({ page }, facetQuery);
+    };
+
     return {
       loading,
       notFoundImage,
@@ -160,6 +175,7 @@ export default defineComponent({
       handleMouseLeave,
       addProductToCart,
       handleFacetValuesUpdate,
+      handlePageChange,
     };
   },
 });
