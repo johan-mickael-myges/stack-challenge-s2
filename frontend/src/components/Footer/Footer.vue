@@ -4,7 +4,8 @@
         <v-row>
           <v-col class="text-center">
             <span>© 2024 Layalin | </span>
-            <router-link to="/privacy-policy" class="text-primary">Politique de confidentialité</router-link>
+            <router-link to="/privacy-policy" class="text-primary mr-8 ml-8">Politique de confidentialité </router-link>
+            <router-link to="/legal-policy" class="text-primary">Mentions légales</router-link>
           </v-col>
         </v-row>
       </v-container>
