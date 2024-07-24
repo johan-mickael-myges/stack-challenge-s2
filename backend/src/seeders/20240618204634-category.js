@@ -1,23 +1,17 @@
 'use strict';
 
-const { faker } = require('@faker-js/faker');
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const amount = 10;
-    const newCategories = new Set();
+    const categories = [
+      { name: 'Bracelets', createdAt: new Date(), updatedAt: new Date() },
+      { name: 'Boucles', createdAt: new Date(), updatedAt: new Date() },
+      { name: 'Colliers', createdAt: new Date(), updatedAt: new Date() },
+      { name: 'Bagues', createdAt: new Date(), updatedAt: new Date() },
+      { name: 'Montres', createdAt: new Date(), updatedAt: new Date() },
+    ];
 
-    while (newCategories.size < amount) {
-      newCategories.add(faker.commerce.department());
-    }
-
-    const categoryArray = Array.from(newCategories).map(name => ({
-      name,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }));
     await queryInterface.bulkDelete('categories', null, {});
-    await queryInterface.bulkInsert('categories', categoryArray, {});
+    await queryInterface.bulkInsert('categories', categories, {});
   },
 
   down: async (queryInterface, Sequelize) => {

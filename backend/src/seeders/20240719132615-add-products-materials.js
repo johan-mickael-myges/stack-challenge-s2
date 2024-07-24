@@ -1,42 +1,92 @@
 'use strict';
-const { faker } = require('@faker-js/faker');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const products = await queryInterface.sequelize.query(
-            `SELECT id from products;`
-    );
-    const materials = await queryInterface.sequelize.query(
-            `SELECT id from materials;`
-    );
+    const productMaterials = [
+      { productId: 1, materialId: 4 },
+      { productId: 2, materialId: 4 },
+      { productId: 3, materialId: 4 },
+      { productId: 4, materialId: 2 },
+      { productId: 5, materialId: 3 },
+      { productId: 6, materialId: 2 },
+      { productId: 7, materialId: 2 },
+      { productId: 8, materialId: 2 },
+      { productId: 9, materialId: 2 },
+      { productId: 10, materialId: 2 },
+      { productId: 11, materialId: 2 },
+      { productId: 12, materialId: 4 },
+      { productId: 13, materialId: 3 },
+      { productId: 14, materialId: 4 },
+      { productId: 15, materialId: 2 },
+      { productId: 16, materialId: 3 },
+      { productId: 17, materialId: 2 },
+      { productId: 18, materialId: 3 },
+      { productId: 19, materialId: 3 },
+      { productId: 20, materialId: 3 },
+      { productId: 21, materialId: 2 },
+      { productId: 22, materialId: 4 },
+      { productId: 23, materialId: 4 },
+      { productId: 24, materialId: 4 },
+      { productId: 25, materialId: 2 },
+      { productId: 26, materialId: 2 },
+      { productId: 27, materialId: 2 },
+      { productId: 28, materialId: 4 },
+      { productId: 29, materialId: 4 },
+      { productId: 30, materialId: 4 },
+      { productId: 31, materialId: 4 },
+      { productId: 32, materialId: 4 },
+      { productId: 33, materialId: 4 },
+      { productId: 34, materialId: 2 },
+      { productId: 35, materialId: 2 },
+      { productId: 36, materialId: 4 },
+      { productId: 37, materialId: 4 },
+      { productId: 38, materialId: 2 },
+      { productId: 39, materialId: 2 },
+      { productId: 40, materialId: 2 },
+      { productId: 41, materialId: 2 },
+      { productId: 42, materialId: 2 },
+      { productId: 43, materialId: 2 },
+      { productId: 44, materialId: 2 },
+      { productId: 45, materialId: 2 },
+      { productId: 46, materialId: 2 },
+      { productId: 47, materialId: 2 },
+      { productId: 48, materialId: 2 },
+      { productId: 49, materialId: 2 },
+      { productId: 50, materialId: 2 },
+      { productId: 51, materialId: 2 },
+      { productId: 52, materialId: 2 },
+      { productId: 53, materialId: 4 },
+      { productId: 54, materialId: 4 },
+      { productId: 55, materialId: 4 },
+      { productId: 56, materialId: 4 },
+      { productId: 57, materialId: 4 },
+      { productId: 58, materialId: 2 },
+      { productId: 59, materialId: 2 },
+      { productId: 60, materialId: 2 },
+      { productId: 61, materialId: 4 },
+      { productId: 62, materialId: 4 },
+      { productId: 63, materialId: 4 },
+      { productId: 64, materialId: 4 },
+      { productId: 65, materialId: 4 },
+      { productId: 66, materialId: 4 },
+      { productId: 67, materialId: 4 },
+      { productId: 68, materialId: 4 },
+      { productId: 69, materialId: 4 },
+      { productId: 70, materialId: 4 },
+      { productId: 71, materialId: 4 },
+      { productId: 72, materialId: 4 },
+      { productId: 73, materialId: 4 },
+      { productId: 74, materialId: 2 },
+      { productId: 75, materialId: 1 },
+      { productId: 76, materialId: 1 },
+      { productId: 77, materialId: 1 },
+      { productId: 78, materialId: 1 },
+      { productId: 79, materialId: 5 },
+      { productId: 80, materialId: 5 },
+      { productId: 81, materialId: 5 },
+    ];
 
-    const productRows = products[0];
-    const materialRows = materials[0];
-
-    const existingCombinations = new Set();
-    const productMaterials = [];
-
-    productRows.forEach(product => {
-      const randomAmount = Math.floor(Math.random() * 3) + 1; // Random amount between 1 and 3
-
-      for (let i = 0; i < randomAmount; i++) {
-        let randomMaterial;
-        let combination;
-
-        do {
-          randomMaterial = faker.helpers.arrayElement(materialRows);
-          combination = `${product.id}-${randomMaterial.id}`;
-        } while (existingCombinations.has(combination));
-
-        existingCombinations.add(combination);
-
-        productMaterials.push({
-          productId: product.id,
-          materialId: randomMaterial.id,
-        });
-      }
-    });
-
+    await queryInterface.bulkDelete('product_materials', null, {});
     await queryInterface.bulkInsert('product_materials', productMaterials, {});
   },
 

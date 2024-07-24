@@ -97,6 +97,7 @@ export default defineComponent({
       parseQueryParams(route.query);
 
       const facetValues = computed(() => productFacetsStore.selectedFacets);
+      console.log(facetValues.value);
       const facetQuery = useFacetQuery(facetValues.value);
 
       await store.fetchProducts({}, facetQuery);
@@ -120,6 +121,7 @@ export default defineComponent({
 
     const handleFacetValuesUpdate = debounce(async (values: Record<string, string[]>) => {
       currentPage.value = 1;
+      console.log(values);
       productFacetsStore.setSelectedFacets(values);
 
       const facetQuery = useFacetQuery(values);
