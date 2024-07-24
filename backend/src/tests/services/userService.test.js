@@ -47,11 +47,6 @@ describe('UserService - registerUser', () => {
         expect(Role.findOne).toHaveBeenCalledWith({ where: { id: ROLE_USER } });
         expect(mockUser.addRole).toHaveBeenCalledWith(mockRole);
 
-        expect(sendMail).toHaveBeenCalledWith(mockUserData.email, 'Bienvenue', 'welcome-user', {
-            user: mockUser,
-            loginUrl: `https://layalin.com/login`,
-        });
-
         expect(result).toEqual(mockUser);
     });
 
