@@ -1,4 +1,3 @@
-// cartController.js
 const { Cart, CartItem, Product, User } = require('../models');
 
 exports.addToCart = async (req, res, next) => {

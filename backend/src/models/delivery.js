@@ -85,7 +85,7 @@ module.exports = (sequelize) => {
                     model: 'shipping_methods',
                     key: 'id'
                 },
-                allowNull: true, // Allow null values
+                allowNull: true,
                 onDelete: 'SET NULL',
                 onUpdate: 'CASCADE'
             },

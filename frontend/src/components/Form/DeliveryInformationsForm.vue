@@ -166,7 +166,6 @@ export default defineComponent({
           billingPhoneNumber: useShippingAsBilling.value ? phoneNumber.value : billingPhoneNumber.value,
           billingAddress: useShippingAsBilling.value ? address.value : billingAddress.value,
         };
-        console.log(formData); // Verify the data being emitted
         emit('update-values', formData);
       }
     );
