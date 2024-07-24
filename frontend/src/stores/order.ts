@@ -12,6 +12,10 @@ const DeliverySchema = z.object({
   status: z.enum(['PENDING', 'SHIPPED', 'DELIVERED', 'CANCELLED']),
   shippingMethodId: z.number().nullable(),
   orderId: z.number(),
+  billingFirstName: z.string(),
+  billingLastName: z.string(),
+  billingAddress: z.string(),
+  billingPhoneNumber: z.string().nullable(),
 });
 
 const ProductSchema = z.object({
