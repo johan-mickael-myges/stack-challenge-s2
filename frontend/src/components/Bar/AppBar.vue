@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { useGoToUrl } from "@/composables/useGoToUrl.ts";
-import {ref, onMounted, onBeforeUnmount, computed} from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import CustomAutocomplete from "./CustomAutocomplete.vue";
 import { useRouter } from 'vue-router';
 import { useAuthStore } from "@/stores/auth.ts";
-import {useCartStore} from "@/stores/cart.ts";
+import { useCartStore } from "@/stores/cart.ts";
 
 const { goToByName } = useGoToUrl();
-const login = () => goToByName('login');
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const countCartItem = computed(() => cartStore.countCartItem);
@@ -34,6 +33,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 
+const router = useRouter();
+
 const goToProfile = () => {
   if (authStore.isAuthenticated) {
     router.push({ path: '/profile/info' }); 
@@ -43,17 +44,25 @@ const goToProfile = () => {
 };
 
 const goToOrder = () => {
-  if (authStore.isAuthenticated){
+  if (authStore.isAuthenticated) {
     router.push({ path: '/paid-orders' });
-  }else{
+  } else {
     goToByName('login');
   }
-}
+};
 
-const router = useRouter();
 const goToCart = () => router.push({ name: 'UserCart' });
+
 const goToHome = () => router.push('/'); 
 
+const logout = async () => {
+  try {
+    await authStore.logout(); 
+    router.push('/login'); 
+  } catch (error) {
+    console.error('Erreur lors de la déconnexion:', error);
+  }
+};
 </script>
 
 <template>
@@ -73,11 +82,9 @@ const goToHome = () => router.push('/');
           <v-icon>mdi-account-outline</v-icon>
         </v-btn>
 
-        
         <v-btn icon @click="goToOrder">
           <v-icon>mdi-package-variant</v-icon>
         </v-btn>
-
 
         <v-btn icon @click="goToCart">
           <v-badge v-if="countCartItem > 0" color="error" :content="countCartItem">
@@ -86,8 +93,40 @@ const goToHome = () => router.push('/');
           <v-icon v-else>mdi-cart-outline</v-icon>
         </v-btn>
 
-        
+        <v-btn icon @click="logout">
+          <v-icon>mdi-logout</v-icon>
+        </v-btn>
       </v-col>
     </v-row>
   </v-app-bar>
 </template>
+
+<style scoped>
+strong {
+  color: black;
+}
+
+.user-info-container {
+  margin-top: 20px;
+}
+
+.user-card {
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+}
+
+.user-card-title {
+  background-color: #f5f5f5;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.user-icon {
+  margin-right: 8px;
+  font-size: 24px;
+}
+</style>
