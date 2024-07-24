@@ -120,11 +120,11 @@ exports.getInvoice = async (req, res, next) => {
     });
 
     if (!order) {
-      throw new NotFoundError('Order not found');
+      return next(new NotFoundError('Order not found'));
     }
 
     if (order.userId !== req.user.userId) {
-      throw new ForbiddenError();
+      return next(new ForbiddenError());
     }
 
     const doc = new PDFDocument();
@@ -139,18 +139,17 @@ exports.getInvoice = async (req, res, next) => {
     doc.fontSize(12).text('Téléphone: 01 56 06 90 41');
     doc.moveDown();
 
-    
-    doc.moveDown();
-
     doc.fontSize(12).text(`Commande ref: ${order.id}`);
     doc.text(`Date: ${new Date(order.createdAt).toISOString()}`);
     doc.text(`Paiement Methode: ${order.paymentMethod}`);
-    
+
     if (order.Delivery) {
       const recipientName = `${order.Delivery.firstName} ${order.Delivery.lastName}`;
       doc.text(`Adresse de livraison: ${recipientName}, ${order.Delivery.address}`);
+      doc.text(`Adresse de facturation: ${order.Delivery.billingFirstName} ${order.Delivery.billingLastName}, ${order.Delivery.billingAddress}`);
     } else {
       doc.text('Adresse de livraison: N/A');
+      doc.text('Adresse de facturation: N/A');
     }
 
     const total = order.OrderItems.reduce((sum, item) => sum + parseFloat(item.unitPrice) * item.quantity, 0).toFixed(2);
@@ -171,4 +170,3 @@ exports.getInvoice = async (req, res, next) => {
     next(error);
   }
 };
-

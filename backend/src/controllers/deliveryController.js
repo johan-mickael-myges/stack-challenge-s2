@@ -12,9 +12,9 @@ exports.getById = async (req, res, next) => {
 
 exports.addDelivery = async (req, res, next) => {
     try {
-        const { orderId, shippingMethodId, address, firstName, lastName, phoneNumber } = req.body;
-        const delivery = await deliveryService.addDelivery(orderId, shippingMethodId, address, firstName, lastName, phoneNumber);
-        res.status(201).send(delivery);
+        const { orderId, shippingMethodId, address, firstName, lastName, phoneNumber, billingFirstName, billingLastName, billingAddress, billingPhoneNumber } = req.body;
+        const delivery = await deliveryService.addDelivery(orderId, shippingMethodId, address, firstName, lastName, phoneNumber, billingFirstName, billingLastName, billingAddress, billingPhoneNumber);
+        res.status(201).json(delivery);
     } catch (error) {
         next(error);
     }

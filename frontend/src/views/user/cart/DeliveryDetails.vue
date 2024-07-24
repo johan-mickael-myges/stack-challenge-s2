@@ -28,19 +28,18 @@
 </template>
 
 <script lang="ts">
-
-import {computed, defineComponent, onMounted, ref} from "vue";
-import {ShippingMethod, useShippingMethodStore} from "@/stores/shippingMethods.ts";
+import { computed, defineComponent, onMounted, ref } from "vue";
+import { ShippingMethod, useShippingMethodStore } from "@/stores/shippingMethods.ts";
 import ShippingOptionsForm from "@/components/Form/ShippingOptionsForm.vue";
 import DeliveryInformationsForm from "@/components/Form/DeliveryInformationsForm.vue";
-import {DeliveryInformation, useDeliveryStore} from "@/stores/delivery.ts";
-import {useRoute, useRouter} from "vue-router";
-import {ZodError} from "zod";
-import {useOrderStore} from "@/stores/order.ts";
+import { DeliveryInformation, useDeliveryStore } from "@/stores/delivery.ts";
+import { useRoute, useRouter } from "vue-router";
+import { ZodError } from "zod";
+import { useOrderStore } from "@/stores/order.ts";
 
 export default defineComponent({
   name: 'DeliveryDetails',
-  components: {DeliveryInformationsForm, ShippingOptionsForm},
+  components: { DeliveryInformationsForm, ShippingOptionsForm },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -58,6 +57,10 @@ export default defineComponent({
       lastName: '',
       address: '',
       phoneNumber: '',
+      billingFirstName: '',
+      billingLastName: '',
+      billingAddress: '',
+      billingPhoneNumber: '',
     });
 
     onMounted(async () => {
@@ -84,6 +87,10 @@ export default defineComponent({
           lastName: deliveryInformation.value.lastName,
           address: deliveryInformation.value.address,
           phoneNumber: deliveryInformation.value.phoneNumber,
+          billingFirstName: deliveryInformation.value.billingFirstName,
+          billingLastName: deliveryInformation.value.billingLastName,
+          billingAddress: deliveryInformation.value.billingAddress,
+          billingPhoneNumber: deliveryInformation.value.billingPhoneNumber,
         });
         router.push({
           name: 'OrderDetails',
@@ -115,4 +122,3 @@ export default defineComponent({
   },
 });
 </script>
-

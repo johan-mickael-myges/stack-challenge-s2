@@ -17,28 +17,23 @@ export type DeliveryEntity = z.infer<typeof DeliveryEntitySchema>;
 
 const DeliveryToCreateSchema = z.object({
     orderId: z.union([
-        z.string().min(1, "L'identifiant de la commande est requise"),
-        z.number()
-            .positive("L'identifiant de la commande doit être un nombre positif")
-            .int()
+      z.string().min(1, "L'identifiant de la commande est requise"),
+      z.number().positive("L'identifiant de la commande doit être un nombre positif").int()
     ]),
     shippingMethodId: z.union([
-        z.string().min(1, "L'identifiant de la méthode de livraison est requise"),
-        z.number()
-            .positive("Veuillez sélectionner une méthode de livraison")
-            .int()
+      z.string().min(1, "L'identifiant de la méthode de livraison est requise"),
+      z.number().positive("Veuillez sélectionner une méthode de livraison").int()
     ]),
-    address: z.string()
-        .min(2, "L'adresse doit au moins comporter 2 caractères")
-        .max(255, "L'adresse doit comporter au maximum 255 caractères"),
-    firstName: z.string()
-        .min(2, "Le prénom doit au moins comporter 2 caractères")
-        .max(255, "Le prénom doit comporter au maximum 255 caractères"),
-    lastName: z.string()
-        .min(2, "Le nom doit au moins comporter 2 caractères")
-        .max(255, "Le nom doit comporter au maximum 255 caractères"),
+    address: z.string().min(2, "L'adresse doit au moins comporter 2 caractères").max(255, "L'adresse doit comporter au maximum 255 caractères"),
+    firstName: z.string().min(2, "Le prénom doit au moins comporter 2 caractères").max(255, "Le prénom doit comporter au maximum 255 caractères"),
+    lastName: z.string().min(2, "Le nom doit au moins comporter 2 caractères").max(255, "Le nom doit comporter au maximum 255 caractères"),
     phoneNumber: z.string().optional(),
+    billingFirstName: z.string().min(2, "Le prénom de facturation doit au moins comporter 2 caractères").max(255, "Le prénom de facturation doit comporter au maximum 255 caractères"),
+    billingLastName: z.string().min(2, "Le nom de facturation doit au moins comporter 2 caractères").max(255, "Le nom de facturation doit comporter au maximum 255 caractères"),
+    billingAddress: z.string().min(2, "L'adresse de facturation doit au moins comporter 2 caractères").max(255, "L'adresse de facturation doit comporter au maximum 255 caractères"),
+    billingPhoneNumber: z.string().optional(),
 });
+  
 export type DeliveryToCreate = z.infer<typeof DeliveryToCreateSchema>;
 
 export const DeliveryInformationsSchema = z.object({
