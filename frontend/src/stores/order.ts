@@ -108,5 +108,26 @@ export const useOrderStore = defineStore('orders', {
                 this.loading = false;
             }
         },
+        async fetchInvoice(orderId: number) {
+            try {
+              this.loading = true;
+              const response = await apiClient.get(`/orders/${orderId}/invoice`, { responseType: 'blob' });
+              const url = window.URL.createObjectURL(new Blob([response.data]));
+              const link = document.createElement('a');
+              link.href = url;
+              link.setAttribute('download', `invoice_${orderId}.pdf`);
+              document.body.appendChild(link);
+              link.click();
+            } catch (error) {
+              this.error = 'Failed to fetch invoice';
+              console.error('Error fetching invoice:', error);
+              if (error.response) {
+                console.error('Response data:', error.response.data);
+              }
+            } finally {
+              this.loading = false;
+            }
+        },
     },
 });
+   

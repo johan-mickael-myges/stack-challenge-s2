@@ -1,6 +1,8 @@
 const { Order, OrderItem, Product, Delivery, ShippingMethod } = require('~models');
 const { createOrder } = require('~services/orderService');
 const deliveryService = require('~services/deliveryService');
+const PDFDocument = require('pdfkit');
+const { Op } = require('sequelize');
 
 exports.createOrder = async (req, res, next) => {
   try {
@@ -93,3 +95,43 @@ exports.getDelivery = async (req, res, next) => {
     next(err);
   }
 }
+
+exports.getInvoice = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+
+    // Trouver la commande par ID
+    const order = await Order.findByPk(orderId, {
+      include: [
+        {
+          model: OrderItem,
+          include: [Product],
+        },
+      ],
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.userId !== req.user.userId) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    // Logique de génération de PDF
+    const doc = new PDFDocument();
+    let filename = `invoice_${order.id}.pdf`;
+
+    // Stream le PDF en tant que pièce jointe
+    res.setHeader('Content-disposition', `attachment; filename=${filename}`);
+    res.setHeader('Content-type', 'application/pdf');
+
+    doc.text(`Invoice for Order ${order.id}`);
+    // Ajoutez ici les détails de la facture
+
+    doc.pipe(res);
+    doc.end();
+  } catch (error) {
+    next(error);
+  }
+};

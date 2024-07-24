@@ -50,18 +50,23 @@
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
+              <v-card-actions>
+                <v-btn @click="openInvoiceModal(order.id)">Voir la facture</v-btn>
+              </v-card-actions>
             </v-card>
           </div>
         </div>
       </v-col>
     </v-row>
+    <InvoiceModal :show="showInvoice"      :orderId="selectedOrderId"  @update:show="showInvoice = $event"
+    />
   </v-container>
 </template>
 
-
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useOrderStore } from '@/stores/order';
+import InvoiceModal from '@/components/Invoice/InvoiceModal.vue';
 
 const orderStore = useOrderStore();
 
@@ -69,6 +74,13 @@ const loading = computed(() => orderStore.loading);
 const error = computed(() => orderStore.error);
 const paidOrders = computed(() => orderStore.paidOrders);
 
+const showInvoice = ref(false);
+const selectedOrderId = ref<number | null>(null);
+
+const openInvoiceModal = (orderId: number) => {
+  selectedOrderId.value = orderId;
+  showInvoice.value = true;
+};
 onMounted(async () => {
   await orderStore.fetchPaidOrders();
 });
@@ -101,4 +113,3 @@ const calculateTotal = (items) => {
   text-decoration: underline;
 }
 </style>
-
