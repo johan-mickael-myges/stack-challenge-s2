@@ -47,7 +47,7 @@
             </div>
           </div>
           <div class="flex justify-center mt-10">
-            <v-pagination class="w-full max-w-xl" v-model="currentPage" :length="totalPages" rounded="circle"></v-pagination>
+            <v-pagination class="w-full max-w-xl" v-model="currentPage" :length="totalPages" rounded="circle" ></v-pagination>
           </div>
         </div>
       </div>
@@ -94,13 +94,17 @@ export default defineComponent({
 
     onMounted(async () => {
       pageStore.calculateNavbarHeight();
-      parseQueryParams(route.query);
+      await parseQueryParams(route.query);
+
+      currentPage.value = parseInt(route.query.page as string, 10) || 1;
+      itemsPerPage.value = parseInt(route.query.limit as string, 10) || store.itemsPerPage;
 
       const facetValues = computed(() => productFacetsStore.selectedFacets);
-      console.log(facetValues.value);
       const facetQuery = useFacetQuery(facetValues.value);
 
-      await store.fetchProducts({}, facetQuery);
+      await store.fetchProducts({
+        page: currentPage.value,
+      }, facetQuery);
       await store.countProducts({ limit: '', ...facetQuery });
 
       window.addEventListener('resize', handleResize);
@@ -108,8 +112,22 @@ export default defineComponent({
 
     onBeforeUnmount(() => window.removeEventListener('resize', handleResize));
 
-    watch(currentPage, (newPage) => store.setPage(newPage));
-    watch(itemsPerPage, (newItemsPerPage) => store.setItemsPerPage(newItemsPerPage));
+    watch(currentPage, async (newPage) => {
+      await store.setPage(newPage);
+      await updateProducts();
+    });
+
+    watch(itemsPerPage, async (newItemsPerPage) => {
+      await store.setItemsPerPage(newItemsPerPage);
+      await updateProducts();
+    });
+
+    const updateProducts = async () => {
+      const facetValues = computed(() => productFacetsStore.selectedFacets);
+      const facetQuery = useFacetQuery(facetValues.value);
+      await router.push({ query: { page: currentPage.value, limit: itemsPerPage.value, ...facetQuery } });
+      await store.fetchProducts({ page: currentPage.value }, facetQuery);
+    };
 
     const handleMouseOver = (productId: number | undefined) => {
       if (productId !== undefined) hoveredCard.value = productId;
@@ -124,41 +142,31 @@ export default defineComponent({
       productFacetsStore.setSelectedFacets(values);
 
       const facetQuery = useFacetQuery(values);
-      await router.push({ query: { ...route.query, ...facetQuery } });
+
+      await router.replace({ query: { page: currentPage.value, limit: itemsPerPage.value, ...facetQuery } });
       await store.fetchProducts({}, facetQuery);
       await store.countProducts({ limit: '', ...facetQuery });
     }, 100);
 
-    watch([currentPage, itemsPerPage], async ([page]) => {
-      const facetValues = computed(() => productFacetsStore.selectedFacets);
-      const facetQuery = useFacetQuery(facetValues.value);
-      await store.fetchProducts({
-        page,
-      }, facetQuery);
-    });
-
-    const parseQueryParams = (query: Record<string, any>) => {
+    const parseQueryParams = async (query: Record<string, any>) => {
       const selectedFacets: Record<string, string[]> = {};
       Object.entries(query).forEach(([key, value]) => {
+        const decodedValue = decodeURIComponent(value as string);
         const match = key.match(/^q\[(.+?)\]\[(\d+)\]$/);
         if (match) {
           const [_, facet, index] = match;
           if (!selectedFacets[facet]) selectedFacets[facet] = [];
-          selectedFacets[facet][parseInt(index, 10)] = value as string;
+          selectedFacets[facet][parseInt(index, 10)] = decodedValue;
         } else if (key.startsWith('q[') && key.endsWith(']')) {
           const facet = key.slice(2, -1);
-          selectedFacets[facet] = Array.isArray(value) ? value : [value];
+          if (facet === 'terms') {
+            selectedFacets[facet] = decodedValue;
+          } else {
+            selectedFacets[facet] = Array.isArray(decodedValue) ? decodedValue : [decodedValue];
+          }
         }
       });
       productFacetsStore.setSelectedFacets(selectedFacets);
-    };
-
-    const handlePageChange = async (page: number) => {
-      currentPage.value = page;
-      const facetValues = computed(() => productFacetsStore.selectedFacets);
-      console.log(facetValues.value);
-      const facetQuery = useFacetQuery(facetValues.value);
-      await store.fetchProducts({ page }, facetQuery);
     };
 
     return {
@@ -175,7 +183,6 @@ export default defineComponent({
       handleMouseLeave,
       addProductToCart,
       handleFacetValuesUpdate,
-      handlePageChange,
     };
   },
 });

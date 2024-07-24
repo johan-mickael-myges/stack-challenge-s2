@@ -15,8 +15,8 @@ const FacetOtherItemSchema = z.object({
 export const FacetValueCheckboxSchema = z.union([FacetValueItemSchema, FacetOtherItemSchema]);
 
 export const FacetValueRangeSchema = z.object({
-    min: z.number(),
-    max: z.number(),
+    min: z.union([z.number(), z.null(), z.string()]),
+    max: z.union([z.number(), z.null(), z.string()]),
 });
 
 export const ProductFacetSchema = z.object({

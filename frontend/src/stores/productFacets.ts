@@ -1,13 +1,15 @@
-import {defineStore} from 'pinia';
+import { defineStore } from 'pinia';
 import apiClient from '@/config/axios';
 import { z } from 'zod';
-import {ProductFacetsSchema} from "@/types/schemas/products.ts";
+import { ProductFacetsSchema } from "@/types/schemas/products";
+
+type SelectedFacets = Record<string, string | string[]>;
 
 export const useProductFacetsStore = defineStore('productFacets', {
     state: () => ({
         loading: false,
         facets: [] as z.infer<typeof ProductFacetsSchema>,
-        selectedFacets: {} as Record<string, string[]>,
+        selectedFacets: {} as SelectedFacets,
     }),
     actions: {
         async fetchProductFacets(params?: {}) {
@@ -23,7 +25,7 @@ export const useProductFacetsStore = defineStore('productFacets', {
                 throw error;
             }
         },
-        setSelectedFacets(values: Record<string, string[]>) {
+        setSelectedFacets(values: Record<string, string | string[]>) {
             this.selectedFacets = values;
         }
     },
