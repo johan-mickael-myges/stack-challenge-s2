@@ -120,6 +120,20 @@ function generatePassword(length = 12) {
     return password.split('').sort(() => Math.random() - 0.5).join('');
 }
 
+
+exports.getInfoUser = async (userId) => {
+    
+    const user = await User.findByPk(userId, {
+        attributes: ['firstname', 'lastname', 'email', 'number']
+    });
+
+    if (!user) {
+        throw new BadRequestError('User not found.');
+    }
+
+    return user;
+};
+
 exports.registerUser = async (userData) => {
     const existingUser = await User.findOne({ where: { email: userData.email } });
     if (existingUser) {

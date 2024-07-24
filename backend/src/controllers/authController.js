@@ -7,6 +7,17 @@ exports.check = (req, res, next) => {
     res.status(200).json(req.user);
 }
 
+exports.getInfoUser = async (req, res, next) => {
+  try {
+      const userId = req.user.userId;
+      const user = await userService.getInfoUser(userId);
+      res.status(200).json(user);
+  } catch (error) {
+      next(error);
+  }
+};
+
+
 exports.registerUser = async (req, res, next) => {
     try {
         const newUser = await userService.registerUser(req.body);
