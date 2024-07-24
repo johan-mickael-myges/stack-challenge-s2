@@ -62,6 +62,15 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
+    const infoUser = async () => {
+        try {
+            const response = await apiClient.get('/auth/infoUser');
+            user.value = response.data; // Stocke les données utilisateur dans le store
+        } catch (error) {
+            console.error('Error fetching user information:', error);
+        }
+    };
+
     const login = async (data: LoginData) => {
         resetState();
         try {
@@ -188,6 +197,7 @@ export const useAuthStore = defineStore('auth', () => {
         validateResetToken,
         isAuthenticated,
         confirmDeletion,
-        sendEmailResetPassword
+        sendEmailResetPassword,
+        infoUser,
     };
 });

@@ -13,6 +13,7 @@ router.post('/delete', checkToken, authController.deleteUser);
 router.post('/change-password', checkToken, authController.changePassword);
 router.post('/EmailResetPassword', authController.sendEmailResetPassword);
 router.post('/resetPassword', authController.resetPassword);
+router.post('/infoUser', checkToken, authController.getInfoUser);
 
 router.post('/validateResetToken', authController.validateResetToken);
 router.get('/cookies', checkToken, authController.getCookiePreference);
