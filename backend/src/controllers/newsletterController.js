@@ -37,9 +37,9 @@ const savePreferences = async (req, res, next) => {
 const saveItemsPreferences = async (req, res, next) => {
     try {
         const {userId} = req.user;
-        const { items, alertId } = req.body;
+        const { items, userAlertPreferenceId } = req.body;
 
-        const response = await newsletterService.saveItemsPreferences(userId, items, alertId);
+        const response = await newsletterService.saveItemsPreferences(userId, items, userAlertPreferenceId);
 
         return res.status(200).json(response);
     } catch (error) {

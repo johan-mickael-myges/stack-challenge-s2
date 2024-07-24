@@ -15,17 +15,12 @@ class User extends Model {
         User.hasMany(models.UserAlertPreference, {
             foreignKey: 'userId',
             as: 'alertPreferences',
-            onDelete: 'CASCADE',
-        });
-        User.hasMany(models.UserAlertItemPreference, {
-            foreignKey: 'userId',
-            as: 'alertItemPreferences',
-            onDelete: 'CASCADE',
+            onDelete: 'CASCADE'
         });
         User.hasOne(models.NewsletterSubscription, {
             foreignKey: 'userId',
             as: 'newsletterSubscription',
-            onDelete: 'CASCADE',
+            onDelete: 'CASCADE'
         });
     }
 

@@ -1,6 +1,14 @@
 const { DataTypes, Model } = require('sequelize');
 
-class NewsletterSubscription extends Model {}
+class NewsletterSubscription extends Model {
+    static associate(models) {
+        NewsletterSubscription.belongsTo(models.User, {
+            foreignKey: 'userId',
+            as: 'user',
+            onDelete: 'CASCADE'
+        });
+    }
+}
 
 module.exports = (sequelize) => {
     NewsletterSubscription.init(

@@ -1,6 +1,24 @@
 const { DataTypes, Model } = require('sequelize');
 
-class UserAlertPreference extends Model {}
+class UserAlertPreference extends Model {
+    static associate(models) {
+        UserAlertPreference.belongsTo(models.User, {
+            foreignKey: 'userId',
+            as: 'user',
+            onDelete: 'CASCADE'
+        });
+        UserAlertPreference.belongsTo(models.Alert, {
+            foreignKey: 'alertId',
+            as: 'alert',
+            onDelete: 'CASCADE'
+        });
+        UserAlertPreference.hasMany(models.UserAlertItemPreference, {
+            foreignKey: 'userAlertPreferenceId',
+            as: 'alertItemPreferences',
+            onDelete: 'CASCADE'
+        });
+    }
+}
 
 module.exports = (sequelize) => {
     UserAlertPreference.init(

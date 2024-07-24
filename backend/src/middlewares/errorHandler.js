@@ -1,4 +1,5 @@
 const errorHandler = (err, req, res, next) => {
+    console.log(err);
     if (err.isOperational) {
         const code = err.statusCode || 500;
         res.status(code).send(err.message);

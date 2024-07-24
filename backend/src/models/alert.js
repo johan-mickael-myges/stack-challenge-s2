@@ -7,16 +7,6 @@ class Alert extends Model {
             as: 'userAlertPreferences',
             onDelete: 'CASCADE',
         });
-        Alert.hasMany(models.AlertTrigger, {
-            foreignKey: 'alertId',
-            as: 'alertTriggers',
-            onDelete: 'CASCADE',
-        });
-        Alert.hasMany(models.UserAlertItemPreference, {
-            foreignKey: 'alertId',
-            as: 'userAlertItemPreferences',
-            onDelete: 'CASCADE',
-        });
     }
 }
 

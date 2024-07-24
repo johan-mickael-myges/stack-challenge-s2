@@ -1,15 +1,16 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('user_alert_preferences', {
       id: {
-        allowNull: false,
+        type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
       },
       userId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'users',
           key: 'id'
@@ -19,6 +20,7 @@ module.exports = {
       },
       alertId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'alerts',
           key: 'id'
@@ -28,20 +30,19 @@ module.exports = {
       },
       enabled: {
         type: Sequelize.BOOLEAN,
-        defaultValue: true
+        defaultValue: true,
       },
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        allowNull: false,
       },
       updatedAt: {
-        allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
-      }
+        allowNull: false,
+      },
     });
   },
+
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('user_alert_preferences');
   }

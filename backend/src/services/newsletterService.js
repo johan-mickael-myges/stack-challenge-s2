@@ -1,4 +1,4 @@
-const { NewsletterSubscription, UserAlertPreference, UserAlertItemPreference, Alert, AlertTrigger } = require('~models');
+const { NewsletterSubscription, UserAlertPreference, UserAlertItemPreference, Alert, AlertTrigger, User } = require('~models');
 const BadRequestError = require("~errors/BadRequestError");
 const {getBoolValue} = require('~utils/queryOptionsFactory');
 const productService = require('~services/productService');
@@ -78,12 +78,12 @@ const savePreferences = async (userId, alertId, enabled) => {
     };
 }
 
-const saveItemsPreferences = async (userId, items, alertId) => {
+const saveItemsPreferences = async (userId, items, userAlertPreferenceId) => {
     if (!userId) {
         throw new BadRequestError("User ID is required");
     }
 
-    if (!alertId) {
+    if (!userAlertPreferenceId) {
         throw new BadRequestError("Alert ID is required");
     }
 
@@ -99,53 +99,25 @@ const saveItemsPreferences = async (userId, items, alertId) => {
         throw new BadRequestError("Items are required");
     }
 
-    const alert = await Alert.findByPk(alertId);
+    const alertPreference = await UserAlertPreference.findByPk(userAlertPreferenceId);
 
-    if (!alert) {
-        throw new BadRequestError("Alert not found");
+    if (!alertPreference) {
+        throw new BadRequestError("Alert preference not found");
     }
 
     await UserAlertItemPreference.destroy({
         where: {
-            userId,
-            alertId,
+            userAlertPreferenceId,
         },
     });
 
     const itemsPreferences = items.map((itemId) => ({
         userId,
-        alertId,
+        userAlertPreferenceId,
         itemId,
     }));
 
     return await UserAlertItemPreference.bulkCreate(itemsPreferences);
-}
-
-const addAlertTrigger = async (alertId, itemIds) => {
-    if (!alertId) {
-        throw new Error("Alert ID is required");
-    }
-
-    if (!Array.isArray(itemIds)) {
-        itemIds = [itemIds];
-    }
-
-    if (!itemIds || itemIds.length === 0) {
-        throw new Error("Item IDs are required");
-    }
-
-    const alert = await Alert.findByPk(alertId);
-
-    if (!alert) {
-        throw new Error("Alert not found");
-    }
-
-    const alertTriggers = itemIds.map((itemId) => ({
-        alertId,
-        itemId,
-    }));
-
-    return await AlertTrigger.bulkCreate(alertTriggers);
 }
 
 const addProductAddedWithCategoriesAlertTrigger = async (productId) => {
@@ -158,10 +130,47 @@ const addProductAddedWithCategoriesAlertTrigger = async (productId) => {
     return await addAlertTrigger(NEW_PRODUCT, categoryIds);
 }
 
+const getUsersThatShouldReceivedNewProductAddedOnCategoryAlert = async () => {
+    return await User.findAll({
+        attributes:{
+            exclude: ['createdAt', 'updatedAt', 'number']
+        },
+        include: [
+            {
+                model: UserAlertPreference,
+                as: 'alertPreferences',
+                attributes: [],
+                where: {
+                    alertId: 1, // Example alertId
+                    enabled: true,
+                },
+                required: true,
+                include: [
+                    {
+                        model: UserAlertItemPreference,
+                        as: 'alertItemPreferences',
+                        attributes: [],
+                        required: true,
+                    },
+                ],
+            },
+            {
+                model: NewsletterSubscription,
+                as: 'newsletterSubscription',
+                attributes: [],
+                where: {
+                    subscribed: true,
+                },
+                required: true,
+            },
+        ],
+    });
+};
+
 module.exports = {
     subscribe,
     savePreferences,
     saveItemsPreferences,
-    addAlertTrigger,
     addProductAddedWithCategoriesAlertTrigger,
+    getUsersThatShouldReceivedNewProductAddedOnCategoryAlert,
 };
