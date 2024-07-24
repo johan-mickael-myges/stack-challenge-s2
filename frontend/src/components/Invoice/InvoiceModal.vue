@@ -9,6 +9,11 @@
           <div v-else>
             <p>Commande ref: {{ invoice.id }}</p>
             <p>Date: {{ invoice.createdAt }}</p>
+            <p>Paiement Methode: {{ invoice.paymentMethod }}</p>
+            <p>
+              Adresse de livraison:
+              {{ invoice.Delivery ? `${invoice.Delivery.firstName} ${invoice.Delivery.lastName}, ${invoice.Delivery.address}` : 'N/A' }}
+            </p>
             <p>Total: {{ calculateTotal(invoice.OrderItems) }} €</p>
             <v-list>
               <v-list-item
@@ -52,6 +57,7 @@
     if (props.orderId) {
       await orderStore.fetchInvoiceDetails(props.orderId);
       invoice.value = orderStore.invoice;
+      console.log('Invoice data in modal:', invoice.value); // Debug log
     }
   };
   

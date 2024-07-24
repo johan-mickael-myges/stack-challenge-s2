@@ -24,6 +24,10 @@ exports.getOrderDetails = async (req, res, next) => {
           model: OrderItem,
           include: [Product],
         },
+        {
+          model: Delivery,
+          include: [ShippingMethod],
+        },
       ],
     });
 
@@ -40,6 +44,7 @@ exports.getOrderDetails = async (req, res, next) => {
     next(error);
   }
 };
+
 
 exports.updateDeliveryDetails = async (req, res, next) => {
   try {
@@ -107,6 +112,10 @@ exports.getInvoice = async (req, res, next) => {
           model: OrderItem,
           include: [Product],
         },
+        {
+          model: Delivery,
+          include: [ShippingMethod],
+        },
       ],
     });
 
@@ -131,6 +140,15 @@ exports.getInvoice = async (req, res, next) => {
 
     doc.fontSize(12).text(`Commande ref: ${order.id}`);
     doc.text(`Date: ${new Date(order.createdAt).toISOString()}`);
+    doc.text(`Paiement Methode: ${order.paymentMethod}`);
+    
+    if (order.Delivery) {
+      const recipientName = `${order.Delivery.firstName} ${order.Delivery.lastName}`;
+      doc.text(`Adresse de livraison: ${recipientName}, ${order.Delivery.address}`);
+    } else {
+      doc.text('Adresse de livraison: N/A');
+    }
+
     const total = order.OrderItems.reduce((sum, item) => sum + parseFloat(item.unitPrice) * item.quantity, 0).toFixed(2);
     doc.text(`Total: ${total} €`);
     doc.moveDown();
@@ -149,3 +167,4 @@ exports.getInvoice = async (req, res, next) => {
     next(error);
   }
 };
+
