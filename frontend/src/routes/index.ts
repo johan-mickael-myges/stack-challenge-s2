@@ -12,6 +12,7 @@ import userSecurityRoutes from "@/routes/public/security/userSecurityRoutes.ts";
 import productRoutes from './public/products/productRoutes';
 import adminSecurityRoutes from "@/routes/public/security/adminSecurityRoutes.ts";
 import privacyPolicyRoutes from '@/routes/public/policy/privacyPolicyRoutes';
+import refundPolicyRoutes from '@/routes/public/policy/refundPolicyRoutes';
 import orderRoutes from '@/routes/user/orderRoutes.ts';
 import { useAuthStore } from "@/stores/auth.ts";
 import UserProfileRoutes from '@/routes/user/userRoutes';
@@ -29,6 +30,7 @@ const routes: Array<RouteRecordRaw> = [
     ...productRoutes,
     ...errorRoutes,
     ...privacyPolicyRoutes, 
+    ...refundPolicyRoutes, 
     ...orderRoutes,
     ...UserProfileRoutes,
 ]
@@ -40,8 +42,6 @@ const router = createRouter({
 
 router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
     const authStore = useAuthStore();
-
-    // Check if route requires authentication
     if (to.matched.some(record => record.meta.requiresAuth || record.meta.requiresAdmin)) {
         if (!authStore.user.userId) {
             try {
@@ -51,7 +51,6 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
             }
         }
 
-        // Check if route requires admin role
         if (to.matched.some(record => record.meta.requiresAdmin) && !authStore.user.roles.includes('ROLE_ADMIN')) {
             return next({ path: '/unauthorized' });
         }
