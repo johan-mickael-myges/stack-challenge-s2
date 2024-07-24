@@ -1,5 +1,6 @@
 const { Color } = require('~models');
 const eventEmitter = require('~services/eventEmitter');
+const colorService = require('~services/colorService');
 
 const countColors = async (req, res, next) => {
     try {
@@ -67,12 +68,7 @@ const updateColor = async (req, res, next) => {
 
 const deleteColor = async (req, res, next) => {
     try {
-        const color = await Color.findByPk(req.params.id);
-        if (!color) {
-            return res.sendStatus(404);
-        }
-        await color.destroy();
-        eventEmitter.emit('colorDeleted', color.name);
+        await colorService.deleteColor(req.params.id);
         res.sendStatus(204);
     } catch (error) {
         next(error);

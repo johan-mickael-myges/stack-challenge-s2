@@ -2,6 +2,7 @@ const { Brand } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 const BadRequestError = require('~errors/BadRequestError');
 const eventEmitter = require('~services/eventEmitter');
+const brandService = require('~services/brandService');
 
 const countBrands = async (req, res, next) => {
     try {
@@ -71,12 +72,7 @@ const updateBrand = async (req, res, next) => {
 
 const deleteBrand = async (req, res, next) => {
     try {
-        const brand = await Brand.findByPk(req.params.id);
-        if (!brand) {
-            return res.sendStatus(404);
-        }
-        await brand.destroy();
-        eventEmitter.emit('brandDeleted', brand.name);
+        await brandService.deleteBrand(req.params.id);
         res.sendStatus(204);
     } catch (error) {
         next(error);

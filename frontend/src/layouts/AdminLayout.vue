@@ -31,7 +31,7 @@ export default defineComponent({
     return {
       items: [
         {
-          title: 'Products',
+          title: 'Produits',
           props: {
             to: {name: 'AdminProductList'},
             prependIcon: 'mdi-package-variant-closed',

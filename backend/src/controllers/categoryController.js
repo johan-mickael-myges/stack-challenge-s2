@@ -1,6 +1,7 @@
 const { Category } = require('~models');
 const {buildQueryOptions} = require("~utils/queryOptionsFactory");
 const eventEmitter = require('~services/eventEmitter');
+const categoryService = require('~services/categoryService');
 
 const countCategories = async (req, res, next) => {
     try {
@@ -61,12 +62,7 @@ const updateCategory = async (req, res, next) => {
 
 const deleteCategory = async (req, res, next) => {
     try {
-        const category = await Category.findByPk(req.params.id);
-        if (!category) {
-            return res.sendStatus(404);
-        }
-        await category.destroy();
-        eventEmitter.emit('categoryDeleted', category.name);
+        await categoryService.deleteCategory(req.params.id);
         res.sendStatus(204)
     } catch (error) {
         next(error);

@@ -1,5 +1,6 @@
 const { Material } = require('~models');
 const eventEmitter = require('~services/eventEmitter');
+const materialService = require('~services/materialService');
 
 const countMaterials = async (req, res, next) => {
     try {
@@ -67,12 +68,7 @@ const updateMaterial = async (req, res, next) => {
 
 const deleteMaterial = async (req, res, next) => {
     try {
-        const material = await Material.findByPk(req.params.id);
-        if (!material) {
-            return res.sendStatus(404);
-        }
-        await material.destroy();
-        eventEmitter.emit('materialDeleted', material.name);
+        await materialService.deleteMaterial(req.params.id);
         res.sendStatus(204);
     } catch (error) {
         next(error);

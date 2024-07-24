@@ -194,7 +194,7 @@ export default defineComponent({
       categories: {
         value: [],
         transform(value) {
-          if (value[0].id) {
+          if (value[0]?.id) {
             return value.map((category) => category.id);
           } else {
             return value;
@@ -204,7 +204,7 @@ export default defineComponent({
       colors: {
         value: [],
         transform(value) {
-          if (value[0].id) {
+          if (value[0]?.id) {
             return value.map((color) => color.id);
           } else {
             return value;
@@ -214,7 +214,7 @@ export default defineComponent({
       materials: {
         value: [],
         transform(value) {
-          if (value[0].id) {
+          if (value[0]?.id) {
             return value.map((material) => material.id);
           } else {
             return value;
