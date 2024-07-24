@@ -55,79 +55,89 @@ export type Items = z.infer<typeof ItemsSchema>;
 
 export const useOrderStore = defineStore('orders', {
     state: () => ({
-        loading: false,
-        delivery: null as DeliveryEntity | null,
-        paidOrders: [] as CreatedOrders,
-        error: null as string | null,
+      loading: false,
+      delivery: null as DeliveryEntity | null,
+      paidOrders: [] as CreatedOrders,
+      invoice: null as CreatedOrder | null,
+      error: null as string | null,
     }),
     actions: {
-        async fetchDelivery(orderId: number) {
-            this.loading = true;
-            try {
-                const response = await apiClient.get(`/orders/${orderId}/delivery`);
-                DeliveryEntitySchema.parse(response.data);
-                this.delivery = response.data;
-            } catch(error) {
-                throw error;
-            } finally {
-                this.loading = false;
-            }
-        },
-        async createOrder(
-            items: z.infer<typeof ItemsSchema>,
-        ): Promise<CreatedOrder> {
-            try {
-                ItemsSchema.parse(items);
-
-                this.loading = true;
-                return await apiClient.post('/orders', {
-                    items,
-                });
-            } catch (error) {
-                throw error;
-            } finally {
-                this.loading = false;
-            }
-        },
-        async fetchPaidOrders() {
-            try {
-                this.loading = true;
-                this.error = null;
-                const response = await apiClient.get('/orders/history', {
-                    withCredentials: true,
-                });
-                console.log('Fetched paid orders:', response.data);
-                this.paidOrders = CreatedOrdersSchema.parse(response.data);
-            } catch (error) {
-                this.error = 'Failed to fetch paid orders';
-                console.error('Error fetching paid orders:', error);
-                if (error.response) {
-                    console.error('Response data:', error.response.data);
-                }
-            } finally {
-                this.loading = false;
-            }
-        },
-        async fetchInvoice(orderId: number) {
-            try {
-              this.loading = true;
-              const response = await apiClient.get(`/orders/${orderId}/invoice`, { responseType: 'blob' });
-              const url = window.URL.createObjectURL(new Blob([response.data]));
-              const link = document.createElement('a');
-              link.href = url;
-              link.setAttribute('download', `invoice_${orderId}.pdf`);
-              document.body.appendChild(link);
-              link.click();
-            } catch (error) {
-              this.error = 'Failed to fetch invoice';
-              console.error('Error fetching invoice:', error);
-              if (error.response) {
-                console.error('Response data:', error.response.data);
-              }
-            } finally {
-              this.loading = false;
-            }
-        },
+      async fetchDelivery(orderId: number) {
+        this.loading = true;
+        try {
+          const response = await apiClient.get(`/orders/${orderId}/delivery`);
+          DeliveryEntitySchema.parse(response.data);
+          this.delivery = response.data;
+        } catch (error) {
+          throw error;
+        } finally {
+          this.loading = false;
+        }
+      },
+      async createOrder(items: z.infer<typeof ItemsSchema>): Promise<CreatedOrder> {
+        try {
+          ItemsSchema.parse(items);
+          this.loading = true;
+          return await apiClient.post('/orders', { items });
+        } catch (error) {
+          throw error;
+        } finally {
+          this.loading = false;
+        }
+      },
+      async fetchPaidOrders() {
+        try {
+          this.loading = true;
+          this.error = null;
+          const response = await apiClient.get('/orders/history', { withCredentials: true });
+          console.log('Fetched paid orders:', response.data);
+          this.paidOrders = CreatedOrdersSchema.parse(response.data);
+        } catch (error) {
+          this.error = 'Failed to fetch paid orders';
+          console.error('Error fetching paid orders:', error);
+          if (error.response) {
+            console.error('Response data:', error.response.data);
+          }
+        } finally {
+          this.loading = false;
+        }
+      },
+      async fetchInvoiceDetails(orderId: number) {
+        try {
+          this.loading = true;
+          this.error = null;
+          const response = await apiClient.get(`/orders/${orderId}`);
+          this.invoice = CreatedOrderSchema.parse(response.data);
+        } catch (error) {
+          this.error = 'Failed to fetch invoice details';
+          console.error('Error fetching invoice details:', error);
+          if (error.response) {
+            console.error('Response data:', error.response.data);
+          }
+        } finally {
+          this.loading = false;
+        }
+      },
+      async fetchInvoice(orderId: number) {
+        try {
+          this.loading = true;
+          const response = await apiClient.get(`/orders/${orderId}/invoice`, { responseType: 'blob' });
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `invoice_${orderId}.pdf`);
+          document.body.appendChild(link);
+          link.click();
+        } catch (error) {
+          this.error = 'Failed to fetch invoice';
+          console.error('Error fetching invoice:', error);
+          if (error.response) {
+            console.error('Response data:', error.response.data);
+          }
+        } finally {
+          this.loading = false;
+        }
+      },
     },
 });
-   
+  

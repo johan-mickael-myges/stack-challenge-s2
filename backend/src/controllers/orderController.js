@@ -100,7 +100,7 @@ exports.getInvoice = async (req, res, next) => {
   try {
     const { orderId } = req.params;
 
-    // Trouver la commande par ID
+    // Find the order by ID
     const order = await Order.findByPk(orderId, {
       include: [
         {
@@ -118,16 +118,30 @@ exports.getInvoice = async (req, res, next) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    // Logique de génération de PDF
+    // Logic to generate PDF
     const doc = new PDFDocument();
     let filename = `invoice_${order.id}.pdf`;
 
-    // Stream le PDF en tant que pièce jointe
+    // Stream the PDF as an attachment
     res.setHeader('Content-disposition', `attachment; filename=${filename}`);
     res.setHeader('Content-type', 'application/pdf');
 
-    doc.text(`Invoice for Order ${order.id}`);
-    // Ajoutez ici les détails de la facture
+    doc.fontSize(18).text('Facture', { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(12).text(`Commande ref: ${order.id}`);
+    doc.text(`Date: ${new Date(order.createdAt).toISOString()}`);
+    const total = order.OrderItems.reduce((sum, item) => sum + parseFloat(item.unitPrice) * item.quantity, 0).toFixed(2);
+    doc.text(`Total: ${total} €`);
+    doc.moveDown();
+
+    order.OrderItems.forEach(item => {
+      doc.text(`${item.Product.name} x ${item.quantity}`);
+      doc.text(`Prix Unitaire: ${item.unitPrice} €`);
+      const subtotal = (parseFloat(item.unitPrice) * item.quantity).toFixed(2);
+      doc.text(`Sous-total: ${subtotal} €`);
+      doc.moveDown();
+    });
 
     doc.pipe(res);
     doc.end();

@@ -7,12 +7,12 @@
             <v-progress-circular indeterminate color="primary"></v-progress-circular>
           </div>
           <div v-else>
-            <p>Commande ref: {{ order.id }}</p>
-            <p>Date: {{ order.createdAt }}</p>
-            <p>Total: {{ calculateTotal(order.OrderItems) }} €</p>
+            <p>Commande ref: {{ invoice.id }}</p>
+            <p>Date: {{ invoice.createdAt }}</p>
+            <p>Total: {{ calculateTotal(invoice.OrderItems) }} €</p>
             <v-list>
               <v-list-item
-                v-for="item in order.OrderItems"
+                v-for="item in invoice.OrderItems"
                 :key="item.id"
               >
                 <v-list-item-content>
@@ -33,7 +33,7 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, computed } from 'vue';
+  import { ref, computed, watch } from 'vue';
   import { useOrderStore } from '@/stores/order';
   
   const props = defineProps({
@@ -45,8 +45,15 @@
   
   const orderStore = useOrderStore();
   
-  const order = computed(() => orderStore.paidOrders.find(o => o.id === props.orderId));
   const loading = computed(() => orderStore.loading);
+  const invoice = ref(null);
+  
+  const fetchInvoice = async () => {
+    if (props.orderId) {
+      await orderStore.fetchInvoiceDetails(props.orderId);
+      invoice.value = orderStore.invoice;
+    }
+  };
   
   const updateShow = (value: boolean) => {
     emit('update:show', value);
@@ -56,12 +63,18 @@
     emit('update:show', false);
   };
   
+  const calculateTotal = (items) => {
+    return items.reduce((total, item) => total + parseFloat(item.unitPrice) * item.quantity, 0).toFixed(2);
+  };
+  
   const downloadInvoice = async () => {
     await orderStore.fetchInvoice(props.orderId);
   };
   
-  const calculateTotal = (items) => {
-    return items.reduce((total, item) => total + parseFloat(item.unitPrice) * item.quantity, 0).toFixed(2);
-  };
+  watch(() => props.show, (newVal) => {
+    if (newVal) {
+      fetchInvoice();
+    }
+  });
   </script>
   
