@@ -121,9 +121,13 @@ export default defineComponent({
     const itemsPerPage = ref(store.itemsPerPage);
     const currentPage = ref(store.currentPage);
 
-    onMounted(() => {
-      store.fetchAndCountProducts();
+    onMounted(async () => {
       pageStore.calculateNavbarHeight();
+
+      await store.fetchProducts();
+      await store.countProducts({
+        limit: '',
+      })
 
       window.addEventListener('resize', handleResize);
     });
@@ -169,10 +173,15 @@ export default defineComponent({
     };
 
     const handleFacetValuesUpdate = debounce(async (values: Record<string, string[]>) => {
+      currentPage.value = 1;
       productFacetsStore.setSelectedFacets(values);
       const facetQuery = useFacetQuery(values);
-      await store.fetchAndCountProducts({}, facetQuery);
-    }, 300);
+      await store.fetchProducts({}, facetQuery);
+      await store.countProducts({
+        limit: '',
+        ...facetQuery,
+      });
+    }, 100);
 
     return {
       isLoading,

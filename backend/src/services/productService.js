@@ -15,6 +15,15 @@ const countProducts = async (options = {}) => {
     return Product.count();
 }
 
+const countMatchingProducts = async (options = {}) => {
+    if (getBoolValue(options['denormalize'])) {
+        const builtQuery = buildMongooseQuery(MongooseProduct.find(), options);
+        return builtQuery.countDocuments();
+    }
+
+    return Product.count(options);
+}
+
 const getAllProducts = async (options = {}) => {
     if (getBoolValue(options['denormalize'])) {
         const builtQuery = buildMongooseQuery(MongooseProduct.find(), options);
@@ -268,6 +277,7 @@ const generateFacets = async (value = '', attributes = [
 
 module.exports = {
     countProducts,
+    countMatchingProducts,
     getAllProducts,
     getProductById,
     createProduct,

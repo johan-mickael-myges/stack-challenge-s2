@@ -1,10 +1,11 @@
 const productService = require('~services/productService');
 const { buildQueryOptions } = require('~utils/queryOptionsFactory');
-const { Product } = require('~models');
 
 exports.countProducts = async (req, res, next) => {
     try {
-        const count = await productService.countProducts(req.query);
+        let options = buildQueryOptions(req.query);
+
+        const count = await productService.countMatchingProducts(options);
         res.status(200).json(count);
     } catch (error) {
         next(error);

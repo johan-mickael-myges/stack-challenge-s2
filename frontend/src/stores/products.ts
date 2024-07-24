@@ -60,12 +60,13 @@ export const useProductStore = defineStore('products', {
         sortBy: [] as any,
     }),
     actions: {
-        async countProducts(params?: Record<string, any>) {
+        async countProducts(params?: Record<string, any>, facetParams?: Record<string, any>) {
             try {
                 const response = await apiClient.get('/products/count', {
                     params: {
                         denormalize: true,
                         ...params,
+                        ...facetParams,
                     }
                 });
                 this.total = response.data;
