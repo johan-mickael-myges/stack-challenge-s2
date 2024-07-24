@@ -150,7 +150,7 @@ export const useAuthStore = defineStore('auth', () => {
             if (err.response && err.response.data && err.response.data.message) {
                 throw new Error(err.response.data.message);
             } else {
-                throw new Error('Une erreur inattendue est survenue.');
+                throw new Error('Cette adresse e-mail n\'existe pas.');
             }
         }
     };   

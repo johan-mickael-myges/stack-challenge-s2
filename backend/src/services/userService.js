@@ -60,7 +60,7 @@ exports.changePassword = async (userId, currentPassword, newPassword, confirmNew
 exports.resetPassword = async (token, newPassword) => {
     const resetToken = await PasswordResetToken.findOne({ where: { token } });
     if (!resetToken || resetToken.expiresAt < new Date()) {
-        throw new Error('Token invalide ou expiré.');
+        throw new BadRequestError('Token invalide ou expiré.');
     }
     const user = await User.findByPk(resetToken.userId);
     user.password = newPassword;
@@ -72,7 +72,7 @@ exports.validateResetToken = async (token) => {
 
       const resetToken = await PasswordResetToken.findOne({ where: { token } });
       if (!resetToken || resetToken.expiresAt < new Date()) {
-        throw new Error('Token invalide ou expiré' );
+        throw new BadRequestError('Token invalide ou expiré' );
       }
       return true;
 };
@@ -80,7 +80,7 @@ exports.validateResetToken = async (token) => {
 exports.sendEmailResetPassword = async (email) => {
     const user = await User.findOne({ where: { email } });
       if (!user) {
-        throw new Error('Aucun utilisateur trouvé avec cette adresse e-mail');
+        throw new BadRequestError('Aucun utilisateur trouvé avec cette adresse e-mail');
       }
 
       const resetToken = crypto.randomBytes(32).toString('hex');

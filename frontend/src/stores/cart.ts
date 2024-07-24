@@ -128,7 +128,7 @@ export const useCartStore = defineStore('carts', {
             if (!this.cart) {
                 return 0;
             }
-            return this.cart.CartItems.reduce((total, item) => total + item.Product.price * item.quantity, 0);
+            return Number(this.cart.CartItems.reduce((total, item) => total + item.Product.price * item.quantity, 0).toFixed(2));
         },
         items(): { productId: number; quantity: number }[] {
             return this.cart?.CartItems.map((item: z.infer<typeof OrderItemSchema>) => ({

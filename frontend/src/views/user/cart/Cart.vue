@@ -15,7 +15,7 @@
               <p>Votre panier est actuellement vide.</p>
             </div>
             <div v-else>
-              <div v-for="item in cart.CartItems" :key="item.id" class="cart-item mb-4">
+              <div v-if="cart" v-for="item in cart.CartItems" :key="item.id" class="cart-item mb-4">
                 <v-card class="d-flex align-center p-4 relative flex-col sm:flex-row">
                   <v-img :src="item.Product.thumbnail" class="cart-item-image mr-4 mb-4 sm:mb-0"></v-img>
                   <v-card-text class="d-flex flex-column justify-center w-full sm:w-auto">
