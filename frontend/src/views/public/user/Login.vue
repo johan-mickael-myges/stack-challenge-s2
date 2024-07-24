@@ -42,6 +42,10 @@ export default defineComponent({
             <p class="text-gray-600">Pas encore de compte ?</p>
             <router-link to="/register">S'inscrire</router-link>
           </div>
+          <div class="text-center">
+            <p class="text-gray-600">Mot de passe oublié ?</p>
+            <router-link to="/EmailResetPassword">Réinitialiser</router-link>
+          </div>
         </template>
       </Login>
     </div>

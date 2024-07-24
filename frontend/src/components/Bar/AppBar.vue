@@ -63,7 +63,7 @@ const goToHome = () => router.push('/');
         <div v-if="isSmallScreen">
           <img src="@/assets/layalin_logo.png" alt="Logo_Layalin" class="h-10" @click="goToHome"> <!-- Make the logo clickable -->
         </div>
-        <v-app-bar-title v-else class="font-weight-bold" @click="goToHome"> <!-- Make the text clickable -->
+        <v-app-bar-title v-else class="font-weight-bold cursor-pointer" @click="goToHome"> <!-- Make the text clickable -->
           LAYALIN
         </v-app-bar-title>
       </v-col>

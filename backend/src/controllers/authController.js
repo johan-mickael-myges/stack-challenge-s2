@@ -11,7 +11,6 @@ exports.registerUser = async (req, res, next) => {
     try {
         const newUser = await userService.registerUser(req.body);
         res.status(201).json(newUser);
-        
     } catch (error) {
         next(error);
     }
@@ -37,7 +36,7 @@ exports.changePassword = async (req, res, next) => {
       const user = await userService.changePassword(userId, currentPassword, newPassword, confirmNewPassword);
       res.status(200).json(user);
     } catch (error) {
-      next(error);
+       next(error);
     }
 };
 
@@ -69,6 +68,35 @@ exports.logoutUser = async (req, res, next) => {
     res.sendStatus(200);
 }
 
+exports.sendEmailResetPassword = async (req, res, next) => {
+  try {
+      const { email } = req.body;
+      await userService.sendEmailResetPassword(email);
+      res.sendStatus(200);
+  } catch (error) {
+      next(error);
+  }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+    await userService.resetPassword(token, newPassword);
+    res.sendStatus(200);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.validateResetToken = async (req, res, next) => {
+  try {
+    const { token } = req.body;
+    await userService.validateResetToken(token);
+    res.status(200).json({ valid: true });
+  } catch (error) {
+    res.status(400).json({ valid: false, message: error.message });
+  }
+};
 
 exports.getCookiePreference = async (req, res, next) => {
     try {

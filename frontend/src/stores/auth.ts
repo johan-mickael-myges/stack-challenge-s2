@@ -128,6 +128,48 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
+    const sendEmailResetPassword = async (email: string): Promise<string> => {
+        try {
+            const response = await apiClient.post('/auth/EmailResetPassword', { email });
+            
+            if (response.status === 200) {
+                return 'La demande de réinitialisation de mot de passe a été envoyée avec succès.';
+            } else {
+                throw new Error('Une erreur est survenue lors de l\'envoi de la demande de réinitialisation de mot de passe.');
+            }
+        } catch (err: any) {
+            if (err.response && err.response.data && err.response.data.message) {
+                throw new Error(err.response.data.message);
+            } else {
+                throw new Error('Une erreur inattendue est survenue.');
+            }
+        }
+    };   
+    
+    const resetPassword = async (token: string, newPassword: string) => {
+        try {
+            await apiClient.post('/auth/resetPassword', {
+              token,
+              newPassword
+            });
+            window.location.href = '/login';
+            alert('Le mot de passe a été réinitialisé avec succès.');
+          } catch (error) {
+            throw error;
+          }
+    }
+
+    const validateResetToken = async (token: string) => {
+        try {
+          const response = await apiClient.post('/auth/validateResetToken', {
+            token
+          });
+          return response.data.valid;
+        } catch (error) {
+          throw error;
+        }
+    };
+
     const isAuthenticated = computed(() => !!Object.keys(user).length);
 
     loadUserFromLocalStorage();
@@ -142,7 +184,10 @@ export const useAuthStore = defineStore('auth', () => {
         user,
         verifyAuth,
         changePassword,
+        resetPassword,
+        validateResetToken,
         isAuthenticated,
         confirmDeletion,
+        sendEmailResetPassword
     };
 });
