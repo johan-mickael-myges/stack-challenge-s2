@@ -18,10 +18,10 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref, watch} from 'vue';
 import {z} from "zod";
 import {FacetValueCheckboxSchema, ProductFacetSchema} from "@/types/schemas/products.ts";
-
+import {useProductFacetsStore} from "@/stores/productFacets.ts";
 
 export default defineComponent({
   name: 'CheckboxFacets',
@@ -33,7 +33,16 @@ export default defineComponent({
   },
   emits: ['update-values'],
   setup(props, {emit}) {
+    const productFacetsStore = useProductFacetsStore();
+    const selectedFacets = computed(() => productFacetsStore.selectedFacets);
+
     const selectedValues = ref<string[]>([]);
+
+    watch(selectedFacets, (newSelectedFacets) => {
+      if (newSelectedFacets[props.item.id]) {
+        selectedValues.value = [...newSelectedFacets[props.item.id]];
+      }
+    }, { immediate: true });
 
     const formatLabel = (itemValues: z.infer<typeof FacetValueCheckboxSchema>) => {
       if (itemValues.other === true) {

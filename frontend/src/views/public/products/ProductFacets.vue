@@ -28,7 +28,6 @@ export default defineComponent({
       terms.value = values['terms'];
     };
 
-    // watct terms to refetch the facets but debounce the call
     watch(terms, debounce((newTerms: string) => {
       store.fetchProductFacets({
         terms: newTerms,
