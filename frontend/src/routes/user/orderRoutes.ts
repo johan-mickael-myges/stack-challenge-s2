@@ -3,7 +3,7 @@ import OrderDetails from '@/views/user/cart/OrderDetails.vue';
 import OrderConfirmation from '@/views/user/cart/OrderConfirmation.vue';
 import UserLayout from '@/layouts/UserLayout.vue';
 import DeliveryDetails from '@/views/user/cart/DeliveryDetails.vue';
-import PaidOrdersPage from '@/views/user/Profile/PaidOrdersPage.vue'; 
+import PaidOrdersPage from '@/views/user/Profile/PaidOrdersPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -20,7 +20,11 @@ const routes: Array<RouteRecordRaw> = [
                 path: '',
                 name: 'OrderDetails',
                 component: OrderDetails,
-                meta: { requiresAuth: true }
+                meta: { requiresAuth: true },
+                props: (route) => ({
+                    orderId: route.params.orderId,
+                    totalShippingCost: route.query.totalShippingCost ? Number(route.query.totalShippingCost) : 0,
+                }),
             },
             {
                 path: 'order-confirmation',

@@ -6,7 +6,7 @@
         <p>Aucun mode de livraison disponible</p>
       </div>
       <div v-else>
-        <ShippingOptionsForm :items="shippingMethods" @update-values="onShippinOptionChange"/>
+        <ShippingOptionsForm :items="shippingMethods" @update-values="onShippingOptionChange"/>
       </div>
 
       <div class="mb-4">
@@ -51,7 +51,6 @@ export default defineComponent({
     const shippingMethodId = ref(0);
     const errors = ref('');
 
-    const existingDelivery = computed(() => orderStore.delivery);
     const deliveryInformation = ref<DeliveryInformation>({
       firstName: '',
       lastName: '',
@@ -70,7 +69,7 @@ export default defineComponent({
 
     const shippingMethods = computed(() => shippingMethodsStore.shippingMethods);
 
-    const onShippinOptionChange = (shippingMethod: ShippingMethod) => {
+    const onShippingOptionChange = (shippingMethod: ShippingMethod) => {
       shippingMethodId.value = shippingMethod.id;
     };
 
@@ -92,11 +91,14 @@ export default defineComponent({
           billingAddress: deliveryInformation.value.billingAddress,
           billingPhoneNumber: deliveryInformation.value.billingPhoneNumber,
         });
+
+        const selectedShippingMethod = shippingMethodsStore.shippingMethods.find(method => method.id === shippingMethodId.value);
+        const totalShippingCost = selectedShippingMethod ? selectedShippingMethod.cost : 0;
+
         router.push({
           name: 'OrderDetails',
-          params: {
-            orderId: orderId
-          }
+          params: { orderId },
+          query: { totalShippingCost: totalShippingCost.toString() }
         });
       } catch (e) {
         if (e instanceof ZodError) {
@@ -108,16 +110,12 @@ export default defineComponent({
       }
     };
 
-    const deliveryInformationsErrors = computed(() => deliveryStore.errors);
-
     return {
       shippingMethods,
-      onShippinOptionChange,
+      onShippingOptionChange,
       onDeliveryInformationsChange,
       createDelivery,
-      deliveryInformationsErrors,
       errors,
-      existingDelivery,
     };
   },
 });
