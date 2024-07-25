@@ -17,14 +17,14 @@ module.exports = {
     for (const product of products) {
       stocks.push({
         type: STOCK_TYPE_IN,
-        quantity: Math.floor(Math.random() * 20) + 1, // Random quantity between 1 and 20
+        quantity: Math.floor(Math.random() * 20) + 6,
         productId: product.id,
         createdAt: new Date(),
         updatedAt: new Date()
       });
       stocks.push({
         type: STOCK_TYPE_OUT,
-        quantity: Math.floor(Math.random() * 10) + 1, // Random quantity between 1 and 10
+        quantity: Math.floor(Math.random() * 5) + 1, // Random quantity between 1 and 10
         productId: product.id,
         createdAt: new Date(),
         updatedAt: new Date()

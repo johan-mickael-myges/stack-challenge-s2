@@ -14,7 +14,6 @@ router.get(
 
 router.get(
     '/count',
-    checkToken,
     stockController.countRemainingForProduct
 );
 

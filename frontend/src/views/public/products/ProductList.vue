@@ -34,10 +34,26 @@
                     <span>{{ product.price }} €</span>
                   </v-card-subtitle>
                 </div>
-                <div>
-                  <v-tooltip text="Ajouter au panier">
+                <div class="flex flex-row items-center justify-end">
+                  <v-tooltip v-if="product.stocks > 0" class="grid-cols-1">
                     <template v-slot:activator="{ props }">
-                      <v-btn v-bind="props" color="white" variant="flat" block @click.stop="addProductToCart(product.originalId)">
+                      <v-icon  v-bind="props" class="grid-cols-1" color="green">mdi-check-circle</v-icon>
+                    </template>
+                    <template v-slot:default>
+                      {{ product.stocks }} éléments disponible en stock.
+                    </template>
+                  </v-tooltip>
+                  <v-tooltip v-else class="grid-cols-1">
+                    <template v-slot:activator="{ props }">
+                      <v-icon v-bind="props" class="grid-cols-1" color="red">mdi-minus-circle</v-icon>
+                    </template>
+                    <template v-slot:default>
+                      Actuellement indisponible
+                    </template>
+                  </v-tooltip>
+                  <v-tooltip class="grid-cols-1" text="Ajouter au panier">
+                    <template v-slot:activator="{ props }">
+                      <v-btn v-bind="props" color="white" variant="flat" icon @click.stop="addProductToCart(product.originalId)">
                         <v-icon>mdi mdi-cart-plus</v-icon>
                       </v-btn>
                     </template>

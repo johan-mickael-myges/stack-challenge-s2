@@ -1,8 +1,11 @@
+const stockService = require('../services/stockService');
+
 const factory = async (sequelizeProduct) => {
     const categories = await sequelizeProduct.getCategories();
     const brand = await sequelizeProduct.getBrand();
     const materials = await sequelizeProduct.getMaterials();
     const colors = await sequelizeProduct.getColors();
+    const stocks = await stockService.countRemainingForProduct(sequelizeProduct.dataValues.id);
 
     return {
         originalId: sequelizeProduct.id,
@@ -16,7 +19,8 @@ const factory = async (sequelizeProduct) => {
         brand: brand ? brand.name : null,
         categories: categories.map(category => category.name),
         materials: materials.map(material => material.name),
-        colors: colors.map(color => color.name)
+        colors: colors.map(color => color.name),
+        stocks: stocks,
     };
 }
 

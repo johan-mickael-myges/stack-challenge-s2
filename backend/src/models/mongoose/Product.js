@@ -12,7 +12,8 @@ const ProductSchema = new mongoose.Schema({
     brand: { type: String, ref: 'Brand' },
     categories: [{ type: String, ref: 'Category' }],
     materials: [{ type: String, ref: 'Material' }],
-    colors: [{ type: String, ref: 'Color' }]
+    colors: [{ type: String, ref: 'Color' }],
+    stocks: { type: Number, default: 0, min: 0}
 }, { timestamps: true });
 
 module.exports = mongoose.model('Product', ProductSchema);

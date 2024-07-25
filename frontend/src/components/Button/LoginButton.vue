@@ -15,7 +15,9 @@ export default defineComponent({
     const router = useRouter();
 
     const handleLogin = () => {
-      router.push({ path: 'login' });
+      router.push({
+        name: 'login',
+      })
     };
 
     return {

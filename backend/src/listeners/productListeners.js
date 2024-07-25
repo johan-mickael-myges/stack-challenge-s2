@@ -63,4 +63,21 @@ eventEmitter.on('productDeleted', async (productId) => {
     }
 });
 
+eventEmitter.on('stock:updated', async (product) => {
+    try {
+        const productData = await productFactory(product);
+
+        await MongooseProduct.findOneAndUpdate(
+            {originalId: product.dataValues.id},
+            productData,
+            {new: true, useFindAndModify: false}
+        );
+    } catch (error) {
+        console.error('Error transforming and saving product', {
+            error,
+            product
+        });
+    }
+})
+
 module.exports = eventEmitter;
