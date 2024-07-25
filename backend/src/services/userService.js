@@ -121,10 +121,9 @@ function generatePassword(length = 12) {
 }
 
 
-exports.getInfoUser = async (userId) => {
-    
+exports.getUserInfo = async (userId) => {
     const user = await User.findByPk(userId, {
-        attributes: ['firstname', 'lastname', 'email', 'number']
+        attributes: ['id', 'firstname', 'lastname', 'email', 'number']
     });
 
     if (!user) {

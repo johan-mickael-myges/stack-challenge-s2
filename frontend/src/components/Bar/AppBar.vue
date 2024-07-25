@@ -43,7 +43,7 @@ const router = useRouter();
 
 const goToProfile = () => {
   if (authStore.isAuthenticated) {
-    router.push({ path: '/profile/info' }); 
+    router.push({ name: 'UserInfo' });
   } else {
     goToByName('login');
   }
@@ -64,7 +64,7 @@ const goToHome = () => router.push('/');
 </script>
 
 <template>
-  <v-app-bar id="navbar" elevation="1" height="80" class="px-8">
+  <v-app-bar id="navbar" elevation="1" height="80" class="px-8 bg-green-500" color="grey-darken-4">
     <v-row class="align-center">
       <v-col>
         <div v-if="isSmallScreen">
@@ -113,33 +113,3 @@ const goToHome = () => router.push('/');
     </v-row>
   </v-app-bar>
 </template>
-
-<style scoped>
-strong {
-  color: black;
-}
-
-.user-info-container {
-  margin-top: 20px;
-}
-
-.user-card {
-  padding: 16px;
-  border: 1px solid #e0e0e0;
-  background-color: #fff;
-}
-
-.user-card-title {
-  background-color: #f5f5f5;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.user-icon {
-  margin-right: 8px;
-  font-size: 24px;
-}
-</style>

@@ -17,8 +17,8 @@ exports.checkAdmin = (req, res, next) => {
 
 exports.getInfoUser = async (req, res, next) => {
   try {
-      const userId = req.user.userId;
-      const user = await userService.getInfoUser(userId);
+      const { userId } = req.user;
+      const user = await userService.getUserInfo(userId);
       res.status(200).json(user);
   } catch (error) {
       next(error);

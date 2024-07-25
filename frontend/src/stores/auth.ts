@@ -1,17 +1,26 @@
 import { defineStore } from 'pinia';
-import { reactive, ref, computed } from 'vue';
+import { ref } from 'vue';
 import { ExpressError, LoginData, RegisterData } from '@/types';
 import apiClient from "@/config/axios.ts";
 import { useRouter } from 'vue-router';
 import {z} from 'zod';
-import {cleanAllStates, useStateCleaner} from "@/composables/useStateCleaner.ts";
+import {cleanAllStates} from "@/composables/useStateCleaner.ts";
 
 const ApiUserSchema = z.object({
     userId: z.number(),
     roles: z.array(z.string())
 });
 
+const CurrentUserSchema = z.object({
+    id: z.number(),
+    firstname: z.string(),
+    lastname: z.string(),
+    email: z.string(),
+    number: z.string(),
+});
+
 export type ApiUser = z.infer<typeof ApiUserSchema>;
+export type CurrentUser = z.infer<typeof CurrentUserSchema>;
 
 export const useAuthStore = defineStore('auth', () => {
     const loading = ref(false);
@@ -20,6 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
     const router = useRouter();
     const isAuthenticated = ref(false);
     const user = ref<ApiUser | null>(null);
+    const currentUser = ref<CurrentUser | null>(null);
     const httpCode = ref(200);
 
     const clearState = () => {
@@ -65,12 +75,12 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
-    const infoUser = async () => {
+    const fetchCurrentUser = async () => {
         try {
-            const response = await apiClient.get('/auth/infoUser');
-            user.value = response.data; // Stocke les données utilisateur dans le store
+            const response = await apiClient.get('/auth/current');
+            currentUser.value = CurrentUserSchema.parse(response.data);
         } catch (error) {
-            console.error('Error fetching user information:', error);
+            console.error(error);
         }
     };
 
@@ -200,6 +210,7 @@ export const useAuthStore = defineStore('auth', () => {
         register,
         login,
         logout,
+        currentUser,
         user,
         verifyAuth,
         changePassword,
@@ -208,7 +219,7 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated,
         confirmDeletion,
         sendEmailResetPassword,
-        infoUser,
+        fetchCurrentUser,
         checkAdmin,
         clearState,
     };
