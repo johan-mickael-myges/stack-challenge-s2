@@ -63,7 +63,7 @@ export default defineComponent({
       return {
           items: [
               { icon: "mdi-account", text: "Informations Utilisateur", routeName: 'UserInfo' },
-             //  { icon: "mdi-bell", text: "Gestion des alertes", routeName: 'UserAlerts' },
+              { icon: "mdi-bell", text: "Gestion des alertes", routeName: 'UserAlerts' },
           ],
       };
   },

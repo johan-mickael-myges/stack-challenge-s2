@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const config = require('~config/config');
 const {ROLE_USER } = require('~constants/roles');
-const { User, PasswordResetToken, NewsletterSubscription, UserAlertPreference, UserAlertItemPreference } = require('~models');
+const { User, PasswordResetToken, NewsletterSubscription, UserAlertPreference, UserAlertItemPreference, Alert } = require('~models');
 const { Role } = require('~models');
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('~errors/UnauthorizedError');
@@ -226,3 +226,40 @@ exports.getUsersThatShouldReceiveAlertForSubscribedItems = async (itemIds, alert
         ],
     });
 };
+
+exports.getAlerts = async (userId) => {
+    const user = await User.findOne({
+        where: { id: userId },
+        attributes: [], // Add other user attributes you need
+        include: [
+            {
+                model: UserAlertPreference,
+                as: 'alertPreferences',
+                attributes: ['id', 'alertId', 'enabled'],
+                include: [
+                    {
+                        model: Alert,
+                        as: 'alert',
+                        attributes: ['id', 'type', 'description'],
+                    },
+                    {
+                        model: UserAlertItemPreference,
+                        as: 'alertItemPreferences',
+                        attributes: ['id', 'itemId'],
+                    },
+                ],
+            },
+            {
+                model: NewsletterSubscription,
+                as: 'newsletterSubscription',
+                attributes: ['id', 'subscribed'],
+            },
+        ],
+    });
+
+    if (!user) {
+        throw new BadRequestError('User not found.');
+    }
+
+    return user;
+}

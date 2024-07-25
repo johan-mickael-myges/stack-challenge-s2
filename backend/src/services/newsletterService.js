@@ -121,13 +121,19 @@ const saveItemsPreferences = async (userId, items, userAlertPreferenceId) => {
     }
 
     if (!items || items.length === 0) {
-        throw new BadRequestError("Items are required");
+        await UserAlertItemPreference.destroy({
+            where: {
+                userAlertPreferenceId,
+            },
+        });
+
+        return [];
     }
 
-    const alertPreference = await UserAlertPreference.findByPk(userAlertPreferenceId);
+    let alertPreference = await UserAlertPreference.findByPk(userAlertPreferenceId);
 
     if (!alertPreference) {
-        throw new BadRequestError("Alert preference not found");
+        await savePreferences(userId, userAlertPreferenceId, true);
     }
 
     await UserAlertItemPreference.destroy({
@@ -254,6 +260,73 @@ const sendEmailForUserForNewsletterUnsubscription = async (userId) => {
     );
 }
 
+const getAlertSubscriptionForUser = async (userId) => {
+    if (!userId) {
+        throw new BadRequestError("User ID is required");
+    }
+
+    return await NewsletterSubscription.findOne({
+        where: {
+            userId,
+        },
+    });
+}
+
+const getAlertPreferencesForUser = async (userId) => {
+    if (!userId) {
+        throw new BadRequestError("User ID is required");
+    }
+
+    return await UserAlertPreference.findAll({
+        where: {
+            userId,
+        },
+        attributes: ["id", "alertId", "enabled"],
+        include: [
+            {
+                model: Alert,
+                as: "alert",
+                attributes: ["description"],
+            },
+            {
+                model: UserAlertItemPreference,
+                as: "alertItemPreferences",
+                attributes: ["id", "itemId"],
+            },
+        ],
+    });
+}
+
+const getAlertPreferenceForUser = async (userId, alertId) => {
+    if (!userId) {
+        throw new BadRequestError("User ID is required");
+    }
+
+    if (!alertId) {
+        throw new BadRequestError("Alert ID is required");
+    }
+
+    return await UserAlertPreference.findOne({
+        where: {
+            userId,
+            alertId,
+        },
+        attributes: ["id", "alertId", "enabled"],
+        include: [
+            {
+                model: Alert,
+                as: "alert",
+                attributes: ["description"],
+            },
+            {
+                model: UserAlertItemPreference,
+                as: "alertItemPreferences",
+                attributes: ["id", "itemId"],
+            },
+        ],
+    });
+}
+
 module.exports = {
     subscribe,
     savePreferences,
@@ -263,4 +336,7 @@ module.exports = {
     sendEmailToUsersThatShouldReceivedProductPriceChangesAlert,
     sendEmailForUserForNewsletterSubscription,
     sendEmailForUserForNewsletterUnsubscription,
+    getAlertSubscriptionForUser,
+    getAlertPreferencesForUser,
+    getAlertPreferenceForUser,
 };
