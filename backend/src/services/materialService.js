@@ -20,7 +20,7 @@ const deleteMaterial = async(materialId) => {
 
     const remainingMaterials = await countMaterial();
     if (remainingMaterials === 1) {
-        throw new BadRequestError('Impossible de supprimer le dernier matériau');
+        throw new BadRequestError('Cannot delete the last material');
     }
 
     await material.destroy();

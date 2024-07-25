@@ -76,14 +76,15 @@ describe('CartController', () => {
       expect(response.body.CartItems.length).toBeGreaterThan(0);
     });
 
-    it('should return 404 if user does not have a cart', async () => {
+    it('should return empty if user does not have a cart', async () => {
       Cart.findOne.mockResolvedValueOnce(null);
 
       const response = await request(app)
         .get('/carts')
         .set('Cookie', [`token=${token}`]);
 
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([]);
     });
   });
 

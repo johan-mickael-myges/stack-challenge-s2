@@ -17,9 +17,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import {defineComponent, onBeforeMount} from 'vue';
 import AdminSidebar from "@/components/modules/admin/AdminSidebar.vue";
 import LogoutButton from "@/components/Button/LogoutButton.vue";
+import {useAuthStore} from "@/stores/auth.ts";
 
 export default defineComponent({
   name: 'AdminLayout',
@@ -72,6 +73,13 @@ export default defineComponent({
         },
       ],
     };
+  },
+  setup() {
+      const authStore = useAuthStore();
+
+      onBeforeMount(() => {
+        authStore.checkAdmin();
+      });
   },
 });
 </script>

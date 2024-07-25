@@ -18,6 +18,13 @@ export const useAddressStore = defineStore('address', {
     }),
 
     actions: {
+        clearState() {
+            this.address = '';
+            this.addressError = '';
+            this.addressLoading = false;
+            this.addressSuggestions = [];
+        },
+
         async verifyAddress(query: string) {
             if (query.length < 3) {
                 this.addressSuggestions = [];

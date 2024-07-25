@@ -4,6 +4,8 @@ const brandListener = require('~listeners/brandListeners');
 const paypalListener = require('~listeners/paypalListeners');
 const colorListener = require('~listeners/colorListeners');
 const materialListener = require('~listeners/materialListeners');
+const userListener = require('~listeners/userListeners');
+const alertListener = require('~listeners/alertListeners');
 
 const subscribeToAppEvents = () => {
     productListener;
@@ -12,6 +14,8 @@ const subscribeToAppEvents = () => {
     paypalListener;
     colorListener;
     materialListener;
+    alertListener;
+    userListener;
 }
 
 module.exports = subscribeToAppEvents;

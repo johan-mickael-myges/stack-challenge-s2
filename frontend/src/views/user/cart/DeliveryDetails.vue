@@ -6,7 +6,7 @@
         <p>Aucun mode de livraison disponible</p>
       </div>
       <div v-else>
-        <ShippingOptionsForm :items="shippingMethods" @update-values="onShippinOptionChange"/>
+        <ShippingOptionsForm :items="shippingMethods" @update-values="onShippingOptionChange"/>
       </div>
 
       <div class="mb-4">
@@ -28,19 +28,18 @@
 </template>
 
 <script lang="ts">
-
-import {computed, defineComponent, onMounted, ref} from "vue";
-import {ShippingMethod, useShippingMethodStore} from "@/stores/shippingMethods.ts";
+import { computed, defineComponent, onMounted, ref } from "vue";
+import { ShippingMethod, useShippingMethodStore } from "@/stores/shippingMethods.ts";
 import ShippingOptionsForm from "@/components/Form/ShippingOptionsForm.vue";
 import DeliveryInformationsForm from "@/components/Form/DeliveryInformationsForm.vue";
-import {DeliveryInformation, useDeliveryStore} from "@/stores/delivery.ts";
-import {useRoute, useRouter} from "vue-router";
-import {ZodError} from "zod";
-import {useOrderStore} from "@/stores/order.ts";
+import { DeliveryInformation, useDeliveryStore } from "@/stores/delivery.ts";
+import { useRoute, useRouter } from "vue-router";
+import { ZodError } from "zod";
+import { useOrderStore } from "@/stores/order.ts";
 
 export default defineComponent({
   name: 'DeliveryDetails',
-  components: {DeliveryInformationsForm, ShippingOptionsForm},
+  components: { DeliveryInformationsForm, ShippingOptionsForm },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -52,12 +51,15 @@ export default defineComponent({
     const shippingMethodId = ref(0);
     const errors = ref('');
 
-    const existingDelivery = computed(() => orderStore.delivery);
     const deliveryInformation = ref<DeliveryInformation>({
       firstName: '',
       lastName: '',
       address: '',
       phoneNumber: '',
+      billingFirstName: '',
+      billingLastName: '',
+      billingAddress: '',
+      billingPhoneNumber: '',
     });
 
     onMounted(async () => {
@@ -67,7 +69,7 @@ export default defineComponent({
 
     const shippingMethods = computed(() => shippingMethodsStore.shippingMethods);
 
-    const onShippinOptionChange = (shippingMethod: ShippingMethod) => {
+    const onShippingOptionChange = (shippingMethod: ShippingMethod) => {
       shippingMethodId.value = shippingMethod.id;
     };
 
@@ -84,12 +86,19 @@ export default defineComponent({
           lastName: deliveryInformation.value.lastName,
           address: deliveryInformation.value.address,
           phoneNumber: deliveryInformation.value.phoneNumber,
+          billingFirstName: deliveryInformation.value.billingFirstName,
+          billingLastName: deliveryInformation.value.billingLastName,
+          billingAddress: deliveryInformation.value.billingAddress,
+          billingPhoneNumber: deliveryInformation.value.billingPhoneNumber,
         });
+
+        const selectedShippingMethod = shippingMethodsStore.shippingMethods.find(method => method.id === shippingMethodId.value);
+        const totalShippingCost = selectedShippingMethod ? selectedShippingMethod.cost : 0;
+
         router.push({
           name: 'OrderDetails',
-          params: {
-            orderId: orderId
-          }
+          params: { orderId },
+          query: { totalShippingCost: totalShippingCost.toString() }
         });
       } catch (e) {
         if (e instanceof ZodError) {
@@ -101,18 +110,13 @@ export default defineComponent({
       }
     };
 
-    const deliveryInformationsErrors = computed(() => deliveryStore.errors);
-
     return {
       shippingMethods,
-      onShippinOptionChange,
+      onShippingOptionChange,
       onDeliveryInformationsChange,
       createDelivery,
-      deliveryInformationsErrors,
       errors,
-      existingDelivery,
     };
   },
 });
 </script>
-

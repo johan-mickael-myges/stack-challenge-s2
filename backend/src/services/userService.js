@@ -1,12 +1,13 @@
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const config = require('~config/config');
-const { ROLE_ADMIN, ROLE_USER, ROLE_STORE_KEEPER } = require('~constants/roles');
-const { User } = require('~models');
+const {ROLE_USER } = require('~constants/roles');
+const { User, PasswordResetToken, NewsletterSubscription, UserAlertPreference, UserAlertItemPreference, Alert } = require('~models');
 const { Role } = require('~models');
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('~errors/UnauthorizedError');
 const BadRequestError = require('~errors/BadRequestError');
-const sendMail = require('~services/mailerService');
+const eventEmitter = require('~services/eventEmitter');
 
 exports.deleteUser = async (userId, password) => {
     const existingUser = await User.findByPk(userId);
@@ -56,6 +57,44 @@ exports.changePassword = async (userId, currentPassword, newPassword, confirmNew
     return existingUser;
   };
 
+exports.resetPassword = async (token, newPassword) => {
+    const resetToken = await PasswordResetToken.findOne({ where: { token } });
+    if (!resetToken || resetToken.expiresAt < new Date()) {
+        throw new BadRequestError('Token invalide ou expiré.');
+    }
+    const user = await User.findByPk(resetToken.userId);
+    user.password = newPassword;
+    await user.save();
+    await resetToken.destroy();
+};
+
+exports.validateResetToken = async (token) => {
+
+      const resetToken = await PasswordResetToken.findOne({ where: { token } });
+      if (!resetToken || resetToken.expiresAt < new Date()) {
+        throw new BadRequestError('Token invalide ou expiré' );
+      }
+      return true;
+};
+
+exports.sendEmailResetPassword = async (email) => {
+    const user = await User.findOne({ where: { email } });
+      if (!user) {
+        throw new BadRequestError('Aucun utilisateur trouvé avec cette adresse e-mail');
+      }
+
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 3600000);
+
+      await PasswordResetToken.create({
+          userId: user.id,
+          token: resetToken,
+          expiresAt,
+      });
+
+      eventEmitter.emit('userResetPassword', { user, resetToken });
+};
+
 function generatePassword(length = 12) {
     if (length < 8) {
         throw new Error('La longueur du mot de passe doit être d\'au moins 8 caractères.');
@@ -81,6 +120,19 @@ function generatePassword(length = 12) {
     return password.split('').sort(() => Math.random() - 0.5).join('');
 }
 
+
+exports.getUserInfo = async (userId) => {
+    const user = await User.findByPk(userId, {
+        attributes: ['id', 'firstname', 'lastname', 'email', 'number']
+    });
+
+    if (!user) {
+        throw new BadRequestError('User not found.');
+    }
+
+    return user;
+};
+
 exports.registerUser = async (userData) => {
     const existingUser = await User.findOne({ where: { email: userData.email } });
     if (existingUser) {
@@ -91,15 +143,7 @@ exports.registerUser = async (userData) => {
 
     const role = await Role.findOne({ where: { id: ROLE_USER } });
     await user.addRole(role);
-
-    try {
-        await sendMail(user.email, 'Bienvenue', 'welcome-user', {
-            user: user,
-            loginUrl: `${config.frontendUrl}/login`,
-        });
-    } catch (error) {
-        console.error('Error sending welcome email', error);
-    }
+    eventEmitter.emit('userRegisterMailer', user);
 
     return user;
 };
@@ -134,3 +178,88 @@ exports.loginUser = async (email, password) => {
 
     return { user, token };
 };
+
+exports.getUsersThatShouldReceiveAlertForSubscribedItems = async (itemIds, alertID) => {
+    if (!itemIds) {
+        return [];
+    }
+
+    if (!Array.isArray(itemIds)) {
+        itemIds = [itemIds];
+    }
+
+    return await User.findAll({
+        attributes:{
+            exclude: ['createdAt', 'updatedAt', 'number']
+        },
+        include: [
+            {
+                model: UserAlertPreference,
+                as: 'alertPreferences',
+                attributes: [],
+                where: {
+                    alertId: alertID,
+                    enabled: true,
+                },
+                required: true,
+                include: [
+                    {
+                        model: UserAlertItemPreference,
+                        as: 'alertItemPreferences',
+                        attributes: [],
+                        where: {
+                            itemId: itemIds,
+                        },
+                        required: true,
+                    },
+                ],
+            },
+            {
+                model: NewsletterSubscription,
+                as: 'newsletterSubscription',
+                attributes: [],
+                where: {
+                    subscribed: true,
+                },
+                required: true,
+            },
+        ],
+    });
+};
+
+exports.getAlerts = async (userId) => {
+    const user = await User.findOne({
+        where: { id: userId },
+        attributes: [], // Add other user attributes you need
+        include: [
+            {
+                model: UserAlertPreference,
+                as: 'alertPreferences',
+                attributes: ['id', 'alertId', 'enabled'],
+                include: [
+                    {
+                        model: Alert,
+                        as: 'alert',
+                        attributes: ['id', 'type', 'description'],
+                    },
+                    {
+                        model: UserAlertItemPreference,
+                        as: 'alertItemPreferences',
+                        attributes: ['id', 'itemId'],
+                    },
+                ],
+            },
+            {
+                model: NewsletterSubscription,
+                as: 'newsletterSubscription',
+                attributes: ['id', 'subscribed'],
+            },
+        ],
+    });
+
+    if (!user) {
+        throw new BadRequestError('User not found.');
+    }
+
+    return user;
+}

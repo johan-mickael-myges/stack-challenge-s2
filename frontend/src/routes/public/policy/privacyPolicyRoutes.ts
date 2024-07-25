@@ -1,11 +1,11 @@
 import { RouteRecordRaw } from 'vue-router';
 import PrivacyPolicy from '@/views/public/user/PrivacyPolicy.vue';
-import UserLayout from '@/layouts/UserLayout.vue';
+import PublicLayout from "@/layouts/PublicLayout.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/privacy-policy',
-        component: UserLayout,
+        component: PublicLayout,
         children: [
             { path: '', name: 'PrivacyPolicy', component: PrivacyPolicy },
         ],

@@ -9,15 +9,23 @@
   </template>
   
   <script lang="ts">
-  import { defineComponent } from 'vue';
+  import {defineComponent, onBeforeMount} from 'vue';
   import AppBar from '@/components/Bar/AppBar.vue';
   import Footer from '@/components/Footer/Footer.vue';
+  import {useAuthStore} from "@/stores/auth.ts";
   
   export default defineComponent({
-    name: 'AdminLayout',
+    name: 'UserLayout',
     components: {
       AppBar,
       Footer,
+    },
+    setup() {
+      const authStore = useAuthStore();
+
+      onBeforeMount(() => {
+        authStore.verifyAuth();
+      });
     },
   });
   </script>

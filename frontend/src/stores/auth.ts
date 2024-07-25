@@ -1,32 +1,45 @@
 import { defineStore } from 'pinia';
-import { reactive, ref, computed } from 'vue';
+import { ref } from 'vue';
 import { ExpressError, LoginData, RegisterData } from '@/types';
 import apiClient from "@/config/axios.ts";
 import { useRouter } from 'vue-router';
+import {z} from 'zod';
+import {cleanAllStates} from "@/composables/useStateCleaner.ts";
+
+const ApiUserSchema = z.object({
+    userId: z.number(),
+    roles: z.array(z.string())
+});
+
+const CurrentUserSchema = z.object({
+    id: z.number(),
+    firstname: z.string(),
+    lastname: z.string(),
+    email: z.string(),
+    number: z.string(),
+});
+
+export type ApiUser = z.infer<typeof ApiUserSchema>;
+export type CurrentUser = z.infer<typeof CurrentUserSchema>;
 
 export const useAuthStore = defineStore('auth', () => {
     const loading = ref(false);
     const hasError = ref(false);
     const errors = ref<Record<string, ExpressError[]>>({});
     const router = useRouter();
-    let user = reactive<{ [key: string]: any }>({});
+    const isAuthenticated = ref(false);
+    const user = ref<ApiUser | null>(null);
+    const currentUser = ref<CurrentUser | null>(null);
+    const httpCode = ref(200);
 
-    const resetState = () => {
+    const clearState = () => {
         loading.value = false;
         hasError.value = false;
         errors.value = {};
+        isAuthenticated.value = false;
+        user.value = null;
+        httpCode.value = 200;
     }
-
-    const saveUserToLocalStorage = () => {
-        localStorage.setItem('user', JSON.stringify(user));
-    };
-
-    const loadUserFromLocalStorage = () => {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-            Object.assign(user, JSON.parse(userData));
-        }
-    };
 
     const deleteUser = async () => {
         const userData = localStorage.getItem('user');
@@ -40,7 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     const register = async (data: RegisterData) => {
-        resetState();
+        clearState();
         try {
             await apiClient.post('/auth/register', data);
             window.location.href = '/login';
@@ -62,12 +75,19 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
-    const login = async (data: LoginData) => {
-        resetState();
+    const fetchCurrentUser = async () => {
         try {
-            const response = await apiClient.post('/auth/login', data);
-            Object.assign(user, response.data.user);
-            saveUserToLocalStorage();
+            const response = await apiClient.get('/auth/current');
+            currentUser.value = CurrentUserSchema.parse(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const login = async (data: LoginData) => {
+        try {
+            await apiClient.post('/auth/login', data);
+            isAuthenticated.value = true;
         } catch (err: any) {
             hasError.value = true;
             throw err;
@@ -79,19 +99,32 @@ export const useAuthStore = defineStore('auth', () => {
     const verifyAuth = async () => {
         try {
             const response = await apiClient.get('/auth/check');
-            Object.assign(user, response.data);
-            saveUserToLocalStorage();
+            user.value = ApiUserSchema.parse(response.data);
+            isAuthenticated.value = true;
+            httpCode.value = response.status;
         } catch (err: any) {
-            Object.keys(user).forEach(key => delete user[key]);
-            throw err;
+            user.value = null;
+            httpCode.value = err.response.status;
+        }
+    };
+
+    const checkAdmin = async() => {
+        try {
+            const response = await apiClient.get('/auth/check-admin');
+            isAuthenticated.value = true;
+            httpCode.value = response.status;
+        } catch (err: any) {
+            user.value = null;
+            isAuthenticated.value = false;
+            httpCode.value = err.response.status;
         }
     };
 
     const logout = async () => {
-        resetState();
         try {
-            Object.keys(user).forEach(key => delete user[key]);
+            (cleanAllStates());
             await apiClient.post('/auth/logout');
+            isAuthenticated.value = false;
             window.location.href = '/login';
         } catch (err: any) {
             hasError.value = true;
@@ -128,9 +161,47 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
-    const isAuthenticated = computed(() => !!Object.keys(user).length);
+    const sendEmailResetPassword = async (email: string): Promise<string> => {
+        try {
+            const response = await apiClient.post('/auth/EmailResetPassword', { email });
+            
+            if (response.status === 200) {
+                return 'La demande de réinitialisation de mot de passe a été envoyée avec succès.';
+            } else {
+                throw new Error('Une erreur est survenue lors de l\'envoi de la demande de réinitialisation de mot de passe.');
+            }
+        } catch (err: any) {
+            if (err.response && err.response.data && err.response.data.message) {
+                throw new Error(err.response.data.message);
+            } else {
+                throw new Error('Cette adresse e-mail n\'existe pas.');
+            }
+        }
+    };   
+    
+    const resetPassword = async (token: string, newPassword: string) => {
+        try {
+            await apiClient.post('/auth/resetPassword', {
+              token,
+              newPassword
+            });
+            window.location.href = '/login';
+            clearState();
+          } catch (error) {
+            throw error;
+          }
+    }
 
-    loadUserFromLocalStorage();
+    const validateResetToken = async (token: string) => {
+        try {
+          const response = await apiClient.post('/auth/validateResetToken', {
+            token
+          });
+          return response.data.valid;
+        } catch (error) {
+          throw error;
+        }
+    };
 
     return {
         loading,
@@ -139,10 +210,17 @@ export const useAuthStore = defineStore('auth', () => {
         register,
         login,
         logout,
+        currentUser,
         user,
         verifyAuth,
         changePassword,
+        resetPassword,
+        validateResetToken,
         isAuthenticated,
         confirmDeletion,
+        sendEmailResetPassword,
+        fetchCurrentUser,
+        checkAdmin,
+        clearState,
     };
 });

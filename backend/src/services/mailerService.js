@@ -7,7 +7,7 @@ const defaultClient = SibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = config.sendInBlueApiKey;
 
-const sendMail = async (to, subject, templateName, data) => {
+const sendMail = async (recipients, subject, templateName, data) => {
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
 
     const htmlContent = await render(templateName, data);
@@ -15,7 +15,11 @@ const sendMail = async (to, subject, templateName, data) => {
     sendSmtpEmail.subject = subject;
     sendSmtpEmail.htmlContent = htmlContent;
     sendSmtpEmail.sender = { name: config.sendInBlueSenderName, email: config.sendInBlueSender };
-    sendSmtpEmail.to = [{ email: to }];
+    if (Array.isArray(recipients)) {
+        sendSmtpEmail.to = recipients.map(email => ({ email }));
+    } else {
+        sendSmtpEmail.to = [{ email: recipients }];
+    }
 
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 

@@ -12,9 +12,13 @@ import userSecurityRoutes from "@/routes/public/security/userSecurityRoutes.ts";
 import productRoutes from './public/products/productRoutes';
 import adminSecurityRoutes from "@/routes/public/security/adminSecurityRoutes.ts";
 import privacyPolicyRoutes from '@/routes/public/policy/privacyPolicyRoutes';
+import refundPolicyRoutes from '@/routes/public/policy/refundPolicyRoutes';
+import legalNoticeRoutes from '@/routes/public/policy/legalNoticeRoutes';
 import orderRoutes from '@/routes/user/orderRoutes.ts';
 import { useAuthStore } from "@/stores/auth.ts";
 import UserProfileRoutes from '@/routes/user/userRoutes';
+import {computed} from "vue";
+import {record} from "zod";
 
 const routes: Array<RouteRecordRaw> = [
     ...adminSecurityRoutes,
@@ -29,6 +33,8 @@ const routes: Array<RouteRecordRaw> = [
     ...productRoutes,
     ...errorRoutes,
     ...privacyPolicyRoutes, 
+    ...refundPolicyRoutes, 
+    ...legalNoticeRoutes, 
     ...orderRoutes,
     ...UserProfileRoutes,
 ]
@@ -36,28 +42,6 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
     history: createWebHistory(),
     routes,
-});
-
-router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-    const authStore = useAuthStore();
-
-    // Check if route requires authentication
-    if (to.matched.some(record => record.meta.requiresAuth || record.meta.requiresAdmin)) {
-        if (!authStore.user.userId) {
-            try {
-                await authStore.verifyAuth();
-            } catch (error) {
-                return next({ path: '/login', query: { redirect: to.fullPath } });
-            }
-        }
-
-        // Check if route requires admin role
-        if (to.matched.some(record => record.meta.requiresAdmin) && !authStore.user.roles.includes('ROLE_ADMIN')) {
-            return next({ path: '/unauthorized' });
-        }
-    }
-
-    next();
 });
 
 export default router;

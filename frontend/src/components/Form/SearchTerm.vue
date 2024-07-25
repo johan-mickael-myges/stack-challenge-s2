@@ -11,14 +11,24 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
-
+import {defineComponent, ref, watch, onMounted, computed} from 'vue';
+import { useProductFacetsStore } from "@/stores/productFacets";
 
 export default defineComponent({
   name: 'SearchTerm',
   emits: ['update-values'],
-  setup(props, {emit}) {
+  setup(props, { emit }) {
+    const productFacetsStore = useProductFacetsStore();
+    const selectedFacets = computed(() => productFacetsStore.selectedFacets);
     const searchTerm = ref<string>('');
+
+    onMounted(() => {
+      searchTerm.value = <string>selectedFacets.value['terms'] || '';
+    });
+
+    watch(searchTerm, () => {
+      emitSelectedValues();
+    });
 
     const emitSelectedValues = () => {
       emit('update-values', searchTerm.value);

@@ -12,6 +12,16 @@ class User extends Model {
         });
         User.hasMany(models.Order, { foreignKey: 'userId' });
         User.hasOne(models.Cart, { foreignKey: 'userId' });
+        User.hasMany(models.UserAlertPreference, {
+            foreignKey: 'userId',
+            as: 'alertPreferences',
+            onDelete: 'CASCADE'
+        });
+        User.hasOne(models.NewsletterSubscription, {
+            foreignKey: 'userId',
+            as: 'newsletterSubscription',
+            onDelete: 'CASCADE'
+        });
     }
 
     static async hashPassword(password) {

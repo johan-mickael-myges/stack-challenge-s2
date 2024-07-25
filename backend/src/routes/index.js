@@ -14,6 +14,8 @@ const colorRoutes = require('./colorRoutes');
 const materialRoutes = require('./materialRoutes');
 const shippingMethodRoutes = require('./shippingMethodsRoutes');
 const deliveryRoutes = require('./deliveryRoutes');
+const newsletterRoutes = require('./newsletterRoutes');
+const alertRoutes = require('./alertRoutes');
 
 router.use('/auth', authRoutes);
 router.use('/products', productRoutes);
@@ -27,6 +29,9 @@ router.use('/colors', colorRoutes);
 router.use('/materials', materialRoutes);
 router.use('/shipping-methods', shippingMethodRoutes);
 router.use('/deliveries', deliveryRoutes);
+router.use('/newsletters', newsletterRoutes);
+router.use('/alerts', alertRoutes);
+
 router.use(errorHandler);
 
 module.exports = router;

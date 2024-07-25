@@ -55,6 +55,10 @@ const addDelivery = async (
     firstName,
     lastName,
     phoneNumber,
+    billingFirstName,
+    billingLastName,
+    billingAddress,
+    billingPhoneNumber
 ) => {
     if (!orderId) {
         throw new BadRequestError('Order ID is required');
@@ -74,6 +78,18 @@ const addDelivery = async (
 
     if (!lastName) {
         throw new BadRequestError('Last name is required');
+    }
+
+    if (!billingFirstName) {
+        throw new BadRequestError('Billing first name is required');
+    }
+
+    if (!billingLastName) {
+        throw new BadRequestError('Billing last name is required');
+    }
+
+    if (!billingAddress) {
+        throw new BadRequestError('Billing address is required');
     }
 
     const foundOrder = await Order.findByPk(orderId);
@@ -97,6 +113,10 @@ const addDelivery = async (
         firstName,
         lastName,
         phoneNumber,
+        billingFirstName,
+        billingLastName,
+        billingAddress,
+        billingPhoneNumber,
         status: 'PENDING'
     });
 }

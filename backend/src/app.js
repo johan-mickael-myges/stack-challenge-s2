@@ -19,6 +19,10 @@ const errorHandler = require('~middlewares/errorHandler');
 const { frontendUrl } = require('~config/config');
 const subscribeToAppEvents = require('~listeners');
 const path = require('path');
+const EventEmitter = require('events');
+const emitter = new EventEmitter();
+
+emitter.setMaxListeners(20);
 
 const app = express();
 

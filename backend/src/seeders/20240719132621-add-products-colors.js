@@ -1,42 +1,91 @@
 'use strict';
-const { faker } = require('@faker-js/faker');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const products = await queryInterface.sequelize.query(
-            `SELECT id from products;`
-    );
-    const colors = await queryInterface.sequelize.query(
-            `SELECT id from colors;`
-    );
+    const productColors = [
+      { productId: 1, colorId: 2 },
+      { productId: 2, colorId: 2 },
+      { productId: 3, colorId: 2 },
+      { productId: 4, colorId: 2 },
+      { productId: 5, colorId: 2 },
+      { productId: 6, colorId: 2 },
+      { productId: 7, colorId: 2 },
+      { productId: 9, colorId: 2 },
+      { productId: 10, colorId: 2 },
+      { productId: 11, colorId: 2 },
+      { productId: 12, colorId: 2 },
+      { productId: 13, colorId: 1 },
+      { productId: 14, colorId: 2 },
+      { productId: 15, colorId: 2 },
+      { productId: 16, colorId: 1 },
+      { productId: 17, colorId: 2 },
+      { productId: 18, colorId: 1 },
+      { productId: 19, colorId: 1 },
+      { productId: 20, colorId: 1 },
+      { productId: 21, colorId: 1 },
+      { productId: 22, colorId: 2 },
+      { productId: 23, colorId: 2 },
+      { productId: 24, colorId: 3 },
+      { productId: 25, colorId: 2 },
+      { productId: 26, colorId: 2 },
+      { productId: 27, colorId: 2 },
+      { productId: 28, colorId: 2 },
+      { productId: 29, colorId: 2 },
+      { productId: 30, colorId: 2 },
+      { productId: 31, colorId: 2 },
+      { productId: 32, colorId: 2 },
+      { productId: 33, colorId: 2 },
+      { productId: 34, colorId: 2 },
+      { productId: 35, colorId: 2 },
+      { productId: 36, colorId: 3 },
+      { productId: 37, colorId: 3 },
+      { productId: 38, colorId: 2 },
+      { productId: 39, colorId: 2 },
+      { productId: 40, colorId: 2 },
+      { productId: 41, colorId: 2 },
+      { productId: 42, colorId: 2 },
+      { productId: 43, colorId: 2 },
+      { productId: 44, colorId: 2 },
+      { productId: 45, colorId: 2 },
+      { productId: 46, colorId: 2 },
+      { productId: 47, colorId: 2 },
+      { productId: 48, colorId: 2 },
+      { productId: 49, colorId: 2 },
+      { productId: 50, colorId: 2 },
+      { productId: 51, colorId: 2 },
+      { productId: 52, colorId: 2 },
+      { productId: 53, colorId: 2 },
+      { productId: 54, colorId: 2 },
+      { productId: 55, colorId: 2 },
+      { productId: 56, colorId: 2 },
+      { productId: 57, colorId: 1 },
+      { productId: 58, colorId: 2 },
+      { productId: 59, colorId: 2 },
+      { productId: 60, colorId: 2 },
+      { productId: 61, colorId: 2 },
+      { productId: 62, colorId: 2 },
+      { productId: 63, colorId: 2 },
+      { productId: 64, colorId: 2 },
+      { productId: 65, colorId: 2 },
+      { productId: 66, colorId: 2 },
+      { productId: 67, colorId: 2 },
+      { productId: 68, colorId: 2 },
+      { productId: 69, colorId: 2 },
+      { productId: 70, colorId: 2 },
+      { productId: 71, colorId: 2 },
+      { productId: 72, colorId: 2 },
+      { productId: 73, colorId: 2 },
+      { productId: 74, colorId: 2 },
+      { productId: 75, colorId: 1 },
+      { productId: 76, colorId: 1 },
+      { productId: 77, colorId: 1 },
+      { productId: 78, colorId: 1 },
+      { productId: 79, colorId: 1 },
+      { productId: 80, colorId: 1 },
+      { productId: 81, colorId: 1 },
+    ];
 
-    const productRows = products[0];
-    const colorRows = colors[0];
-
-    const existingCombinations = new Set();
-    const productColors = [];
-
-    productRows.forEach(product => {
-      const randomAmount = Math.floor(Math.random() * 3) + 1; // Random amount between 1 and 3
-
-      for (let i = 0; i < randomAmount; i++) {
-        let randomColor;
-        let combination;
-
-        do {
-          randomColor = faker.helpers.arrayElement(colorRows);
-          combination = `${product.id}-${randomColor.id}`;
-        } while (existingCombinations.has(combination));
-
-        existingCombinations.add(combination);
-
-        productColors.push({
-          productId: product.id,
-          colorId: randomColor.id,
-        });
-      }
-    });
-
+    await queryInterface.bulkDelete('product_colors', null, {});
     await queryInterface.bulkInsert('product_colors', productColors, {});
   },
 

@@ -9,7 +9,7 @@
           <v-progress-circular color="black" indeterminate></v-progress-circular>
         </div>
         <div v-else>
-          <v-alert v-if="!products.length" text="Aucun produit ne correspond à votre recherche." density="compact" variant="tonal" color="grey" />
+          <v-alert v-if="!products.length" text="Nous n'avons pas trouvé de résultat correspondant à votre recherche." variant="tonal" color="grey" />
           <div v-else class="grid md:grid-cols-3 lg:grid-cols-4 gap-4 mt-7">
             <div v-for="product in products" :key="product.originalId">
               <v-card variant="elevated" @mouseover="handleMouseOver(product.originalId)" @mouseleave="handleMouseLeave()" @click="$router.push(`/products/${product.originalId}`)">
@@ -47,7 +47,7 @@
             </div>
           </div>
           <div class="flex justify-center mt-10">
-            <v-pagination class="w-full max-w-xl" v-model="currentPage" :length="totalPages" rounded="circle"></v-pagination>
+            <v-pagination class="w-full max-w-xl" v-model="currentPage" :length="totalPages" rounded="circle" ></v-pagination>
           </div>
         </div>
       </div>
@@ -94,12 +94,17 @@ export default defineComponent({
 
     onMounted(async () => {
       pageStore.calculateNavbarHeight();
-      parseQueryParams(route.query);
+      await parseQueryParams(route.query);
+
+      currentPage.value = parseInt(route.query.page as string, 10) || 1;
+      itemsPerPage.value = parseInt(route.query.limit as string, 10) || store.itemsPerPage;
 
       const facetValues = computed(() => productFacetsStore.selectedFacets);
       const facetQuery = useFacetQuery(facetValues.value);
 
-      await store.fetchProducts({}, facetQuery);
+      await store.fetchProducts({
+        page: currentPage.value,
+      }, facetQuery);
       await store.countProducts({ limit: '', ...facetQuery });
 
       window.addEventListener('resize', handleResize);
@@ -107,8 +112,22 @@ export default defineComponent({
 
     onBeforeUnmount(() => window.removeEventListener('resize', handleResize));
 
-    watch(currentPage, (newPage) => store.setPage(newPage));
-    watch(itemsPerPage, (newItemsPerPage) => store.setItemsPerPage(newItemsPerPage));
+    watch(currentPage, async (newPage) => {
+      await store.setPage(newPage);
+      await updateProducts();
+    });
+
+    watch(itemsPerPage, async (newItemsPerPage) => {
+      await store.setItemsPerPage(newItemsPerPage);
+      await updateProducts();
+    });
+
+    const updateProducts = async () => {
+      const facetValues = computed(() => productFacetsStore.selectedFacets);
+      const facetQuery = useFacetQuery(facetValues.value);
+      await router.push({ query: { page: currentPage.value, limit: itemsPerPage.value, ...facetQuery } });
+      await store.fetchProducts({ page: currentPage.value }, facetQuery);
+    };
 
     const handleMouseOver = (productId: number | undefined) => {
       if (productId !== undefined) hoveredCard.value = productId;
@@ -123,22 +142,28 @@ export default defineComponent({
       productFacetsStore.setSelectedFacets(values);
 
       const facetQuery = useFacetQuery(values);
-      await router.push({ query: { ...route.query, ...facetQuery } });
+
+      await router.replace({ query: { page: currentPage.value, limit: itemsPerPage.value, ...facetQuery } });
       await store.fetchProducts({}, facetQuery);
       await store.countProducts({ limit: '', ...facetQuery });
     }, 100);
 
-    const parseQueryParams = (query: Record<string, any>) => {
+    const parseQueryParams = async (query: Record<string, any>) => {
       const selectedFacets: Record<string, string[]> = {};
       Object.entries(query).forEach(([key, value]) => {
+        const decodedValue = decodeURIComponent(value as string);
         const match = key.match(/^q\[(.+?)\]\[(\d+)\]$/);
         if (match) {
           const [_, facet, index] = match;
           if (!selectedFacets[facet]) selectedFacets[facet] = [];
-          selectedFacets[facet][parseInt(index, 10)] = value as string;
+          selectedFacets[facet][parseInt(index, 10)] = decodedValue;
         } else if (key.startsWith('q[') && key.endsWith(']')) {
           const facet = key.slice(2, -1);
-          selectedFacets[facet] = Array.isArray(value) ? value : [value];
+          if (facet === 'terms') {
+            selectedFacets[facet] = decodedValue;
+          } else {
+            selectedFacets[facet] = Array.isArray(decodedValue) ? decodedValue : [decodedValue];
+          }
         }
       });
       productFacetsStore.setSelectedFacets(selectedFacets);

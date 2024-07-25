@@ -40,6 +40,11 @@ export const useShippingMethodStore = defineStore('shippingMethods', {
         loading: false,
     }),
     actions: {
+        clearState() {
+            this.selectedShippingMethod = null;
+            this.shippingMethods = [];
+            this.loading = false;
+        },
         async fetchShippingMethods() {
             this.loading = true;
             try {

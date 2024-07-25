@@ -38,10 +38,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, computed } from 'vue';
+import {defineComponent, ref, watch, computed, onMounted} from 'vue';
 import { z } from "zod";
-import { ProductFacetSchema } from "@/types/schemas/products.ts";
-import { useProductFacetsStore } from "@/stores/productFacets.ts";
+import { ProductFacetSchema } from "@/types/schemas/products";
+import { useProductFacetsStore } from "@/stores/productFacets";
 
 export default defineComponent({
   name: 'RangeFacets',
@@ -55,22 +55,29 @@ export default defineComponent({
   setup(props, { emit }) {
     const productFacetsStore = useProductFacetsStore();
     const selectedFacets = computed(() => productFacetsStore.selectedFacets);
-
     const rangeValues = ref([props.item.values.min, props.item.values.max]);
 
-    // Watch for changes in selectedFacets and update rangeValues accordingly
+    onMounted(() => {
+      if (selectedFacets.value[props.item.id]) {
+        rangeValues.value = [...selectedFacets.value[props.item.id]];
+      }
+    });
+
     watch(selectedFacets, (newSelectedFacets) => {
       if (newSelectedFacets[props.item.id]) {
         rangeValues.value = [...newSelectedFacets[props.item.id]];
       }
     }, { immediate: true });
 
+    watch(rangeValues, () => {
+      emitSelectedValues();
+    });
+
     const emitSelectedValues = () => {
       emit('update-values', rangeValues.value);
     };
 
     return {
-      props,
       rangeValues,
       emitSelectedValues,
     };

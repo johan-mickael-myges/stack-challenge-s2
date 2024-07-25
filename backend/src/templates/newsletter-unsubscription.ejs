@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAYALIN - Newsletter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #393939;
+        }
+        .informations {
+            background: #dedede;
+            padding: 1rem;
+        }
+        img {
+            max-width: 200px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header style="background: #172822; color: white; padding: 1rem 0; text-align: center">
+        <h1>Bonjour <%= user.firstName %> <%= user.lastName %> 👋</h1>
+    </header>
+    <footer style="background: #dedede; text-align: center; padding: 1rem 0">
+        <p>Vous ne recevrez plus désormais des mails de notre part.</p>
+        <small>© 2024 Layalin. Tous droits réservés.</small>
+    </footer>
+</div>
+</body>
+</html>

@@ -22,7 +22,7 @@
               :total-shipping-cost="totalShippingCost"
               :total-to-pay="totalToPay"
             />
-            <PaypalButton :total-price="totalPrice" :internal-order-id="order.id + ''" />
+            <PaypalButton :total-price="totalToPay" :internal-order-id="order.id + ''" />
           </div>
         </div>
       </v-col>
@@ -31,28 +31,30 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, onMounted, computed} from 'vue';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import useOrderDetails from '@/composables/useOrderDetails';
 import PaypalButton from "@/components/Button/PaypalButton.vue";
 import OrderTotalRecap from '@/components/modules/admin/products/OrderTotalRecap.vue';
 import ProductToPay from '@/components/modules/admin/products/ProductToPay.vue';
-import {useCartStore} from "@/stores/cart.ts";
+import { useCartStore } from "@/stores/cart.ts";
 
 export default defineComponent({
   name: 'OrderDetails',
-  components: {PaypalButton, OrderTotalRecap, ProductToPay},
+  components: { PaypalButton, OrderTotalRecap, ProductToPay },
   setup() {
     const route = useRoute();
     const orderId = route.params.orderId as string;
-    const { order, loading, error, totalPrice, fetchOrderDetails } = useOrderDetails(orderId);
+    const totalShippingCost = Number(route.query.totalShippingCost);
+
+    const { order, loading, error, fetchOrderDetails } = useOrderDetails(orderId);
 
     const cartStore = useCartStore();
     const cartItems = computed(() => cartStore.getItemsWithAllDetails);
 
-    const totalProductsPrice = computed(() => cartStore.cartTotal);
-    const totalShippingCost = ref(0);
-    const totalToPay = computed(() => totalProductsPrice.value + totalShippingCost.value);
+    const totalProductsPrice = computed(() => cartStore.cartTotal.toFixed(2));
+    const formattedTotalShippingCost = totalShippingCost.toFixed(2);
+    const totalToPay = computed(() => (parseFloat(totalProductsPrice.value) + parseFloat(formattedTotalShippingCost)).toFixed(2));
 
     onMounted(async () => {
       await cartStore.fetchCart();
@@ -63,10 +65,9 @@ export default defineComponent({
       order,
       loading,
       error,
-      totalPrice,
       cartItems,
       totalProductsPrice,
-      totalShippingCost,
+      totalShippingCost: formattedTotalShippingCost,
       totalToPay
     };
   },

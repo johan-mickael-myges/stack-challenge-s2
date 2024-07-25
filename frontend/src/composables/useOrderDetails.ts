@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import axios from 'axios';
+import apiClient from "@/config/axios.ts";
 
 export default function useOrderDetails(orderId: string) {
   const order = ref<any>(null);
@@ -9,9 +10,7 @@ export default function useOrderDetails(orderId: string) {
 
   const fetchOrderDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/orders/${orderId}`, {
-        withCredentials: true,
-      });
+      const response = await apiClient.get(`/orders/${orderId}`);
       order.value = response.data;
       totalPrice.value = response.data.OrderItems.reduce((sum: number, item: any) => sum + parseFloat(item.subtotal), 0);
     } catch (err) {

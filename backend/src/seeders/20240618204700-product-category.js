@@ -1,36 +1,96 @@
 'use strict';
 
-const { faker } = require('@faker-js/faker');
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const productIds = await queryInterface.sequelize.query(
-            'SELECT id FROM products;',
-            { type: Sequelize.QueryTypes.SELECT }
-    );
+    const productCategories = [
+      { productId: 1, categoryId: 3 },
+      { productId: 2, categoryId: 3 },
+      { productId: 3, categoryId: 2 },
+      { productId: 4, categoryId: 3 },
+      { productId: 5, categoryId: 3 },
+      { productId: 6, categoryId: 3 },
+      { productId: 7, categoryId: 3 },
+      { productId: 9, categoryId: 3 },
+      { productId: 10, categoryId: 3 },
+      { productId: 11, categoryId: 3 },
+      { productId: 12, categoryId: 2 },
+      { productId: 13, categoryId: 1 },
+      { productId: 14, categoryId: 1 },
+      { productId: 15, categoryId: 1 },
+      { productId: 16, categoryId: 5 },
+      { productId: 17, categoryId: 4 },
+      { productId: 18, categoryId: 2 },
+      { productId: 19, categoryId: 1 },
+      { productId: 20, categoryId: 1 },
+      { productId: 21, categoryId: 5 },
+      { productId: 22, categoryId: 2 },
+      { productId: 23, categoryId: 2 },
+      { productId: 24, categoryId: 1 },
+      { productId: 25, categoryId: 3 },
+      { productId: 26, categoryId: 3 },
+      { productId: 27, categoryId: 5 },
+      { productId: 28, categoryId: 1 },
+      { productId: 29, categoryId: 4 },
+      { productId: 30, categoryId: 2 },
+      { productId: 31, categoryId: 2 },
+      { productId: 32, categoryId: 2 },
+      { productId: 33, categoryId: 1 },
+      { productId: 34, categoryId: 2 },
+      { productId: 35, categoryId: 3 },
+      { productId: 36, categoryId: 3 },
+      { productId: 37, categoryId: 3 },
+      { productId: 38, categoryId: 3 },
+      { productId: 39, categoryId: 4 },
+      { productId: 40, categoryId: 3 },
+      { productId: 41, categoryId: 2 },
+      { productId: 42, categoryId: 1 },
+      { productId: 43, categoryId: 3 },
+      { productId: 44, categoryId: 2 },
+      { productId: 45, categoryId: 3 },
+      { productId: 46, categoryId: 1 },
+      { productId: 47, categoryId: 3 },
+      { productId: 48, categoryId: 3 },
+      { productId: 49, categoryId: 1 },
+      { productId: 50, categoryId: 2 },
+      { productId: 51, categoryId: 1 },
+      { productId: 52, categoryId: 2 },
+      { productId: 53, categoryId: 2 },
+      { productId: 54, categoryId: 3 },
+      { productId: 55, categoryId: 1 },
+      { productId: 56, categoryId: 2 },
+      { productId: 57, categoryId: 2 },
+      { productId: 58, categoryId: 2 },
+      { productId: 59, categoryId: 2 },
+      { productId: 60, categoryId: 2 },
+      { productId: 61, categoryId: 1 },
+      { productId: 62, categoryId: 2 },
+      { productId: 63, categoryId: 3 },
+      { productId: 64, categoryId: 3 },
+      { productId: 65, categoryId: 3 },
+      { productId: 66, categoryId: 3 },
+      { productId: 67, categoryId: 2 },
+      { productId: 68, categoryId: 1 },
+      { productId: 69, categoryId: 3 },
+      { productId: 70, categoryId: 2 },
+      { productId: 71, categoryId: 1 },
+      { productId: 72, categoryId: 2 },
+      { productId: 73, categoryId: 3 },
+      { productId: 74, categoryId: 3 },
+      { productId: 75, categoryId: 4 },
+      { productId: 76, categoryId: 1 },
+      { productId: 77, categoryId: 3 },
+      { productId: 78, categoryId: 2 },
+      { productId: 79, categoryId: 4 },
+      { productId: 80, categoryId: 1 },
+      { productId: 81, categoryId: 3 },
+      { productId: 82, categoryId: 2 },
+    ];
 
-    const categoryIds = await queryInterface.sequelize.query(
-            'SELECT id FROM categories;',
-            { type: Sequelize.QueryTypes.SELECT }
-    );
-
-    const productCategoryAssociations = [];
-
-    productIds.forEach(product => {
-      const numberOfCategories = faker.number.int({ min: 1, max: 3 }); // Each product will have between 1 and 3 categories
-      const shuffledCategoryIds = faker.helpers.shuffle(categoryIds);
-      for (let i = 0; i < numberOfCategories; i++) {
-        productCategoryAssociations.push({
-          productId: product.id,
-          categoryId: shuffledCategoryIds[i].id,
-        });
-      }
-    });
-
-    await queryInterface.bulkInsert('product_categories', productCategoryAssociations, {});
+    await queryInterface.bulkDelete('product_categories', null, {});
+    await queryInterface.bulkInsert('product_categories', productCategories, {});
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.bulkDelete('product_categories', null, {});
-  },
+  }
 };

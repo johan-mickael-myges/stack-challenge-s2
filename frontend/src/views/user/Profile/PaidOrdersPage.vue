@@ -15,6 +15,7 @@
             <li>Article à retourner</li>
             <li>Raison du retour</li>
           </ul>
+          Nous vous invitons à consulter notre <a href="/refund-policy" class="underline">politique de retours et de remboursements</a>.
         </v-alert>
         <h1 class="text-2xl font-bold mb-4">Votre historique de commandes :</h1>
         <v-alert v-if="error" type="error">{{ error }}</v-alert>
@@ -40,7 +41,7 @@
                   :key="item.id"
                   class="align-start"
                 >
-                  <v-list-item-avatar>
+                  <v-list-item-avatar class="mr-4">
                     <v-img :src="item.Product.thumbnail" alt="Image du Produit" max-width="75"></v-img>
                   </v-list-item-avatar>
                   <v-list-item-content>
@@ -50,18 +51,22 @@
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
+              <v-card-actions>
+                <v-btn @click="openInvoiceModal(order.id)">Voir la facture</v-btn>
+              </v-card-actions>
             </v-card>
           </div>
         </div>
       </v-col>
     </v-row>
+    <InvoiceModal :show="showInvoice" :orderId="selectedOrderId" @update:show="showInvoice = $event" />
   </v-container>
 </template>
 
-
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useOrderStore } from '@/stores/order';
+import InvoiceModal from '@/components/Invoice/InvoiceModal.vue';
 
 const orderStore = useOrderStore();
 
@@ -69,6 +74,13 @@ const loading = computed(() => orderStore.loading);
 const error = computed(() => orderStore.error);
 const paidOrders = computed(() => orderStore.paidOrders);
 
+const showInvoice = ref(false);
+const selectedOrderId = ref<number | null>(null);
+
+const openInvoiceModal = (orderId: number) => {
+  selectedOrderId.value = orderId;
+  showInvoice.value = true;
+};
 onMounted(async () => {
   await orderStore.fetchPaidOrders();
 });
@@ -77,28 +89,3 @@ const calculateTotal = (items) => {
   return items.reduce((total, item) => total + parseFloat(item.unitPrice) * item.quantity, 0).toFixed(2);
 };
 </script>
-
-<style scoped>
-.v-list-item-avatar {
-  margin-right: 16px;
-}
-.text-center {
-  text-align: center;
-}
-.text-lg {
-  font-size: 1.25rem;
-}
-.list-disc {
-  list-style-type: disc;
-}
-.pl-5 {
-  padding-left: 1.25rem;
-}
-.mt-2 {
-  margin-top: 0.5rem;
-}
-.underline {
-  text-decoration: underline;
-}
-</style>
-
