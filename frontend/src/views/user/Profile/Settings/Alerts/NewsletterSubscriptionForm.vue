@@ -18,12 +18,10 @@ export default defineComponent({
       subscribed.value = subscriptionStore.newsletterSubscription?.subscribed ?? false;
     });
 
-    watch(subscribed, () => {
-      if (subscribed.value) {
-        label.value = "Je souhaite recevoir des mails de la part du site";
-      } else {
-        label.value = "Je ne souhaite pas recevoir des mails de la part du site";
-      }
+    watch(subscribed, (newVal) => {
+      label.value = newVal
+          ? "Je souhaite recevoir des mails de la part du site"
+          : "Je ne souhaite pas recevoir des mails de la part du site";
     });
 
     const saveSubscription = async () => {
