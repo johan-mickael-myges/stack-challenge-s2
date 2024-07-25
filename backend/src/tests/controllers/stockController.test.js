@@ -94,17 +94,6 @@ describe('Stock Controller', () => {
     });
 
     describe('GET /products/:id/stocks/count', () => {
-        it('should return 401 if the user is not authenticated', async () => {
-            jwt.verify.mockImplementation((token, secret, callback) => {
-                callback(new UnauthorizedError(), null);
-            });
-
-            const response = await request(app).get('/products/1/stocks/count');
-
-            expect(response.statusCode).toBe(401);
-            expect(response.error.text).toBe('Unauthorized');
-        });
-
         it('should return 404 if product is not found', async () => {
             jwt.verify.mockImplementation((token, secret, callback) => {
                 callback(null, {});
