@@ -26,6 +26,7 @@ const sendMail = async (recipients, subject, templateName, data) => {
     try {
         await apiInstance.sendTransacEmail(sendSmtpEmail);
     } catch (error) {
+        console.log(error);
         throw new MailerError();
     }
 }
