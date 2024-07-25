@@ -56,6 +56,10 @@ export const useCartStore = defineStore('carts', {
         cart: null as Cart | null,
     }),
     actions: {
+        clearState() {
+            this.loading = false;
+            this.cart = null;
+        },
         async addToCart(productId: number, quantity: number = 1, signal?: AbortSignal) {
             this.loading = true;
             try {

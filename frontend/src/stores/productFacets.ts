@@ -12,6 +12,11 @@ export const useProductFacetsStore = defineStore('productFacets', {
         selectedFacets: {} as SelectedFacets,
     }),
     actions: {
+        clearState() {
+            this.loading = false;
+            this.facets = [];
+            this.selectedFacets = {};
+        },
         async fetchProductFacets(params?: {}) {
             try {
                 const response = await apiClient.get('/products/facets', {

@@ -20,6 +20,15 @@ export const useCategoryStore = defineStore('categories', {
         sortBy: [] as any,
     }),
     actions: {
+        clearState() {
+            this.loading = false;
+            this.categories = [];
+            this.category = null;
+            this.total = 0;
+            this.currentPage = 1;
+            this.itemsPerPage = 10;
+            this.sortBy = [];
+        },
         async countCategories() {
             try {
                 const response = await apiClient.get('/categories/count');

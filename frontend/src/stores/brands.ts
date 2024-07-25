@@ -20,6 +20,15 @@ export const useBrandStore = defineStore('brands', {
         sortBy: [] as any,
     }),
     actions: {
+        clearState() {
+            this.loading = false;
+            this.brands = [];
+            this.brand = null;
+            this.total = 0;
+            this.currentPage = 1;
+            this.itemsPerPage = 10;
+            this.sortBy = [];
+        },
         async countBrands() {
             try {
                 const response = await apiClient.get('/brands/count');

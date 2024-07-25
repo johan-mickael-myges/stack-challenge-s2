@@ -20,6 +20,15 @@ export const useColorStore = defineStore('colors', {
         sortBy: [] as any
     }),
     actions: {
+        clearState() {
+            this.loading = false;
+            this.colors = [];
+            this.color = null;
+            this.total = 0;
+            this.currentPage = 1;
+            this.itemsPerPage = 10;
+            this.sortBy = [];
+        },
         async countColors() {
             try {
                 const response = await apiClient.get('/colors/count');

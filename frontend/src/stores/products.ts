@@ -60,6 +60,15 @@ export const useProductStore = defineStore('products', {
         sortBy: [] as any,
     }),
     actions: {
+        clearState() {
+            this.loading = false;
+            this.products = [];
+            this.product = null;
+            this.total = 0;
+            this.currentPage = 1;
+            this.itemsPerPage = 10;
+            this.sortBy = [];
+        },
         async countProducts(params?: Record<string, any>, facetParams?: Record<string, any>) {
             try {
                 const response = await apiClient.get('/products/count', {

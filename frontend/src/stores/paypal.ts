@@ -7,6 +7,10 @@ export const usePayPalStore = defineStore('paypal', {
         paypalClientId: null as string | null,
     }),
     actions: {
+        async clearState() {
+            this.loading = false;
+            this.paypalClientId = null;
+        },
         async fetchPayPalClientId() {
             this.loading = true;
             try {

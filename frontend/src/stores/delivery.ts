@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import {z} from 'zod';
 import apiClient from '@/config/axios';
+import { clearScreenDown } from 'readline';
 
 export const DeliveryEntitySchema = z.object({
     id: z.number(),
@@ -53,6 +54,12 @@ export const useDeliveryStore = defineStore('deliveries', {
         errors: [] as string[],
     }),
     actions: {
+        clearState() {
+            this.loading = false;
+            this.delivery = null;
+            this.deliveryInformation = null;
+            this.errors = [];
+        },
         async getDelivery(deliveryId: number) {
             this.loading = true;
             try {

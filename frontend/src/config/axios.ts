@@ -18,7 +18,6 @@ apiClient.interceptors.response.use(
                 await router.push({ name: 'Forbidden' });
             }
         }
-
         return Promise.reject(error);
     }
 );

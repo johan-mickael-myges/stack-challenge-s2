@@ -9,7 +9,7 @@ import LoginButton from "@/components/Button/LoginButton.vue";
 
 const { goToByName } = useGoToUrl();
 const authStore = useAuthStore();
-const isAuthenticated = computed(() => authStore.isAuthenticated);
+const isAuthenticated = (computed(() => authStore.isAuthenticated));
 
 const cartStore = useCartStore();
 const countCartItem = computed(() => cartStore.countCartItem);
@@ -30,7 +30,7 @@ onMounted(async () => {
 
   await authStore.verifyAuth();
 
-  if (isAuthenticated) {
+  if (authStore.isAuthenticated) {
     await cartStore.fetchCart();
   }
 });

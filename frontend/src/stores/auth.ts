@@ -4,6 +4,7 @@ import { ExpressError, LoginData, RegisterData } from '@/types';
 import apiClient from "@/config/axios.ts";
 import { useRouter } from 'vue-router';
 import {z} from 'zod';
+import {cleanAllStates, useStateCleaner} from "@/composables/useStateCleaner.ts";
 
 const ApiUserSchema = z.object({
     userId: z.number(),
@@ -21,10 +22,13 @@ export const useAuthStore = defineStore('auth', () => {
     const user = ref<ApiUser | null>(null);
     const httpCode = ref(200);
 
-    const resetState = () => {
+    const clearState = () => {
         loading.value = false;
         hasError.value = false;
         errors.value = {};
+        isAuthenticated.value = false;
+        user.value = null;
+        httpCode.value = 200;
     }
 
     const deleteUser = async () => {
@@ -39,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     const register = async (data: RegisterData) => {
-        resetState();
+        clearState();
         try {
             await apiClient.post('/auth/register', data);
             window.location.href = '/login';
@@ -71,7 +75,6 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     const login = async (data: LoginData) => {
-        resetState();
         try {
             await apiClient.post('/auth/login', data);
             isAuthenticated.value = true;
@@ -108,8 +111,8 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     const logout = async () => {
-        resetState();
         try {
+            (cleanAllStates());
             await apiClient.post('/auth/logout');
             isAuthenticated.value = false;
             window.location.href = '/login';
@@ -173,7 +176,7 @@ export const useAuthStore = defineStore('auth', () => {
               newPassword
             });
             window.location.href = '/login';
-            alert('Le mot de passe a été réinitialisé avec succès.');
+            clearState();
           } catch (error) {
             throw error;
           }
@@ -207,5 +210,6 @@ export const useAuthStore = defineStore('auth', () => {
         sendEmailResetPassword,
         infoUser,
         checkAdmin,
+        clearState,
     };
 });

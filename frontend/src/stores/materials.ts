@@ -20,6 +20,15 @@ export const useMaterialStore = defineStore('materials', {
         sortBy: [] as any
     }),
     actions: {
+        clearState() {
+            this.loading = false;
+            this.materials = [];
+            this.material = null;
+            this.total = 0;
+            this.currentPage = 1;
+            this.itemsPerPage = 10;
+            this.sortBy = [];
+        },
         async countMaterials() {
             try {
                 const response = await apiClient.get('/materials/count');
