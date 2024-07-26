@@ -8,8 +8,8 @@ RUN npm install
 
 COPY . .
 
-ENTRYPOINT ["npm"]
+RUN npm install -g nodemon
 
-CMD ["start"]
+CMD sh -c "npm install && npm start"
 
 EXPOSE 8000

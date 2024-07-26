@@ -8,8 +8,8 @@ RUN npm install
 
 COPY . .
 
-ENTRYPOINT ["npm"]
+RUN npm install -g vite
 
-CMD ["run", "dev"]
+CMD sh -c "npm install && npm run dev"
 
 EXPOSE 5173
