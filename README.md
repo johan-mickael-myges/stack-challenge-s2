@@ -1,6 +1,6 @@
 # Groupe 3 : 
 
-johan-mickael-myges:  RAKOTONIAINA Johan Mickael 
+## johan-mickael-myges:  RAKOTONIAINA Johan Mickael 
 
 Inscription avec confirmation par mail
 Authentification
@@ -11,7 +11,7 @@ Gestion des rôles
 
 
 
-RachaRamoul:  RAMOUL Racha  
+## RachaRamoul:  RAMOUL Racha
 
 Panier 
 Commande
@@ -21,7 +21,7 @@ Historique des commandes et facturation
 RGPD
 
 
-hema-brm: BIRABOURAME Hemavathi
+## hema-brm: BIRABOURAME Hemavathi
 
 Réinitialisation de mot de passe 
 Affichage des produits 
@@ -31,7 +31,7 @@ Crud admin (couleurs, matériaux, marques)
 
 
 
-SarahLyna:   SALAMANI Sarah Lina
+## SarahLyna:   SALAMANI Sarah Lina
 
 Modification des mdp 
 Suppression de compte
