@@ -2,43 +2,36 @@
 
 ## Lancement du projet
 
-Pour construire et démarrer les conteneurs définis dans le fichier docker-compose.yml, exécutez la commande suivante :
+1. Installation des dépendances :
 ```bash
 docker compose up --build
 ```
 
-Accédez au conteneur backend et installez les dépendances Node.js :
+2. Création de la base de données
+Dans le dossier /backend, exécuter la commande suivante :
 ```bash
-docker compose run -it --entrypoint /bin/sh backend
-npm install
-exit
-```
-
-Accédez au conteneur frontend et installez les dépendances Node.js :
-```bash
-docker compose run -it --entrypoint /bin/sh frontend
-npm install
-exit
-```
-
-Accédez au dossier backend et recréez la base de données :
-```bash
-cd backend
 make db-recreate
 ```
 
-## johan-mickael-myges:  RAKOTONIAINA Johan Mickael 
+## johan-mickael-myges:  RAKOTONIAINA Johan Mickael
 
+> 1. Partie technique
+- Mise en place de l’environnement de développement (BDD, backend, frontend)
+- Mise en place des outils /utilitaires de développement en local (Docker, Makefile)
+- Mise en place de l’architecture du projet (backend, frontend)
+- Création des composants de base (Tableau, Formulaire)
+- Mise en place des composables (Validation des formulaires, Gestion des erreurs)
+- Déploiement de l’application
+
+> 2. Partie fonctionnelle
 - Inscription avec confirmation par mail
 - Authentification
-- Recherche produits / filtres
-- Gestion d’alertes
-- Panel d’administration
-- Gestion des rôles
-- Gestion des stocks
-- Export Csv
-
-
+- Recherche produits - Facettes
+- Page de paramétrage du compte
+- Gestion d’alertes - (Réapprovisionnement, Nouveaux produits dans une catégorie, Changement de prix, Inscription à la newsletter)
+- CRUD admin
+- Ajout de stock
+- Export CSV
 
 ## RachaRamoul:  RAMOUL Racha
 
