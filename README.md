@@ -8,6 +8,7 @@
 - Gestion d’alertes
 - Panel d’administration
 - Gestion des rôles
+- Gestion des stocks
 
 
 
