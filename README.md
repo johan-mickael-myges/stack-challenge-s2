@@ -9,6 +9,7 @@
 - Panel d’administration
 - Gestion des rôles
 - Gestion des stocks
+- Export Csv
 
 
 
